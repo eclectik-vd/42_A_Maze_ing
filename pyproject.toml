@@ -1,0 +1,41 @@
+[project]
+name = "mazegen"
+version = "0.1.0"
+description = "A_Maze_ing project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "arcade>=3.3.3",
+    "colorama>=0.4.6",
+    "pydantic>=2.13.4"
+]
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+    "mypy>=2.1.0",
+    "pytest>=9.1.1",
+]
+
+# [build-system] --------------------------------TODO
+# requires = ???
+# build-backend = ???
+
+[tool.mypy]
+# exclure explicitement venv & Cie
+exclude = ["^\\.venv/", "^build/", "^dist/"]
+
+# Règles strictes de typage (extraites du Makefile, pour qu'il soit + lisible)
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+
+# pour améliorer la capacité de mypy à vérifier le code spécifiques à pydantic
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true

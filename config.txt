@@ -1,0 +1,25 @@
+# Default settings for the maze generator
+
+# size MAX of the maze to display it in the terminal on my screen
+# WIDTH=69
+# HEIGHT=69
+# size of the maze
+width=9
+HEIGHT=12
+
+# start and end coordinates, in x,y format
+ENTRY=0,0
+EXIT=6,10
+
+# name of text file where the maze will be drawn
+OUTPUT_FILE=maze.txt
+
+# True or False, to indicate whether there is only one possible path
+# PERFECT=True
+PERFECT=False
+
+# custom key that must be added
+# SEED=42
+
+# custom key that can be added
+# DISPLAY_MODE=terminal

@@ -1,0 +1,43 @@
+# doit exclure
+#	tout ce qui est généré localement (caches, environnements virtuels) et
+#	les configurations propres à la machine.
+
+# BIG source: # https://github.com/github/gitignore/blob/main/Python.gitignore
+
+# version épurée :
+
+# ------------------------------------------------------
+# Environnement Python
+# ------------------------------------------------------
+# Le dossier .venv est propre à la machine, il ne doit JAMAIS être versionné
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ------------------------------------------------------
+# Outils et Caches
+# ------------------------------------------------------
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# ------------------------------------------------------
+# Build et Distribution
+# ------------------------------------------------------
+build/
+dist/
+*.egg-info/
+
+# ------------------------------------------------------
+# Éditeurs de code (VSCode / VSCodium)
+# ------------------------------------------------------
+# Ignore les réglages locaux de VSC pour éviter les conflits 42<->homeSweetHome
+.vscode/
+
+# ------------------------------------------------------
+# Système d'exploitation (Mac / Linux / Windows)
+# ------------------------------------------------------
+.DS_Store
+Thumbs.db
