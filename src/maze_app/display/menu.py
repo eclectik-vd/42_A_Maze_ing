@@ -9,32 +9,22 @@ class Menu():
     def __init__(self, visualizer) -> None:
         self.visualizer = visualizer
  
-        zone_x_start = self.visualizer.width // 30
-        self.game_zone = (self.visualizer.width // 2, self.visualizer.height)
- 
-        cell_w = self.game_zone[0] // self.visualizer.maze_width
-        cell_h = self.game_zone[1] // self.visualizer.maze_height
-        self.cell = min(cell_w, cell_h)
-        self.scale = self.cell / 64
- 
-        maze_pixel_width = self.visualizer.maze_width * self.cell
-        maze_pixel_height = self.visualizer.maze_height * self.cell
- 
-        self.margin = (
-            zone_x_start + (self.game_zone[0] - maze_pixel_width) // 2,
-            (self.game_zone[1] - maze_pixel_height) // 2,
+        self.menu_start_x: int = self.visualizer.width // 32 * 19
+        self.menu_start_y: int = self.visualizer.height // 18 * 11
+        self.menu_zone: Tuple[int, int] = (
+            self.visualizer.width // 32 * 18 - 2 * self.menu_start_x,
+            self.visualizer.height - 2 * self.menu_start_y,
         )
  
-        self.menu_start_x = zone_x_start * 2 + maze_pixel_width
-        self.menu_start_y = self.visualizer.height * 0.55
-        self.menu_width = self.visualizer.width - (zone_x_start * 3 + maze_pixel_width)
-        self.menu_height = self.visualizer.height - (zone_x_start + self.visualizer.height * 0.55)
+        self.menu_width = self.visualizer.width // 32 * 12
+        self.menu_height = self.visualizer.height // 18 * 6
  
         self.title = "=== A-Maze-Ing ==="
         self.menu_options: List[str] = [
             "1. re-generate a new maze",
             "2. Show / Hide the shortest path",
-            "3. Quit",
+            "3. Play",
+            "4. Quit",
         ]
         self.selected_index = 0
  
@@ -135,14 +125,15 @@ class Menu():
         Returns:
             None
         """
-        if symbol == arcade.key.UP:
-            self.selected_index = ((self.selected_index - 1)
-                                   % len(self.menu_options))
-        elif symbol == arcade.key.DOWN:
-            self.selected_index = ((self.selected_index + 1)
-                                   % len(self.menu_options))
-        elif symbol == arcade.key.SPACE:
-            self.execute_action()
+        if self.visualizer.on_menu: 
+            if symbol == arcade.key.UP:
+                self.selected_index = ((self.selected_index - 1)
+                                    % len(self.menu_options))
+            elif symbol == arcade.key.DOWN:
+                self.selected_index = ((self.selected_index + 1)
+                                    % len(self.menu_options))
+            elif symbol == arcade.key.SPACE:
+                self.execute_action()
 
     def execute_action(self) -> None:
         """Perform the action associated with the current menu selection.
@@ -152,8 +143,10 @@ class Menu():
         """
         selected: str = self.menu_options[self.selected_index]
         if selected == "1. re-generate a new maze":
-            pass
+            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         elif selected == "2. Show / Hide the shortest path":
             self.visualizer.have_path = not self.visualizer.have_path
-        elif selected == "3. Quit":
+        elif selected == "3. Play":
+            self.visualizer.on_menu = False
+        elif selected == "4. Quit":
             arcade.exit()

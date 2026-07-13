@@ -1,4 +1,5 @@
 from src.maze_app.display.visualizer import Visualizer
+from src.mazegen import MazeGenerator
 
 import time
 import os
@@ -27,14 +28,14 @@ class AsciiVisualizer(Visualizer):
             `colors`.
     """
 
-    def __init__(self, output_file: str):
+    def __init__(self, maze: MazeGenerator):
         """Initialize the ASCII visualizer.
 
         Args:
             output_file (str): Path passed to the base Visualizer,
                 used for any file output handling.
         """
-        super().__init__(output_file)
+        super().__init__(maze)
         init(autoreset=True)
         self.ascii_maze: list = []
         self.ascii_maze_path: list = []
@@ -134,10 +135,13 @@ class AsciiVisualizer(Visualizer):
             None
         """
         self.ascii_maze = []
-        north = ["1", "3", "5", "7", "9", "B", "D", "F"]
-        east = ["2", "3", "6", "7", "A", "B", "E", "F"]
-        south = ["4", "5", "6", "7", "C", "D", "E", "F"]
-        west = ["8", "9", "A", "B", "C", "D", "E", "F"]
+        north = [1, 3, 5, 7, 9, 11, 13, 15]
+        east = [2, 3, 6, 7, 10, 11, 14, 15]
+        south = [4, 5, 6, 7, 12, 13, 14, 15]
+        west = [8, 9, 10, 11, 12, 13, 14, 15]
+
+        entry_x, entry_y = self.entry
+        exit_x, exit_y = self.exit
 
         for row_index, row in enumerate(self.maze):
             if row_index == 0:
@@ -152,10 +156,12 @@ class AsciiVisualizer(Visualizer):
                     mid_line += "|" if cell in west else " "
                 # print(self.exit)
                 # print([row_index, i])
-                if self.entry == [row_index, i]:
+                if entry_x == i and entry_y == row_index:
                     mid_line += " E "
-                elif self.exit == [row_index, i]:
+                elif exit_x == i and exit_y == row_index:
                     mid_line += " S "
+                elif cell == 15:
+                    mid_line += " ❀ "
                 else:
                     mid_line += "   "
                 mid_line += "|" if cell in east else " "
@@ -211,8 +217,13 @@ class AsciiVisualizer(Visualizer):
             current_row += row_offset
             current_col += col_offset
 
+            entry_x, entry_y = self.entry
+            exit_x, exit_y = self.exit
+
             current_cell = [current_row, current_col]
-            if current_cell != self.entry and current_cell != self.exit:
+            exit_cell = [exit_y, exit_x]
+            entry_cell = [entry_y, entry_x]
+            if current_cell != exit_cell and current_cell != entry_cell:
                 cell_line_index = 1 + 2 * current_row
                 cell_column_index = 2 + 4 * current_col
                 self._draw_path_char(cell_line_index, cell_column_index)

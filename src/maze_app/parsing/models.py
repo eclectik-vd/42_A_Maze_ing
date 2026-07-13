@@ -13,8 +13,8 @@ class MazeConfig(BaseModel):
     output_file: str = Field(alias="OUTPUT_FILE")
     perfect: bool = Field(alias="PERFECT")
     seed: int | None = Field(default=None, alias="SEED")
-    display_mode: Literal['terminal', 'gui'] | None = Field(
-        default=None,
+    display_mode: Literal['ascii', 'arcade'] | None = Field(
+        default='ascii',
         alias="DISPLAY_MODE"
     )
 

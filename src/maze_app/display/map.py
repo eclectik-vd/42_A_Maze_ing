@@ -14,10 +14,11 @@ class Map:
         self.bordure_textures = []
         self.exit_textures = []
 
-        zone_x_start: int = self.visualizer.width // 30
+        zone_x_start: int = self.visualizer.width // 32
+        zone_y_start: int = self.visualizer.height // 32
         self.game_zone: Tuple[int, int] = (
-            self.visualizer.width // 2,
-            self.visualizer.height,
+            self.visualizer.width // 32 * 18 - 2 * zone_x_start,
+            self.visualizer.height - 2 * zone_y_start,
         )
  
         cell_w: int = self.game_zone[0] // self.visualizer.maze_width
@@ -30,9 +31,8 @@ class Map:
  
         self.margin: Tuple[int, int] = (
             zone_x_start + (self.game_zone[0] - maze_pixel_width) // 2,
-            (self.game_zone[1] - maze_pixel_height) // 2,
+            zone_y_start + (self.game_zone[1] - maze_pixel_height) // 2,
         )
- 
         self.grid = []
  
         self.generate_maze()
@@ -43,10 +43,10 @@ class Map:
         self.build_sprites()
 
     def build_sprites(self) -> None:
-        wall_sheet = Image.open("display/sprite/e.png")
-        bordure_sheet = Image.open("display/sprite/bordure.png")
-        exit_sheet = Image.open("display/sprite/exit.png")
-        path_sheet = Image.open("display/sprite/path.png")
+        wall_sheet = Image.open("src/maze_app/display/sprite/e.png")
+        bordure_sheet = Image.open("src/maze_app/display/sprite/bordure.png")
+        exit_sheet = Image.open("src/maze_app/display/sprite/exit.png")
+        path_sheet = Image.open("src/maze_app/display/sprite/path.png")
 
         for i in range(4):
             for j in range(4):
@@ -150,7 +150,7 @@ class Map:
                     )
                 else:
                     cx, cy = self.grid[y-1][x-1]
-                    cell_index = int(self.visualizer.maze[y-1][x-1], 16)
+                    cell_index = self.visualizer.maze[y-1][x-1]
 
                     sprite = arcade.Sprite(
                         self.wall_textures[cell_index],
@@ -171,7 +171,8 @@ class Map:
         sprite.alpha = 230
         self.tile_list.append(sprite)
 
-        cx, cy = self.grid[int(self.visualizer.exit[0])][int(self.visualizer.exit[1])]
+        ex, ey = self.visualizer.exit
+        cx, cy = self.grid[int(ey)][int(ex)]
         sprite = arcade.Sprite(
             self.exit_textures[1],
             scale=self.scale,
@@ -190,27 +191,31 @@ class Map:
             "E": (0, 1),
             "W": (0, -1),
         }
-        ey, ex = self.visualizer.exit
-        x = self.visualizer.entry[1]
-        y = self.visualizer.entry[0]
-        for dir in self.visualizer.path:
-            dy, dx = direction_offsets[dir]
-       
-            # print(x, y , "->", dir)
-            x += dx
-            y += dy
-            # print(x, y)
-            if x == ex and y == ey:
-                break
+        x, y = self.visualizer.entry
+        print(self.visualizer.path)
+        path = self.visualizer.path
+        for i in range(0, len(path)):
+            if path[i] == "N":
+                angle = 0
+            elif path[i] == "S":
+                angle = 180
+            elif path[i] == "E":
+                angle = 90
+            elif path[i] == "W":
+                angle = 270
             cx, cy = self.grid[y][x]
             sprite = arcade.Sprite(
                 self.path_texture,
                 scale=self.scale,
                 center_x=cx,
-                center_y=cy
+                center_y=cy,
+                angle=angle
             )
-            sprite.alpha = 230
+            sprite.alpha = 180
             self.path_list.append(sprite)
+            dy, dx = direction_offsets[path[i]]
+            x += dx
+            y += dy
         
 
         

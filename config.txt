@@ -4,7 +4,7 @@
 # WIDTH=69
 # HEIGHT=69
 # size of the maze
-width=9
+width=12
 HEIGHT=12
 
 # start and end coordinates, in x,y format
@@ -22,4 +22,4 @@ PERFECT=False
 # SEED=42
 
 # custom key that can be added
-# DISPLAY_MODE=terminal
+DISPLAY_MODE=arcade

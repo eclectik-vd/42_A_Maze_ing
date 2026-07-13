@@ -1,11 +1,14 @@
 import argparse
 import sys
+import arcade
 from pydantic import ValidationError
 from src.maze_app.parsing.config_parser import parse_config
 from src.maze_app.parsing.models import MazeConfig
 from src.maze_app.output.export import export_to_file
 from src.mazegen import MazeGenerator
 from src.maze_app.exceptions import MazeGenerationError
+from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
+from src.maze_app.display.ascii_visualizer import AsciiVisualizer
 from debug_utils import print_italic, print_green, debug_draw_maze
 
 
@@ -98,7 +101,16 @@ def main(config_path: str) -> None:
 
     # -------------------- TODO ---------------------------------
     # --- AFFICHER LE LABYRINTHE
-    debug_draw_maze(maze.grid, maze.width, maze.height)
+    if config.display_mode == "ascii":
+        visualizer = AsciiVisualizer(maze)
+        visualizer.update()
+    elif config.display_mode == "arcade":
+        window = arcade.Window(1280, 720,
+                            "A-Maze-Ing",
+                            fullscreen=False)
+        visualizer = ArcadeVisualizer(maze)
+        window.show_view(visualizer)
+        arcade.run()
 
     # -------------------- TODO ---------------------------------
     # --- TROUVER LE CHEMIN LE PLUS COURT
