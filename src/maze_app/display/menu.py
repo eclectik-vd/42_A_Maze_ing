@@ -3,6 +3,9 @@ from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
 import arcade
 from PIL import Image
 import arcade.gui as gui
+from src.maze_app.display.map import Map
+from random import randint
+
 
 
 class Menu():
@@ -107,12 +110,21 @@ class Menu():
  
         y = selected_label.y
         x = selected_label.left - 25
-        arcade.draw_triangle_filled(
-            x, y - 2,
-            x, y + 14,
-            x + 12, y + 6,
-            arcade.color.RED_DEVIL,
-        )
+        if self.visualizer.on_menu:
+            arcade.draw_triangle_filled(
+                x, y - 2,
+                x, y + 14,
+                x + 12, y + 6,
+                arcade.color.RED,
+            )
+        else:
+            arcade.draw_triangle_filled(
+                x, y - 2,
+                x, y + 14,
+                x + 12, y + 6,
+                arcade.color.GREEN,
+            )
+
 
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
@@ -143,7 +155,8 @@ class Menu():
         """
         selected: str = self.menu_options[self.selected_index]
         if selected == "1. re-generate a new maze":
-            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            self.visualizer.mazegen.regenerate_perfect_maze(randint(0, 1000))
+            self.visualizer.map = Map(self.visualizer)
         elif selected == "2. Show / Hide the shortest path":
             self.visualizer.have_path = not self.visualizer.have_path
         elif selected == "3. Play":

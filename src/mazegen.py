@@ -36,6 +36,11 @@ from collections import deque
 from copy import deepcopy
 
 
+class MazeGenError(Exception):
+    """exception thrown when maze generation fails or violates rules"""
+    pass
+
+
 class MazeGenerator:
     """ class for generating a maze with Recursive Backtracker """
 
@@ -357,9 +362,8 @@ class MazeGenerator:
                     # East wall of current cell and west wall of cell at right
                     # MUST have same open/close state
                     if bool(cell & self.E) != bool(adjacent_E & self.W):
-                        warnings.warn("East–West inconsistency "
+                        raise MazeGenError("East–West inconsistency "
                                       f"between ({x},{y}) and ({x+1},{y})")
-                        return False
 
                 # check Sud|North, ie with bottom adjacent
                 if y < self.height - 1:
@@ -368,9 +372,8 @@ class MazeGenerator:
                     # South wall of current cell and north wall of bottom cell
                     # MUST have same open/close state
                     if bool(cell & self.S) != bool(adjacent_S & self.N):
-                        warnings.warn("South–North inconsistency "
+                        raise MazeGenError("South–North inconsistency "
                                       f"between ({x},{y}) and ({x},{y+1})")
-                        return False
 
         return True
 
@@ -407,8 +410,7 @@ class MazeGenerator:
 
                 # no wall found, so this 3x3 area is really open '(
                 if is_3x3_open:
-                    warnings.warn(f"open area detected at ({x},{y})")
-                    return False
+                    raise MazeGenError(f"open area detected at ({x},{y})")
 
         return True
 
