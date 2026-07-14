@@ -412,6 +412,25 @@ class MazeGenerator:
 
         return True
 
+    def reset(self) -> None:
+        """ Clear internal state of the maze in memory """
+        self._grid = [[self.ALL_WALLS for _ in range(self.width)]
+            for _ in range(self.height)]
+        self.pattern_cells.clear()
+        self._exit_path = ""
+        self._is_generated = False
+
+    def regenerate_perfect_maze(self, new_seed: int | None = None) -> None:
+        """
+        shortcut for Enzo :)
+            Reset and regenerate the maze with new seed if provided
+        """
+        if new_seed is not None:
+            random.seed(new_seed)
+
+        self.reset()
+        self.generate_perfect_maze()
+
     def solve_maze(self) -> str:
         """
         Use BFS to find the shortest path between the entrance and the exit
