@@ -76,6 +76,7 @@ class AsciiVisualizer(Visualizer):
                 print()
 
         print()
+
         menu = ["=== A-Maze-ing ===",
                 "1. re-generate a new maze",
                 "2. Show / Hide the shortest path",

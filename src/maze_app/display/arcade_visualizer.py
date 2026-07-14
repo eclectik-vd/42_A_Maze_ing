@@ -15,8 +15,8 @@ class ArcadeVisualizer(Visualizer, arcade.View):
         from src.maze_app.display.player import Player
         self.map = Map(self)
         self.menu = Menu(self)
-        self.mazegen = maze
         self.player = Player(self)
+        self.mazegen = maze
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.player)
         self.background_texture = arcade.load_texture("src/maze_app/display"

@@ -155,8 +155,10 @@ class Menu():
         """
         selected: str = self.menu_options[self.selected_index]
         if selected == "1. re-generate a new maze":
-            self.visualizer.mazegen.regenerate_perfect_maze(randint(0, 1000))
-            self.visualizer.map = Map(self.visualizer)
+            self.visualizer.mazegen.regenerate_perfect_maze(randint(0, 10000))
+            self.visualizer.maze: list = self.visualizer.mazegen.grid.copy()
+            self.visualizer.path: str = self.visualizer.mazegen.solve_maze()
+            self.visualizer.map.generate_maze()
         elif selected == "2. Show / Hide the shortest path":
             self.visualizer.have_path = not self.visualizer.have_path
         elif selected == "3. Play":

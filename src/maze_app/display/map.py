@@ -13,6 +13,7 @@ class Map:
         self.wall_textures = []
         self.bordure_textures = []
         self.exit_textures = []
+        self.first = True
 
         zone_x_start: int = self.visualizer.width // 32
         zone_y_start: int = self.visualizer.height // 32
@@ -40,7 +41,12 @@ class Map:
 
     def generate_maze(self) -> None:
         self.calculate_grid()
+        if not self.first:
+            self.path_list.clear()
+            self.tile_list.clear()
+            self.visualizer.player.init_player()
         self.build_sprites()
+        self.first = False
 
     def build_sprites(self) -> None:
         wall_sheet = Image.open("src/maze_app/display/sprite/e.png")
@@ -192,7 +198,6 @@ class Map:
             "W": (0, -1),
         }
         x, y = self.visualizer.entry
-        print(self.visualizer.path)
         path = self.visualizer.path
         for i in range(0, len(path)):
             if path[i] == "N":

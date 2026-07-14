@@ -39,7 +39,21 @@ class Player(arcade.Sprite):
         self.animation_speed = 0.12
 
         self.current_anim_list = self.anim_sud[::4]
-        print(self.anim_sud[::4])
+
+    def init_player(self):
+        self.cell_pos = list(self.visualizer.entry)
+        x, y = self.cell_pos
+        cx, cy = self.map.grid[y][x]
+        self.center_x = cx
+        self.center_y = cy
+        self.speed: int = self.map.cell // 16
+
+        self.dx: int = 0
+        self.dy: int = 0
+        self.next_dx: int = 0
+        self.next_dy: int = 0
+
+        self.current_anim_list = self.anim_sud[::4]
 
     def update(self, delta_time):
         """Update the player's position and handle pac-gum collection.
