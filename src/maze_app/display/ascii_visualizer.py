@@ -104,9 +104,18 @@ class AsciiVisualizer(Visualizer):
             None
         """
         self.draw()
-        choice = input("choice (1-4): ")
+        choice = input("choice (1-5): ")
         if choice == '1':
-            pass
+            os.system('clear')
+            line = "Select the seed for the next maze: "
+            for c in line:
+                    print(c, end="", flush=True)
+                    time.sleep(0.005)
+            seed = input("")
+            self.mazegen.regenerate_perfect_maze(seed)
+            self.maze: list = self.mazegen.grid.copy()
+            self.path: str = self.mazegen.solve_maze()
+            self.update()
         if choice == '2':
             self.have_path = not self.have_path
             self.update()
