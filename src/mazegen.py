@@ -56,11 +56,11 @@ class MazeGenerator:
     # Relative coordinates of "42" pattern
     PATTERN_42: tuple[tuple[int, int], ...] = (
         (0, 0), (0, 1), (0, 2), (1, 2), (2, 1), (2, 2), (2, 3), (2, 4),
-        (4, 0), (5, 0), (6, 0), (6, 1), (4, 2), (5, 2), (6, 2), (4, 3),
-        (4, 4), (5, 4), (6, 4)
+        (5, 0), (6, 0), (7, 0), (7, 1), (5, 2), (6, 2), (7, 2), (5, 3),
+        (5, 4), (6, 4), (7, 4)
     )
     # TODO: add function to calculate width and height
-    PATTERN_WIDTH: int = 7
+    PATTERN_WIDTH: int = 8
     PATTERN_HEIGHT: int = 5
 
     def __init__(
@@ -282,6 +282,8 @@ class MazeGenerator:
 
         # values that refer to cells that are dead ends :
         # which has exactly 3 closed walls and 1 open wall
+        # /!\ tuple fait probablement bugger la reproductibilite
+        # du labyrinthe imparfait... TODO: tester avec une liste
         corridor_ends = (
             self.ALL_WALLS & ~self.N,  # (1110)
             self.ALL_WALLS & ~self.E,  # (1101)
@@ -296,11 +298,15 @@ class MazeGenerator:
             and (x, y) not in self.pattern_cells
         ]
 
-        # count the number of dead ends to be opened
-        nb_walls_to_break = int(len(dead_ends) * percent_to_break)
+        # ------------- subject v2.1 -------------------------------
+        # # count the number of dead ends to be opened
+        # nb_walls_to_break = int(len(dead_ends) * percent_to_break)
+        # # Shuffle the list to break random walls
+        # random.shuffle(dead_ends)
+        # ------------- end subject v2.1 ----------------------------
+        # mandatory v2.2: break all dead ends
+        nb_walls_to_break = len(dead_ends)
 
-        # Shuffle the list to break random walls
-        random.shuffle(dead_ends)
 
         # iterate over the number of walls to break, to open dead-ends
         for x, y in dead_ends[:nb_walls_to_break]:
@@ -377,39 +383,38 @@ class MazeGenerator:
 
         return True
 
-    def check_no_large_areas(self) -> bool:
+    def is_3x3_open(self, start_x: int, start_y: int) -> bool:
         """
-        Check if there is open area of 3x3 cells or larger
-        Return True if the maze is valid, False if a 3x3 area is found
+        Checks if a 3x3 area, with top-left cell at (start_x, start_y),
+        is an open area (no internal walls).
         """
 
-        # The maze is smaller than 3x3, so it's impossible to have such an area
+        # Inspection of horizontal (south) and vertical (east) walls
+        found_wall = any(
+            (self.grid[y][x] & self.S)
+            for y in range(start_y, start_y + 2)
+            for x in range(start_x, start_x + 3)
+
+        ) or any(
+            (self.grid[y][x] & self.E)
+            for y in range(start_y, start_y + 3)
+            for x in range(start_x, start_x + 2)
+        )
+
+        # If `found_wall` is False, then `is_3x3_open` is True
+        return not found_wall
+
+    def free_of_open_areas(self) -> bool:
+        """
+        Check if there is open area of 3x3 cells or larger.
+        Return True if the maze is valid, raise MazeGenError if a 3x3 area is found
+        """
         if self.width < 3 or self.height < 3:
             return True
 
-        # traverse the grid, stopping 2 squares before the end
-        # to avoid going off the grid when viewing at +2 in X and +2 in Y
         for y in range(self.height - 2):
             for x in range(self.width - 2):
-                # assume there is no wall in this 3x3 area being checking
-                is_3x3_open = True
-
-                # check internal walls in this 3x3 square
-                for range_y in range(3):
-                    for range_x in range(3):
-                        cell = self.grid[y + range_y][x + range_x]
-
-                        # if an internal wall (east or south) is found,
-                        # area is not fully open => break to go check next area
-                        if ((range_x < 2 and (cell & self.E))
-                                or (range_y < 2 and (cell & self.S))):
-                            is_3x3_open = False
-                            break
-                    if not is_3x3_open:
-                        break
-
-                # no wall found, so this 3x3 area is really open '(
-                if is_3x3_open:
+                if self.is_3x3_open(x, y):
                     raise MazeGenError(f"open area detected at ({x},{y})")
 
         return True

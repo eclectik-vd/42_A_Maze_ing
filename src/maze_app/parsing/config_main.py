@@ -1,0 +1,49 @@
+import sys
+from pydantic import ValidationError
+from src.maze_app.parsing.config_parser import parse_config
+from src.maze_app.parsing.models import MazeConfig
+from debug_utils import print_italic, print_green
+
+def load_config(config_path: str) -> MazeConfig:
+    """
+    Load, parse, and validate maze configuration.
+    Exit on failure
+    Return: MazeConfig
+    """
+
+    # Extract a configuration from the `config_path` file
+    print_italic(f"\nReading the configuration file: {config_path}")
+    try:
+        config_parsed = parse_config(config_path)
+        # for key, value in config_parsed.items():
+        #     print_green(f"'{key}' : '{value}'")
+
+    except (FileNotFoundError, PermissionError) as err:
+        print(f"Error: the file '{config_path}' can't be accessed\n {err}",
+                file=sys.stderr)
+        sys.exit(1)
+    except ValueError as err:
+        print(f"Error: bad syntax in the configuration file: {err}",
+                file=sys.stderr)
+        sys.exit(1)
+    except Exception as err:
+        print(f"Unexpected error during parsing: {err}", file=sys.stderr)
+        sys.exit(1)
+
+    # Validate config extracted from file and instance data model with Pydantic
+    print_italic("Validating data configuration")
+    try:
+        config = MazeConfig(**config_parsed)
+
+    except ValidationError as err:
+        print("Error validating maze parameters:", file=sys.stderr)
+        for error in err.errors():
+            loc = error.get('loc', ())
+            field_name = loc[0] if loc else "Global"
+            raw_msg = error.get('msg', '')
+            cleaned_msg = raw_msg.replace('Value error,', '').strip()
+            print(f"  - [{field_name}] : {cleaned_msg}", file=sys.stderr)
+        sys.exit(1)
+
+    print_italic("Config successfully validated! ")
+    return config
