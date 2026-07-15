@@ -18,9 +18,9 @@ Example of use:
     )
 
     # 2. Generation
-    maze.generate_perfect_maze()
-    # Optional: creates loops
-    maze.make_imperfect(percent_to_break=0.2)
+    maze.generate()
+    # if needed
+    maze.regenerate(new_seed: int)
 
     # 3. Solving
     path_to_exit = maze.solve_maze()
@@ -65,7 +65,7 @@ class MazeGenerator:
 
     def __init__(
             self, width: int, height: int, entry_coord: tuple[int, int],
-            exit_coord: tuple[int, int], seed: int | None = None
+            exit_coord: tuple[int, int], perfect: bool, seed: int | None = None
     ) -> None:
 
         # Validation des données entrantes (Fail Fast)
@@ -76,6 +76,7 @@ class MazeGenerator:
         self.height = height
         self.entry_coord = entry_coord
         self.exit_coord = exit_coord
+        self.perfect = perfect
         # State check, to prevent access to a maze not yet generated
         self._is_generated = False
 
@@ -282,14 +283,12 @@ class MazeGenerator:
 
         # values that refer to cells that are dead ends :
         # which has exactly 3 closed walls and 1 open wall
-        # /!\ tuple fait probablement bugger la reproductibilite
-        # du labyrinthe imparfait... TODO: tester avec une liste
-        corridor_ends = (
+        corridor_ends = [
             self.ALL_WALLS & ~self.N,  # (1110)
             self.ALL_WALLS & ~self.E,  # (1101)
             self.ALL_WALLS & ~self.S,  # (1011)
             self.ALL_WALLS & ~self.W   # (0111)
-        )
+        ]
 
         # search and store all dead ends except in 42 pattern
         dead_ends: list[tuple[int, int]] = [
@@ -298,12 +297,6 @@ class MazeGenerator:
             and (x, y) not in self.pattern_cells
         ]
 
-        # ------------- subject v2.1 -------------------------------
-        # # count the number of dead ends to be opened
-        # nb_walls_to_break = int(len(dead_ends) * percent_to_break)
-        # # Shuffle the list to break random walls
-        # random.shuffle(dead_ends)
-        # ------------- end subject v2.1 ----------------------------
         # mandatory v2.2: break all dead ends
         nb_walls_to_break = len(dead_ends)
 
@@ -419,17 +412,15 @@ class MazeGenerator:
 
         return True
 
-    # --------------- TODO fix bug re-generer labyrinthes imparfaits
-    #                      needs to add perfect attribut to MazeGenerator
     def reset(self) -> None:
         """ Clear internal state of the maze in memory """
         self._grid = [[self.ALL_WALLS for _ in range(self.width)]
-            for _ in range(self.height)]
+                      for _ in range(self.height)]
         self.pattern_cells.clear()
         self._exit_path = ""
         self._is_generated = False
 
-    def regenerate_maze(self, new_seed: int | None = None) -> None:
+    def regenerate(self, new_seed: int | None = None) -> None:
         """ (shorcut corrected to include non perfect maze)
         Reset and regenerate the maze with a new seed if provided. """
         if new_seed is not None:
@@ -437,19 +428,6 @@ class MazeGenerator:
 
         self.reset()
         self.generate()
-    # --------------- END ToDo fix bug re-generer labyrinthes imparfaits
-
-    def regenerate_perfect_maze(self, new_seed: int | None = None) -> None:
-        """
-        shortcut for Enzo /!\ a corriger :
-            necessite d'inclure `perfect` dans les attributs du labyrinthe
-        Reset and regenerate the maze with new seed if provided
-        """
-        if new_seed is not None:
-            random.seed(new_seed)
-
-        self.reset()
-        self.generate_perfect_maze()
 
     def solve_maze(self) -> str:
         """
@@ -527,18 +505,18 @@ class MazeGenerator:
         # reached empty deque without finding exit, the maze is broken...
         raise RuntimeError("No path to exit was found.")
 
-    def generate(self, is_perfect: bool = True) -> None:
+    def generate(self) -> None:
         """
-        Generate a maze ?and solve it? 
+        Generate a maze
         raise MazeGenError if mandatory rules not followed
         """
 
         self.generate_perfect_maze()
 
-        if not is_perfect:
+        if not self.perfect:
             self.make_imperfect()
 
         if not self.check_walls_integrity() or not self.free_of_open_areas():
-            raise MazeGenError("Generated maze does not comply with internal rules.")
-            
-        # ? solve or not solve, that is the question...
+            raise MazeGenError("Generated maze does not comply internal rules")
+
+        self._exit_path = self.solve_maze()

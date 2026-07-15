@@ -113,7 +113,7 @@ class AsciiVisualizer(Visualizer):
                     print(c, end="", flush=True)
                     time.sleep(0.005)
             seed = input("")
-            self.mazegen.regenerate_perfect_maze(seed)
+            self.mazegen.regenerate(seed)
             self.maze: list = self.mazegen.grid.copy()
             self.path: str = self.mazegen.solve_maze()
             self.update()

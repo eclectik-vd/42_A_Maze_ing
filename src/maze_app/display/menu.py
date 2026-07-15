@@ -155,7 +155,7 @@ class Menu():
         """
         selected: str = self.menu_options[self.selected_index]
         if selected == "1. re-generate a new maze":
-            self.visualizer.mazegen.regenerate_perfect_maze(randint(0, 10000))
+            self.visualizer.mazegen.regenerate(randint(0, 10000))
             self.visualizer.maze: list = self.visualizer.mazegen.grid.copy()
             self.visualizer.path: str = self.visualizer.mazegen.solve_maze()
             self.visualizer.map.generate_maze()

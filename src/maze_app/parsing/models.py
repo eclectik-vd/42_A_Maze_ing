@@ -11,7 +11,7 @@ class MazeConfig(BaseModel):
     entry_coord: tuple[NonNegativeInt, NonNegativeInt] = Field(alias="ENTRY")
     exit_coord: tuple[NonNegativeInt, NonNegativeInt] = Field(alias="EXIT")
     output_file: str = Field(alias="OUTPUT_FILE")
-    perfect: bool = Field(alias="PERFECT")
+    perfect: bool = Field(default=True, alias="PERFECT")
     seed: int | None = Field(default=None, alias="SEED")
     display_mode: Literal['ascii', 'arcade'] | None = Field(
         default='ascii',

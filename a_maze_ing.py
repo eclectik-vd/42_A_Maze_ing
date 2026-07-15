@@ -14,7 +14,7 @@ def main(config_path: str) -> None:
     # LOAD and VALIDATE maze config
     config = load_config(config_path)
 
-    # INITIATES, CREATES and VALIDATES the maze
+    # INITIATES, CREATES, VALIDATES and SOLVE the maze
     print_italic("\nGenerating the maze...")
     try:
         maze = MazeGenerator(
@@ -22,10 +22,10 @@ def main(config_path: str) -> None:
             height=config.height,
             seed=config.seed,
             entry_coord=config.entry_coord,
-            exit_coord=config.exit_coord
+            exit_coord=config.exit_coord,
+            perfect=config.perfect,
         )
-        # FIX TODO: add perfect to attributes and instanciation
-        maze.generate(is_perfect=config.perfect)
+        maze.generate()
         print_italic("The generated maze is compliant with mandatory rules.")
 
     except (ValueError, RuntimeError, MazeGenError) as err:
@@ -47,21 +47,10 @@ def main(config_path: str) -> None:
         window.show_view(visualizer)
         arcade.run()
 
-    # -------------------- TODO ---------------------------------
-    # --- TROUVER LE CHEMIN LE PLUS COURT
-    try:
-        shortest_path: str = maze.solve_maze()
-        print(shortest_path)
-    except RuntimeError as err:
-        print(f"Error: maze must be firstly generated, {err}",
-              file=sys.stderr)
-        sys.exit(1)
-
-    # -------------------- TODO ---------------------------------
     # --- EXPORTER le labyrinthe et la solution dans un fichier texte
-    # if not done yet, first solve: `shortest_path: str = maze.solve_maze()`
-    export_to_file(maze.grid, maze.entry_coord, maze.exit_coord, shortest_path,
-                   config.output_file)
+    # TODO if not done yet, first solve: `maze.solve_maze()`
+    export_to_file(maze.grid, maze.entry_coord, maze.exit_coord,
+                   maze.exit_path, config.output_file)
 
 
 if __name__ == "__main__":
