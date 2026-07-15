@@ -4,22 +4,18 @@ import arcade
 from pydantic import ValidationError
 from src.maze_app.parsing.config_main import load_config
 from src.maze_app.output.export import export_to_file
-from src.mazegen import MazeGenerator
-from src.maze_app.exceptions import MazeGenerationError
+from src.mazegen import MazeGenerator, MazeGenError
 from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
 from src.maze_app.display.ascii_visualizer import AsciiVisualizer
 from debug_utils import print_italic, print_green, debug_draw_maze
 
 
 def main(config_path: str) -> None:
-    # Load and validate maze config
+    # LOAD and VALIDATE maze config
     config = load_config(config_path)
 
-    # -------------------- TODO ---------------------------------
-    # --- GÉNÉRER LE LABYRINTHE AVEC LA CONFIG VALIDÉE ---
-
-    # INSTANCIE le labyrinthe selon la config
-    print_italic("\nGenerating the maze")
+    # INITIATES, CREATES and VALIDATES the maze
+    print_italic("\nGenerating the maze...")
     try:
         maze = MazeGenerator(
             width=config.width,
@@ -28,26 +24,13 @@ def main(config_path: str) -> None:
             entry_coord=config.entry_coord,
             exit_coord=config.exit_coord
         )
-    except ValueError as err:
-        print(f"Error: Can't instantiate the maze, {err}", file=sys.stderr)
+        # FIX TODO: add perfect to attributes and instanciation
+        maze.generate(is_perfect=config.perfect)
+        print_italic("The generated maze is compliant with mandatory rules.")
+
+    except (ValueError, RuntimeError, MazeGenError) as err:
+        print(f"Error during maze processing: {err}", file=sys.stderr)
         sys.exit(1)
-
-    # GENERE le labyrinthe
-    maze.generate_perfect_maze()
-
-    if not config.perfect:
-        print_italic("Setting the maze to imperfect")
-        try:
-            maze.make_imperfect()
-        except RuntimeError as err:
-            print(f"Error: maze must be firstly generated, {err}",
-                  file=sys.stderr)
-            sys.exit(1)
-
-    # VALIDE le labyrinthe
-    # if mandatory rules not followed -> throw an exception
-    if not maze.check_walls_integrity() or not maze.free_of_open_areas():
-        raise MazeGenerationError("Generated maze does not comply with rules.")
 
     print_italic("The maze is compliant with mandatory rules")
 

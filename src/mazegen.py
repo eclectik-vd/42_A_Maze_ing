@@ -419,6 +419,8 @@ class MazeGenerator:
 
         return True
 
+    # --------------- TODO fix bug re-generer labyrinthes imparfaits
+    #                      needs to add perfect attribut to MazeGenerator
     def reset(self) -> None:
         """ Clear internal state of the maze in memory """
         self._grid = [[self.ALL_WALLS for _ in range(self.width)]
@@ -427,10 +429,21 @@ class MazeGenerator:
         self._exit_path = ""
         self._is_generated = False
 
+    def regenerate_maze(self, new_seed: int | None = None) -> None:
+        """ (shorcut corrected to include non perfect maze)
+        Reset and regenerate the maze with a new seed if provided. """
+        if new_seed is not None:
+            random.seed(new_seed)
+
+        self.reset()
+        self.generate()
+    # --------------- END ToDo fix bug re-generer labyrinthes imparfaits
+
     def regenerate_perfect_maze(self, new_seed: int | None = None) -> None:
         """
-        shortcut for Enzo :)
-            Reset and regenerate the maze with new seed if provided
+        shortcut for Enzo /!\ a corriger :
+            necessite d'inclure `perfect` dans les attributs du labyrinthe
+        Reset and regenerate the maze with new seed if provided
         """
         if new_seed is not None:
             random.seed(new_seed)
@@ -513,3 +526,19 @@ class MazeGenerator:
 
         # reached empty deque without finding exit, the maze is broken...
         raise RuntimeError("No path to exit was found.")
+
+    def generate(self, is_perfect: bool = True) -> None:
+        """
+        Generate a maze ?and solve it? 
+        raise MazeGenError if mandatory rules not followed
+        """
+
+        self.generate_perfect_maze()
+
+        if not is_perfect:
+            self.make_imperfect()
+
+        if not self.check_walls_integrity() or not self.free_of_open_areas():
+            raise MazeGenError("Generated maze does not comply with internal rules.")
+            
+        # ? solve or not solve, that is the question...
