@@ -1,8 +1,6 @@
 import pytest
-from pydantic import ValidationError
 
 from src.maze_app.parsing.config_parser import parse_config
-from src.maze_app.parsing.models import MazeConfig
 
 
 def test_fichier_introuvable(tmp_path):
