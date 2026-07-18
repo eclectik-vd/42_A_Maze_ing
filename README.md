@@ -1,19 +1,5 @@
 *This project has been created as part of the 42 curriculum by emarette and vadamavi.*
 
-# Sommaire
-{ToDo} renuméroter... quand fini
-[Description du projet](<#Description du projet>)
-[1. Instructions](<#1/ Instructions>)
-[2. Fichier de configuration](<#2/ Fichier de configuration>)
-[2. Fichier de sortie](<#2/ Fichier de sortie>)
-[3. Module réutilisable](<#3/ Module réutilisable>)
-[4. Architecture](<#4/ Architecture>)
-[4. Algorithmique](<#4/ Algorithmique>)
-[4. Affichage / interactions](#4/ Affichage / interactions)
-[5. Bonus](<#5/ Bonus>)
-[6. Gestion d'équipe et de projet](<#6/ Gestion d'équipe et de projet>)
-[7. Ressources et IA](<#7/ Ressources et IA>)
-
 # Description du projet
 
 ### But du projet
@@ -27,11 +13,33 @@ La consigne était d'implémenter en Python un générateur de labyrinthes, à p
 + fournir une représentation visuelle du labyrinthe ;
 + organiser le code afin que la logique de génération/solution puisse être réutilisée ultérieurement.
 
-{ToDo} Objectif pédagogique : structures de données, algorithmes de graphes, parsing de configuration
-{ToDo} Motivation personnelle : Arcade, pytest
+{ToDo} *Objectif pédagogique : structures de données, algorithmes de graphes, parsing de configuration*
+
+{ToDo} *Motivation personnelle : Arcade, pytest*
+
+
+### Sommaire
+
+[1. Instructions](<#1-instructions>)
+
+[2. Fichier de configuration](<#2-fichier-de-configuration>)
+
+[3. Fichier de sortie](<#3-fichier-de-sortie>)
+
+[4. Module réutilisable](<#4-module-réutilisable>)
+
+[5. Architecture](<#5-architecture>)
+
+[6. Algorithmique](<#6-algorithmique>)
+
+[7. Affichage / interactions](#7-affichage--interactions)
+
+[8. Bonus](<#8-bonus>)
+
+[9. Gestion d'équipe et de projet](#9-gestion-déquipe-et-de-projet)
 
 # 1/ Instructions
-- {ToDo}: création du package (build backend utilisé — `hatchling`, `setuptools`, `poetry`, etc. — et la commande exacte, par ex. `python -m build`) 
+{ToDo}: *création du package (build backend utilisé — `hatchling`, `setuptools`, `poetry`, etc. — et la commande exacte, par ex. `python -m build`) *
 
 
 ### Prérequis
@@ -57,14 +65,22 @@ python3 a_maze_ing.py config.txt
 
 ### Makefile
 
-|Cible|Rôle|
-|---|---|
-|`install`|Installe les dépendances du projet|
-|`run`|Lance le programme principal|
-|`debug`|Lance le programme en mode debug (`pdb`)|
-|`lint`|Exécute `flake8` et `mypy` (règles obligatoires)|
-|`lint-strict`|Exécute `flake8` et `mypy --strict`|
-|`clean`|Supprime les fichiers temporaires (`__pycache__`, `.mypy_cache`…)|
+|Cible|Rôle|Obligatoire|
+|---|---|---|
+|`all`|Installe les dépendances du projet|   |
+|`install`|Installe les dépendances du projet|✔️|
+|`update`|force la mise à jour de uv.lock si besoin|   |
+|`test`|Lance les tests pytest|   |
+|`run`|Lance le programme principal|✔️|
+|`build`|génère l'archive|✔️|
+|`debug`|Lance le programme en mode debug (`pdb`)|✔️|
+|`lint`|Exécute `flake8` et `mypy` (règles obligatoires)|✔️|
+|`lint-strict`|Exécute `flake8` et `mypy --strict`|✔️|
+|`clean`|Supprime les fichiers temporaires (`__pycache__`, `.mypy_cache`…)|✔️|
+|`fclean`|Supprime l'environnement virtuel (`.venv`, `uv.lock`…)|   |
+|`fclean`|Supprime l'environnement virtuel (`.venv`, `uv.lock`…)|   |
+
+[Haut page](<#description-du-projet>)
 
 # 2/ Fichier de configuration
 Le fichier de configuration contient une paire `CLÉ=VALEUR` par ligne. Les lignes commençant par `#` sont des commentaires et sont ignorées.
@@ -80,9 +96,12 @@ Le fichier de configuration contient une paire `CLÉ=VALEUR` par ligne. Les li
 | `SEED`         | Graine de génération (reproductibilité) | `SEED=42`              | optionnel   |
 | `DISPLAY_MODE` | Mode d'affichage (`arcade` / `ascii`)   | `DISPLAY_MODE=arcade`  | optionnel   |
 
-- {ToDo}: valeurs par défaut
-- {ToDo}: comportement en cas d'erreur de syntaxe ou de valeur invalide
-# 2/ Fichier de sortie
+{ToDo}: *valeurs par défaut*
+{ToDo}: *comportement en cas d'erreur de syntaxe ou de valeur invalide*
+
+[Haut page](<#description-du-projet>)
+
+# 3/ Fichier de sortie
 
 Chaque cellule est encodée par un digit hexadécimal représentant l'état de ses murs : 
 
@@ -92,11 +111,13 @@ Chaque cellule est encodée par un digit hexadécimal représentant l'état de s
 | 1               | Est       |
 | 2               | Sud       |
 | 3               | Ouest     |
+
 Un mur fermé positionne le bit correspondant à `1`. Par exemple :
 + b0011 : murs sud et ouest ouverts
 + b1010 : murs nord et sud ouverts
 
 Les cellules sont écrites ligne par ligne.
+
 Ensuite, après une ligne vide, trois lignes supplémentaires précisent :
 + les coordonnées d'entrée,
 + les coordonnées de sortie,
@@ -114,7 +135,9 @@ ac2a9102829113855692c3a92
 ESEENEEESSSEESESSESESSSSSEEEEESES
 ```
 
-# 3/ Module réutilisable
+[Haut page](<#description-du-projet>)
+
+# 4/ Module réutilisable
 
 La logique de génération est isolée dans la classe **`MazeGenerator`** (`src/mazegen.py`).
 Elle est packagée en un module autonome (`mazegen-*.whl` / `mazegen-*.tar.gz`) fourni à la racine du dépôt et installable via `pip` :
@@ -138,15 +161,16 @@ maze = MazeGenerator(
 maze.generate()
 
 # Accès à la structure générée (liste 2D d'entiers, bitmask par cellule pour l'état des murs)
-# 
 grid = maze.grid
 # Accès à une solution (plus court chemin entre l'entrée et la sortie)
 solution = maze.exit_path
 ```
 
-# 4/ Architecture
+[Haut page](<#description-du-projet>)
+
+# 5/ Architecture
 ##### Fichiers
-{ToDo}: maj avec projet final
+{ToDo}: *maj avec projet final*
 ```text
 .
 ├── .flake8
@@ -189,7 +213,7 @@ solution = maze.exit_path
 ```
 
 ##### Flux global
-{ToDo}: maj mef avec styles persos, verif avec Enzo
+{ToDo}: *maj mef avec styles persos, verif avec Enzo*
 ```mermaid
 flowchart TD
     A["main:<br>A_Maze_ing.py"] -->|Charge config| B(load_config)
@@ -211,30 +235,30 @@ flowchart TD
 
 ```
 
+[Haut page](<#description-du-projet>)
 
-# 4/ Algorithmique
+# 6/ Algorithmique
 
 4 algorithmes générateurs de labyrinthes parfaits ont été comparés :
 
-| Algorithme               | Difficulté | Texture                     | Biais       | Vitesse     | Bon pour débuter ?                   |
-| ------------------------ | ---------- | --------------------------- | ----------- | ----------- | ------------------------------------ |
-| Binary Tree / Sidewinder | ⭐          | Diagonale marquée           | Fort        | Très rapide | Oui, en tout premier                 |
-| DFS / Backtracking       | ⭐          | Longs couloirs sinueux      | Moyen       | Rapide      | **Oui, recommandé en 1er vrai projet |
-| Prim randomisé           | ⭐⭐         | Branches courtes, organique | Faible      | Rapide      | Oui                                  |
-| Kruskal randomisé        | ⭐⭐⭐        | Très homogène               | Très faible | Moyen       | Oui, une fois Union-Find compris     |
+| Algorithme               | Difficulté | Texture                     | Biais       | Vitesse     |
+| ------------------- | ---------- | --------------------------- | ----------- | ----------- |
+| Binary Tree         | ⭐          | Diagonale marquée           | Fort        | Très rapide |
+| DFS / Backtracking  | ⭐          | Longs couloirs sinueux      | Moyen       | Rapide      |
+| Prim randomisé      | ⭐⭐         | Branches courtes, organique | Faible      | Rapide      |
+| Kruskal randomisé   | ⭐⭐⭐        | Très homogène               | Très faible | Moyen       |
 
 Le choix s'est porté sur le Backtracking récursif (DFS randomisé) :
-+ Génère naturellement un labyrinthe parfait (arbre couvrant)
-+ Plutôt facile à coder → idéal pour un 1er projet
-+ Rapide, faible consommation mémoire relative, complexité en O(n)
-+ Génère très peu de branches → ressemble à un "labyrinthe classique"
-+ Beaucoup de longs couloirs, donc peu de culs de sacs → ne génère pas de zone ouverte de 3x3 lors du braiding
++ génère naturellement un labyrinthe parfait (arbre couvrant)
++ plutôt facile à coder → idéal pour un 1er projet
++ rapide, faible consommation mémoire relative, complexité en O(n)
++ génère très peu de branches → ressemble à un "labyrinthe classique"
++ beaucoup de longs couloirs, donc peu de culs de sacs → ne génère pas de zone ouverte de 3x3 lors du braiding
 
 Principe :
 + Creuse un chemin au hasard en avançant dans une direction aléatoire ; quand on est bloqué, on revient en arrière (backtrack) jusqu'à trouver une case avec une issue.
 
 ### Génération
-
 Le labyrinthe est généré par **`MazeGenerator`** (`src/mazegen.py`) :
 
 1. Toutes les cellules démarrent fermées (4 murs).
@@ -242,16 +266,20 @@ Le labyrinthe est généré par **`MazeGenerator`** (`src/mazegen.py`) :
 3. Si `PERFECT=False`, le labyrinthe est ensuite "cassé" partiellement (`make_imperfect`) pour supprimer des culs de sacs et le rendre jouable façon Pac-Man, tout en respectant les contraintes du sujet (pas de couloir de largeur supérieure à 2 cellules, connectivité totale, motif "42" visible…).
 4. La résolution du chemin le plus court entre l'entrée et la sortie est calculée par parcours en largeur (**BFS**, `path_exit` / `solve_maze`).
 
-### Résolution
-{ToDo} choix de BFS
+{ToDo} *ajout graph Mermaid*
 
-# 4/ Affichage / interactions
+### Résolution
+{ToDo} *justif choix de BFS + ajout graph Mermaid*
+
+[Haut page](<#description-du-projet>)
+
+# 7/ Affichage / interactions
 
 Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DISPLAY_MODE`) :
 - **`ascii`** : rendu texte directement dans le terminal.
 - **`arcade`** : rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif.
 ### ASCII
-![[ascii.png|320x320]]
+![capture rendu ASCII](src/maze_app/utils/ascii.png)
 Interactions disponibles :
 1. Régénérer un nouveau labyrinthe, en choisissant la seed.
 2. Afficher / masquer le plus court chemin entre l'entrée et la sortie.
@@ -260,7 +288,8 @@ Interactions disponibles :
 
 
 ### Arcade
-![[arcade.png|320x320]]
+![capture rendu Arcade](<img src="src/maze_app/utils/arcade.png" width="320">)
+
 Interactions disponibles :
 1. Déplacer le joueur.
 2. Régénérer un nouveau labyrinthe.
@@ -268,11 +297,15 @@ Interactions disponibles :
 4. Changer les couleurs des murs.
 5. Quitter.
 
-Flèches Haut / Bas pour se déplacer dans le menu
-Espace pour valider
-Flèches Haut / Bas et Gauche/Droite pour se déplacer le joueur dans le labyrinthe
+Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
 
-# 5/ Bonus
+Espace pour valider
+
+Flèches :arrow_up: / :arrow_down: et :arrow_left: / :arrow_right: pour se déplacer le joueur dans le labyrinthe
+
+[Haut page](<#description-du-projet>)
+
+# 8/ Bonus
 - déplacements du joueur avec Arcade
 - labyrinthe imparfait sans cul-de-sac
 - sons / musique
@@ -283,7 +316,9 @@ Flèches Haut / Bas et Gauche/Droite pour se déplacer le joueur dans le labyrin
 - ? paramètres en ligne de commande : seed, display_mode, perfect
   et/ou affichage des paramètres : seed et perfect
 
-# 6/ Gestion d'équipe et de projet
+[Haut page](<#description-du-projet>)
+
+# 9/ Gestion d'équipe et de projet
 
 ### Répartition des rôles
 Emarette avait déjà validé le projet, nous nous sommes donc réparti le travail de façon à ce qu'il ne réalise pas les mêmes tâches qu'avec son précédent binôme.
@@ -302,47 +337,51 @@ Nous avons estimé le temps nécessaire pour les tâches indispensables mais pas
 + occupation variable des clusters par les piscineux.
 
 Ce qui a pris plus de temps que prévu :
-+ génération des labyrinthes imparfaits, le passage du sujet de la version v2.1 à la version v2.2 a augmenté les contraintes.
++ génération des labyrinthes imparfaits, le passage du sujet de la version v2.1 à la version v2.2 a ajouté des contraintes.
 + 
 
-{ToDo ?} : Gantt avec réel +/- simulé (/chgt du sujet)
+{ToDo ?} : *Gantt avec réel +/- simulé (/chgt du sujet)*
+
 ### Ce qui a bien fonctionné
-Mise en place d'une ToDo list pour chaque binône
-Création du `Makefile` dès le démarrage 
-Usage de branches pour collaborer avec git
++ Mise en place d'une ToDo list pour chaque binône
++ Création du `Makefile` dès le démarrage 
++ Usage de branches pour collaborer avec git
+
 ### Axes d'amélioration
 L'architecture initialement définie a été remise en question et modifiée peu après le début de l'implémentation du projet.
 
 ### Outils collaboration et de développement
 
 Pour collaborer, nous avons fait des points d'étape en **présentiel** régulièrement, communiqué via **Slack** et mutualisé le code sur **Github**.
-Le développement a été effectué avec VSCode, les traduction en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec Obsidian. 
+Le développement a été effectué avec [VSCode](https://code.visualstudio.com/), les traductions en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec [Obsidian](https://obsidian.md/). 
 **Outils spécifiques** utilisés : `uv`, `pydantic`, `pytest`, `arcade`, `colorama`, `flake8`, `mypy` …
-
-# 7/ Ressources et IA
 
 ### Ressources
 + Documentation officielle [`uv`](https://docs.astral.sh/uv/guides/projects/)
 + Documentation officielle [`Pydantic`](https://docs.pydantic.dev/)
 + Wikipedia [Modélisation mathématique d'un labyrinthe](https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe)
-+ [Opérateurs-logiques-bit-a-bit]([https://fr.wikipedia.org/wiki/Markdown](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
++ [Opérateurs-logiques-bit-a-bit](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
 + Documentation officielle [`arcade`](https://api.arcade.academy/)
 + Sprites free to use [`pmdcollab.org`](https://sprites.pmdcollab.org/)
-+ 
-? recursive backtracker, BFS, théorie des graphes / arbres couvrants, le packaging Python
++ [Syntaxe Markdown](https://daringfireball.net/projects/markdown/syntax#block)
+
+{ToDO} *? recursive backtracker, BFS, théorie des graphes / arbres couvrants, le packaging Python*
 
 ### Usages IA
 
 Gemini a été utilisé par vadamavi pour :
 + relecture et optimisation de code (Makefile) ;
 + créer les flowcharts d'après un modèle Mermaid élaboré "à la main" ;
+
 Claude a été utilisé par vadamavi pour :
 + synthétiser la comparaison des algorithmes de génération de labyrinthe
-+ évaluer la probabilité d'apparition, sur des labyrinthes générés avec DFS ou Prim et de taille variable (jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
++ évaluer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
 Deepl 
 + traduire le README en anglais.
-? Enzo
-? génération de test avec pytest
+
+{ToDO} *? *Enzo*
+
+{ToDO} *? *génération de test avec pytest*
 
 Tous les fichiers modifiés par IA ont été re-vérifiés par l'un des binômes.
 
@@ -350,6 +389,11 @@ Tous les fichiers modifiés par IA ont été re-vérifiés par l'un des binômes
 # Licence
 
 Ce projet est distribué sous licence {ToDo par ex. MIT}, voir le fichier `LICENSE.md` à la racine du dépôt.
+
+---
+---
+
+Reliquats, à conserver éventuellement en docs perso
 
 ---
 ---
