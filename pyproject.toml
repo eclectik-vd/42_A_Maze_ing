@@ -39,3 +39,7 @@ plugins = ["pydantic.mypy"]
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
+
+# avant sa collecte des tests, pytest ajoutera '.' (racine du projet) à sys.path
+[tool.pytest.ini_options]
+pythonpath = ["."]
