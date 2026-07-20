@@ -2,7 +2,7 @@ import arcade
 
 
 class Player(arcade.Sprite):
-    def __init__(self, visualizer):
+    def __init__(self, visualizer) -> None:
         self.visualizer = visualizer
         self.map = self.visualizer.map
         self.cell_pos = list(self.visualizer.entry)
@@ -18,17 +18,18 @@ class Player(arcade.Sprite):
         w = 96
         h = 320
         columns = 4
-        self.sprite_sheet = arcade.SpriteSheet("src/maze_app/display/sprite/player.png")
+        sprite_path = "src/maze_app/display/sprite/player.png"
+        self.sprite_sheet = arcade.SpriteSheet(sprite_path)
         all_textures = self.sprite_sheet.get_texture_grid(
             size=(w/columns, h/8),
             columns=columns,
             count=columns*8
         )
 
-        self.anim_sud            = all_textures[0:columns]
-        self.anim_ouest          = all_textures[columns*2:columns*3]
-        self.anim_nord           = all_textures[columns*4:columns*5]
-        self.anim_est            = all_textures[columns*6:columns*7]
+        self.anim_sud = all_textures[0:columns]
+        self.anim_ouest = all_textures[columns*2:columns*3]
+        self.anim_nord = all_textures[columns*4:columns*5]
+        self.anim_est = all_textures[columns*6:columns*7]
         super().__init__(self.anim_sud[0])
         self.scale = self.visualizer.map.scale * 1.5
         self.center_x = cx
@@ -40,7 +41,7 @@ class Player(arcade.Sprite):
 
         self.current_anim_list = self.anim_sud[::4]
 
-    def init_player(self):
+    def init_player(self) -> None:
         self.cell_pos = list(self.visualizer.entry)
         x, y = self.cell_pos
         cx, cy = self.map.grid[y][x]
@@ -55,7 +56,7 @@ class Player(arcade.Sprite):
 
         self.current_anim_list = self.anim_sud[::4]
 
-    def update(self, delta_time):
+    def update(self, delta_time: float) -> None:
         """Update the player's position and handle pac-gum collection.
 
         Advances the player toward the target cell, changes direction
@@ -67,7 +68,8 @@ class Player(arcade.Sprite):
             None
         """
         cx, cy = self.map.grid[self.cell_pos[1]][self.cell_pos[0]]
-        if [self.center_x, self.center_y] == list(self.map.grid[self.cell_pos[1]][self.cell_pos[0]]):
+        if ([self.center_x, self.center_y] ==
+           list(self.map.grid[self.cell_pos[1]][self.cell_pos[0]])):
             if not self.have_wall(self.next_dx, self.next_dy):
                 self.dx = self.next_dx
                 self.dy = self.next_dy
@@ -81,7 +83,7 @@ class Player(arcade.Sprite):
         target = list(self.map.grid[self.cell_pos[1]][self.cell_pos[0]])
         if self.center_x < target[0]:
             self.current_anim_list = self.anim_ouest
-            self.center_x = min(self.center_x+ self.speed, target[0])
+            self.center_x = min(self.center_x + self.speed, target[0])
         elif self.center_x > target[0]:
             self.current_anim_list = self.anim_est
             self.center_x = max(self.center_x - self.speed, target[0])
@@ -95,7 +97,8 @@ class Player(arcade.Sprite):
         self.time_counter += delta_time
         if self.time_counter >= self.animation_speed:
             self.time_counter = 0.0
-            self.current_frame = (self.current_frame + 1) % len(self.current_anim_list)
+            self.current_frame = ((self.current_frame + 1) %
+                                  len(self.current_anim_list))
             self.texture = self.current_anim_list[self.current_frame]
 
     def on_key_press(self, key: int, modifiers: int) -> None:

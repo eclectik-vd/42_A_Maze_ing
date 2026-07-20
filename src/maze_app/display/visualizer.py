@@ -1,7 +1,8 @@
 from src.mazegen import MazeGenerator
 
+
 class Visualizer:
-    def __init__(self, mazegen: MazeGenerator):
+    def __init__(self, mazegen: MazeGenerator) -> None:
         self.maze: list = mazegen.grid.copy()
         self.maze_width: int = mazegen.width
         self.maze_height: int = mazegen.height
@@ -10,6 +11,3 @@ class Visualizer:
         self.path: str = mazegen.solve_maze()
         self.have_path: bool = False
         self.mazegen = mazegen
-        
-
-

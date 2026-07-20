@@ -1,13 +1,11 @@
 from src.maze_app.display.visualizer import Visualizer
 from src.mazegen import MazeGenerator
 
-import arcade.key as key
-import arcade.gui as gui
 import arcade
 
 
 class ArcadeVisualizer(Visualizer, arcade.View):
-    def __init__(self, maze: MazeGenerator):
+    def __init__(self, maze: MazeGenerator) -> None:
         arcade.View.__init__(self)
         Visualizer.__init__(self, maze)
         from src.maze_app.display.map import Map
@@ -24,7 +22,7 @@ class ArcadeVisualizer(Visualizer, arcade.View):
                                                       + "background.jpeg")
         self.on_menu: bool = True
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
         arcade.draw_texture_rect(
             self.background_texture,
@@ -34,10 +32,10 @@ class ArcadeVisualizer(Visualizer, arcade.View):
         self.menu.draw()
         self.player_list.draw()
 
-    def on_update(self, delta_time: float):
+    def on_update(self, delta_time: float) -> None:
         self.player.update(delta_time)
 
-    def on_key_press(self, symbol: int, modifiers: int):
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         self.player.on_key_press(symbol, modifiers)
         self.menu.on_key_press(symbol, modifiers)
         if not self.on_menu and symbol == arcade.key.ESCAPE:

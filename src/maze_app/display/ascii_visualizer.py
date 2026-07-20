@@ -28,7 +28,7 @@ class AsciiVisualizer(Visualizer):
             `colors`.
     """
 
-    def __init__(self, maze: MazeGenerator):
+    def __init__(self, maze: MazeGenerator) -> None:
         """Initialize the ASCII visualizer.
 
         Args:
@@ -47,7 +47,7 @@ class AsciiVisualizer(Visualizer):
                              Fore.CYAN]
         self.color_i = 0
 
-    def draw(self):
+    def draw(self) -> None:
         """Clear the terminal and render the maze and menu.
 
         Builds the ASCII representation of the maze via
@@ -64,14 +64,34 @@ class AsciiVisualizer(Visualizer):
         if not self.have_path:
             for line in self.ascii_maze:
                 for c in line:
-                    print(self.colors[self.color_i] + c, end="", flush=True)
+                    if c == "E":
+                        print(Fore.GREEN + c, end="", flush=True)
+                    elif c == "S":
+                        print(Fore.RED + c, end="", flush=True)
+                    elif c == "❀":
+                        print(Fore.BLUE + c, end="", flush=True)
+                    elif c == "•":
+                        print(Fore.YELLOW + c, end="", flush=True)
+                    else:
+                        print(self.colors[self.color_i] + c,
+                              end="", flush=True)
                     time.sleep(0.005)
                 print()
         else:
             self.show_path()
-            for line in self.ascii_maze_path:
+            for line in self.ascii_maze:
                 for c in line:
-                    print(self.colors[self.color_i] + c, end="", flush=True)
+                    if c == "E":
+                        print(Fore.GREEN + c, end="", flush=True)
+                    elif c == "S":
+                        print(Fore.RED + c, end="", flush=True)
+                    elif c == "❀":
+                        print(Fore.BLUE + c, end="", flush=True)
+                    elif c == "•":
+                        print(Fore.YELLOW + c, end="", flush=True)
+                    else:
+                        print(self.colors[self.color_i] + c,
+                              end="", flush=True)
                     time.sleep(0.005)
                 print()
 
@@ -89,7 +109,7 @@ class AsciiVisualizer(Visualizer):
                 time.sleep(0.01)
             print()
 
-    def update(self):
+    def update(self) -> None:
         """Draw the maze and menu, then handle the user's menu choice.
 
         Prompts the user for a choice between 1 and 4:
@@ -110,8 +130,8 @@ class AsciiVisualizer(Visualizer):
             os.system('clear')
             line = "Select the seed for the next maze: "
             for c in line:
-                    print(c, end="", flush=True)
-                    time.sleep(0.005)
+                print(c, end="", flush=True)
+                time.sleep(0.005)
             seed = input("")
             self.mazegen.regenerate(seed)
             self.maze: list = self.mazegen.grid.copy()
@@ -131,7 +151,7 @@ class AsciiVisualizer(Visualizer):
         else:
             pass
 
-    def upper_maze(self):
+    def upper_maze(self) -> None:
         """Build the wall-only ASCII representation of the maze.
 
         Populates `self.ascii_maze` with one top border line, then
@@ -182,7 +202,7 @@ class AsciiVisualizer(Visualizer):
                 bottom_line += ("---" if cell in south else "   ") + "+"
             self.ascii_maze.append(bottom_line)
 
-    def show_path(self):
+    def show_path(self) -> None:
         """Overlay the shortest path onto a copy of the ASCII maze.
 
         Copies `self.ascii_maze` into `self.ascii_maze_path`, then
@@ -238,7 +258,10 @@ class AsciiVisualizer(Visualizer):
                 cell_column_index = 2 + 4 * current_col
                 self._draw_path_char(cell_line_index, cell_column_index)
 
-    def _draw_path_char(self, line_index, column_index, symbol="•"):
+    def _draw_path_char(self,
+                        line_index: int,
+                        column_index: int,
+                        symbol: str = "•") -> None:
         """Replace a single character in `self.ascii_maze_path`.
 
         Since Python strings are immutable, the target line is

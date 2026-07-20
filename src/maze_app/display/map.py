@@ -1,11 +1,12 @@
-from typing import Any, Dict, List, Tuple
+from typing import Tuple
+
 from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
 import arcade
 from PIL import Image
 
 
 class Map:
-    def __init__(self, visualizer) -> None:
+    def __init__(self, visualizer: ArcadeVisualizer) -> None:
         self.visualizer = visualizer
 
         self.tile_list: arcade.SpriteList = arcade.SpriteList()
@@ -21,23 +22,22 @@ class Map:
             self.visualizer.width // 32 * 18 - 2 * zone_x_start,
             self.visualizer.height - 2 * zone_y_start,
         )
- 
+
         cell_w: int = self.game_zone[0] // self.visualizer.maze_width
         cell_h: int = self.game_zone[1] // self.visualizer.maze_height
         self.cell: int = min(cell_w, cell_h)
         self.scale: float = self.cell / 64
- 
+
         maze_pixel_width: int = self.visualizer.maze_width * self.cell
         maze_pixel_height: int = self.visualizer.maze_height * self.cell
- 
+
         self.margin: Tuple[int, int] = (
             zone_x_start + (self.game_zone[0] - maze_pixel_width) // 2,
             zone_y_start + (self.game_zone[1] - maze_pixel_height) // 2,
         )
         self.grid = []
- 
-        self.generate_maze()
 
+        self.generate_maze()
 
     def generate_maze(self) -> None:
         self.calculate_grid()
@@ -56,14 +56,21 @@ class Map:
 
         for i in range(4):
             for j in range(4):
-                region = wall_sheet.crop((j * 64, i * 64, j * 64 + 64, i * 64 + 64))
+                region = wall_sheet.crop((j * 64,
+                                          i * 64,
+                                          j * 64 + 64,
+                                          i * 64 + 64))
                 wall_texture = arcade.Texture(image=region, name=f"tile_{i}")
                 self.wall_textures.append(wall_texture)
-                
+
         for i in range(3):
             for j in range(3):
-                region = bordure_sheet.crop((j * 64, i * 64, j * 64 + 64, i * 64 + 64))
-                bordure_texture = arcade.Texture(image=region, name=f"bordure_{i}")
+                region = bordure_sheet.crop((j * 64,
+                                             i * 64,
+                                             j * 64 + 64,
+                                             i * 64 + 64))
+                bordure_texture = arcade.Texture(image=region,
+                                                 name=f"bordure_{i}")
                 self.bordure_textures.append(bordure_texture)
 
         for i in range(2):
@@ -71,7 +78,7 @@ class Map:
             exit_texture = arcade.Texture(image=region, name=f"tile_{i}")
             self.exit_textures.append(exit_texture)
 
-        self.path_texture = arcade.Texture(image=path_sheet, name=f"path")
+        self.path_texture = arcade.Texture(image=path_sheet, name="path")
 
         for y in range(self.visualizer.maze_height + 2):
             for x in range(self.visualizer.maze_width + 2):
@@ -87,7 +94,9 @@ class Map:
                     )
                 elif (y >= self.visualizer.maze_height + 1 and
                       x >= self.visualizer.maze_width + 1):
-                    cx, cy = self.grid[self.visualizer.maze_height - 1][self.visualizer.maze_width - 1]
+                    mh = self.visualizer.maze_height - 1
+                    mw = self.visualizer.maze_width - 1
+                    cx, cy = self.grid[mh][mw]
                     cx += self.cell
                     cy -= self.cell
                     sprite = arcade.Sprite(
@@ -167,7 +176,8 @@ class Map:
                 sprite.alpha = 230
                 self.tile_list.append(sprite)
 
-        cx, cy = self.grid[int(self.visualizer.entry[0])][int(self.visualizer.entry[1])]
+        ex, ey = self.visualizer.entry
+        cx, cy = self.grid[int(ex)][int(ey)]
         sprite = arcade.Sprite(
             self.exit_textures[0],
             scale=self.scale,
@@ -189,8 +199,7 @@ class Map:
         self.tile_list.append(sprite)
         self.path()
 
-
-    def path(self):
+    def path(self) -> None:
         direction_offsets = {
             "N": (-1, 0),
             "S": (1, 0),
@@ -221,9 +230,6 @@ class Map:
             dy, dx = direction_offsets[path[i]]
             x += dx
             y += dy
-        
-
-        
 
     def draw(self) -> None:
         """Draw the maze tiles, pac-gums, and super pac-gums.
