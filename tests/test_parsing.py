@@ -3,47 +3,45 @@ import pytest
 from src.maze_app.parsing.config_parser import parse_config
 
 
-def test_fichier_introuvable(tmp_path):
-    # construit un chemin (un objet `Path`) qui pointe vers un fichier, dans un dossier temporaire propre
-    fichier = tmp_path / "config.txt"
-    # /!\ `fichier` est un objet `Path`, pas une string...
+def test_file_not_found(tmp_path):
+    config_file = tmp_path / "config.txt"
 
-    # `with` ne doit entourer QUE l'appel censé échouer
     with pytest.raises(FileNotFoundError):
-        # `parse_config(file_path: str)` attend une string, il faut convertir l'objet `Path`.
-        parse_config(str(fichier))
+        parse_config(str(config_file))
 
 
-def test_ligne_sans_egal(tmp_path):
-    # construit un chemin (un objet `Path`) qui pointe vers un fichier, dans un dossier temporaire propre
-    fichier = tmp_path / "config.txt"
-    # /!\ `fichier` est un objet `Path`, pas une string...
+def test_line_without_equals_sign(tmp_path):
+    config_file = tmp_path / "config.txt"
+    config_file.write_text("a line without the equals sign\n")
 
-    # `with` ne doit entourer QUE l'appel censé échouer
-    with pytest.raises(FileNotFoundError):
-        # `parse_config(file_path: str)` attend une string, il faut convertir l'objet `Path`.
-        parse_config(str(fichier))
+    with pytest.raises(ValueError):
+        parse_config(str(config_file))
 
 
-def test_fichier_vide(tmp_path):
-    fichier = tmp_path / "config.txt"
-    fichier.write_text("")
+def test_line_without_equals_sign_v2(tmp_path):
+    config_file = tmp_path / "config.txt"
+    config_file.write_text("a line without the equals sign\n")
 
-    # assert doit vérifier l'égalité
-    assert parse_config(str(fichier)) == {}
-
-
-def test_fichier_commentaires(tmp_path):
-    fichier = tmp_path / "config.txt"
-    fichier.write_text("# uniquement du commentaire")
-
-    # assert doit vérifier l'égalité
-    assert parse_config(str(fichier)) == {}
+    with pytest.raises(ValueError, match="does not comply KEY=VALUE format"):
+        parse_config(str(config_file))
 
 
-def test_fichier_lignes_vides(tmp_path):
-    fichier = tmp_path / "config.txt"
-    fichier.write_text("#\n\n")
+def test_empty_file(tmp_path):
+    config_file = tmp_path / "config.txt"
+    config_file.write_text("")
 
-    # assert doit vérifier l'égalité
-    assert parse_config(str(fichier)) == {}
+    assert parse_config(str(config_file)) == {}
+
+
+def test_file_comments(tmp_path):
+    config_file = tmp_path / "config.txt"
+    config_file.write_text("# only comments")
+
+    assert parse_config(str(config_file)) == {}
+
+
+def test_file_empty_lines(tmp_path):
+    config_file = tmp_path / "config.txt"
+    config_file.write_text("#\n\n")
+
+    assert parse_config(str(config_file)) == {}

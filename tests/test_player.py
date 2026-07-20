@@ -2,9 +2,9 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
 from src.maze_app.display.player import Player
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 class DummySpriteSheet:
@@ -22,7 +22,8 @@ class DummyVisualizer:
 
 
 def test_player_initializes_without_arcade_position_error(monkeypatch):
-    monkeypatch.setattr("src.maze_app.display.player.arcade.SpriteSheet", DummySpriteSheet)
+    monkeypatch.setattr("src.maze_app.display.player.arcade.SpriteSheet",
+                        DummySpriteSheet)
 
     player = Player(DummyVisualizer())
 
