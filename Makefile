@@ -53,6 +53,7 @@ clean:
 
 fclean: clean
 	rm -rf .venv uv.lock
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
 
 # éviter conflits avec des fichiers portant le même nom
 .PHONY: all install update run build debug lint lint-strict clean fclean
