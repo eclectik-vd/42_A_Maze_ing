@@ -300,7 +300,6 @@ class MazeGenerator:
         # mandatory v2.2: break all dead ends
         nb_walls_to_break = len(dead_ends)
 
-
         # iterate over the number of walls to break, to open dead-ends
         for x, y in dead_ends[:nb_walls_to_break]:
             cell = self._grid[y][x]
@@ -362,7 +361,8 @@ class MazeGenerator:
                     # MUST have same open/close state
                     if bool(cell & self.E) != bool(adjacent_E & self.W):
                         raise MazeGenError("East–West inconsistency "
-                                      f"between ({x},{y}) and ({x+1},{y})")
+                                           f"between ({x},{y}) "
+                                           "and ({x+1},{y})")
 
                 # check Sud|North, ie with bottom adjacent
                 if y < self.height - 1:
@@ -400,7 +400,10 @@ class MazeGenerator:
     def free_of_open_areas(self) -> bool:
         """
         Check if there is open area of 3x3 cells or larger.
-        Return True if the maze is valid, raise MazeGenError if a 3x3 area is found
+        Return:
+            True if maze is valid
+        Raise:
+            MazeGenError if a 3x3 area is found
         """
         if self.width < 3 or self.height < 3:
             return True
