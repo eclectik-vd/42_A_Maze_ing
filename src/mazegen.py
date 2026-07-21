@@ -1,4 +1,3 @@
-
 """
 Maze Generator Module
 =====================
@@ -30,6 +29,7 @@ Example of use:
     grid = maze.grid
 """
 
+
 import random
 import warnings
 from collections import deque
@@ -37,12 +37,12 @@ from copy import deepcopy
 
 
 class MazeGenError(Exception):
-    """exception thrown when maze generation fails or violates rules"""
+    """Exception raised when maze generation fails or violates a rule."""
     pass
 
 
 class MazeGenerator:
-    """ class for generating a maze with Recursive Backtracker """
+    """Maze generator based on the Recursive Backtracker algorithm."""
 
     # Wall constants (binary representation)
     # to store 4 states (North, East, South, West) in a single integer
@@ -59,16 +59,34 @@ class MazeGenerator:
         (5, 0), (6, 0), (7, 0), (7, 1), (5, 2), (6, 2), (7, 2), (5, 3),
         (5, 4), (6, 4), (7, 4)
     )
-    # TODO: add function to calculate width and height
     PATTERN_WIDTH: int = 8
     PATTERN_HEIGHT: int = 5
+
+    # ---------------------------------------------------------------------
+    # 
+    # --------------------- INSTANTIATE a labyrinth object ----------------
+    # 
+    # ---------------------------------------------------------------------
 
     def __init__(
             self, width: int, height: int, entry_coord: tuple[int, int],
             exit_coord: tuple[int, int], perfect: bool, seed: int | None = None
     ) -> None:
+        """Initialize the maze generator and validate its parameters.
 
-        # Validation des données entrantes (Fail Fast)
+        Args:
+            width: Number of columns in the grid.
+            height: Number of rows in the grid.
+            entry_coord: (x, y) coordinates of the maze entrance.
+            exit_coord: (x, y) coordinates of the maze exit.
+            perfect: If True, generate a perfect maze (no loops, no
+                isolated areas); if False, allow imperfections.
+            seed: Optional seed for the random number generator.
+
+        Raises:
+            ValueError: If width or height is smaller than 3.
+        """
+
         if width < 3 or height < 3:
             raise ValueError("The maze size must not be less than 3x3.")
 
@@ -77,88 +95,87 @@ class MazeGenerator:
         self.entry_coord = entry_coord
         self.exit_coord = exit_coord
         self.perfect = perfect
-        # State check, to prevent access to a maze not yet generated
-        self._is_generated = False
-
-        # initialise random seed, if provided.
-        # /!\ `if seed:` would be dangerous, because `seed = 0` ... == False
         if seed is not None:
             random.seed(seed)
 
-        # Initialize the grid, with 4 walls for each cell
         self._grid: list[list[int]] = [[self.ALL_WALLS for _ in range(width)]
                                        for _ in range(height)]
-
-        # Initialize an empty set, to store pattern 42 coordinates
-        # (searching in a `set` takes O(1) time, much faster than a list)
         self.pattern_cells: set[tuple[int, int]] = set()
-
-        # initialize an empty string, to store step by step the shortest way
-        # between entry and exit
         self._exit_path: str = ""
+        self._is_generated = False
+
+    # ---------------------------------------------------------------------
+    # 
+    # --------------------- READ-ONLY properties --------------------------
+    # 
+    # ---------------------------------------------------------------------
 
     @property
     def grid(self) -> list[list[int]]:
-        """
-        Returns a deep copy of the grid (`grid` = read-only property):
-        encapsulation prevents calling code from corrupting internal state.
+        """Return a deep copy of the grid.
+
+        The `grid` property is read-only: encapsulation prevents
+        calling code from corrupting internal state.
         """
         return deepcopy(self._grid)
 
     @property
     def exit_path(self) -> str:
-        """ Read-only permission to access the path between entry and exit."""
+        """Read-only access to the path between entry and exit.
+
+        The `exit_path` property is read-only: encapsulation prevents
+        calling code from corrupting internal state.
+        """
         return self._exit_path
 
-    def _break_wall(self, x: int, y: int, direction: int) -> None:
+    # ---------------------------------------------------------------------
+    # 
+    # --------------------- methods for INTERNAL use ----------------------
+    # 
+    # ---------------------------------------------------------------------
+
+    def _apply_42_pattern(self) -> None:
+        """Try to set the '42' pattern in the center of the grid.
+
+        Locks the pattern cells so they are not used by the maze
+        generation algorithm. The pattern is NOT applied :
+            if the grid is too small, or
+            if it collides with the entry or exit cell.
         """
-        Break the wall of cell (x, y) in the given direction,
-        and break the opposite wall of adjacent cell
-        """
 
-        # The binary AND NOT operator `&= ~` removes a specific bit :
-        # Ex: North wall = 0001 => ~N gives 1110 => 1111 & 1110 = 1110
-        #     => North wall is broken :D
+        if (self.width < self.PATTERN_WIDTH + 2
+                or self.height < self.PATTERN_HEIGHT + 2):
+            warnings.warn("This maze is too small to display the '42' pattern")
+            return
 
-        # North wall
-        if direction == self.N and y > 0:
-            self._grid[y][x] &= ~self.N
-            self._grid[y - 1][x] &= ~self.S
+        pattern_x = (self.width - self.PATTERN_WIDTH) // 2
+        pattern_y = (self.height - self.PATTERN_HEIGHT) // 2
 
-        # East wall
-        elif direction == self.E and x < self.width - 1:
-            self._grid[y][x] &= ~self.E
-            self._grid[y][x + 1] &= ~self.W
+        grid_pattern_cells = {
+            (pattern_x + dx, pattern_y + dy) for dx, dy in self.PATTERN_42
+        }
 
-        # South wall
-        elif direction == self.S and y < self.height - 1:
-            self._grid[y][x] &= ~self.S
-            self._grid[y + 1][x] &= ~self.N
+        if (self.entry_coord in grid_pattern_cells
+                or self.exit_coord in grid_pattern_cells):
+            warnings.warn("'42' pattern overlaps the entrance or exit. "
+                          "It will be ignored.")
+            return
 
-        # West wall
-        elif direction == self.W and x > 0:
-            self._grid[y][x] &= ~self.W
-            self._grid[y][x - 1] &= ~self.E
+        self.pattern_cells = grid_pattern_cells
 
-    # Do NOT call this _method outside the class
     def _get_unvisited_adjacents(
             self, x: int, y: int) -> list[tuple[int, int, int]]:
-        """
-        Look around cell (x, y)
+        """Look around cell (x, y).
 
-        Return:
-        the list of unvisited and valid adjacent cells,
-        each adjacent is returned as a tuple: (adj_x, adj_y, direction_to_go)
+        Returns:
+            The list of unvisited and valid adjacent cells.
+            Each adjacent is returned as a tuple:
+            (adj_x, adj_y, direction_to_go).
         """
 
         adjacents: list[tuple[int, int, int]] = []
 
-        # For each direction, 3 conditions to check:
-        # do not go beyond the grid boundaries;
-        # adjacent cell is intact (ALL_WALLS), so has not been visited yet;
-        # adjacent cell is not reserved by pattern 42.
-
-        # to the north
+       # to the north
         if (
             y > 0
             and self._grid[y - 1][x] == self.ALL_WALLS
@@ -192,97 +209,76 @@ class MazeGenerator:
 
         return adjacents
 
-    # Do NOT call this _method outside the class
-    def _apply_42_pattern(self) -> None:
-        """
-        Try to set '42' pattern in the center of the grid and lock the cells.
-        Will NOT set the pattern :
-            if grid too small or
-            if collision between pattern and entry/exit
+    def _break_wall(self, x: int, y: int, direction: int) -> None:
+        """Break the wall of cell (x, y) in the given direction.
+
+        Also breaks the opposite wall of the adjacent cell, so both
+        sides stay consistent.
         """
 
-        # check maze size is sufficient for this pattern
-        if (self.width < self.PATTERN_WIDTH + 2
-                or self.height < self.PATTERN_HEIGHT + 2):
-            # calling script will handle this alert and display in the terminal
-            warnings.warn("This maze is too small to display the '42' pattern")
-            return
+        # North wall
+        if direction == self.N and y > 0:
+            self._grid[y][x] &= ~self.N
+            self._grid[y - 1][x] &= ~self.S
 
-        # Calculating starting coordinates to centre the pattern
-        pattern_x = (self.width - self.PATTERN_WIDTH) // 2
-        pattern_y = (self.height - self.PATTERN_HEIGHT) // 2
+        # East wall
+        elif direction == self.E and x < self.width - 1:
+            self._grid[y][x] &= ~self.E
+            self._grid[y][x + 1] &= ~self.W
 
-        # convert relative coordinates into absolute coordinates on the grid
-        grid_pattern_cells = {
-            (pattern_x + dx, pattern_y + dy) for dx, dy in self.PATTERN_42
-        }
+        # South wall
+        elif direction == self.S and y < self.height - 1:
+            self._grid[y][x] &= ~self.S
+            self._grid[y + 1][x] &= ~self.N
 
-        # check there is NO collision between pattern and entry/exit
-        if (self.entry_coord in grid_pattern_cells
-                or self.exit_coord in grid_pattern_cells):
-            # calling script will handle this alert and display in the terminal
-            warnings.warn("'42' pattern overlaps the entrance or exit. "
-                          "It will be ignored.")
-            return
+        # West wall
+        elif direction == self.W and x > 0:
+            self._grid[y][x] &= ~self.W
+            self._grid[y][x - 1] &= ~self.E
 
-        # Recording prohibited cells, so the algorithm will avoid them
-        self.pattern_cells = grid_pattern_cells
+    # ---------------------------------------------------------------------
+    # 
+    # ----------------------- maze (re)GENERATION -------------------------
+    # 
+    # ---------------------------------------------------------------------
 
     def generate_perfect_maze(self) -> None:
-        """
-        Generate a perfect maze using the "Recursive Backtracker" algorithm
+        """Generate a perfect maze using Recursive Backtracker.
 
-        Args:
-            start_x (int): starting X coordinate (default 0)
-            start_y (int): starting Y coordinate (default 0)
+        The maze is generated starting from `self.entry_coord`.
         """
 
-        # try to place '42' pattern
         self._apply_42_pattern()
 
         start_x, start_y = self.entry_coord
 
-        # Initialising the stack for backtracking.
         stack: list[tuple[int, int]] = [(start_x, start_y)]
 
-        # Main loop: as long as remains cells in the stack
         while stack:
-            # get current cell (last added) coordinates, without removing it
             current_x, current_y = stack[-1]
-            # get all available adjacents
             adjacents = self._get_unvisited_adjacents(current_x, current_y)
 
             if adjacents:
-                # pick a random adjacent
                 next_x, next_y, direction = random.choice(adjacents)
-
-                # break the wall between current and next
                 self._break_wall(current_x, current_y, direction)
-
-                # add next to the stack, so it becomes the new current cell.
                 stack.append((next_x, next_y))
 
             else:
-                # dead-end => backtrack : pop current cell out of the stack
                 stack.pop()
 
-        # status update
         self._is_generated = True
 
     def make_imperfect(self, percent_to_break: float = 0.4) -> None:
-        """
-        Make the maze imperfect by breaking random dead end walls
+        """Make the maze imperfect by breaking random dead-end walls.
 
-        Raise RuntimeError if maze NOT generated yet
+        Raises:
+            RuntimeError: If the maze has not been generated yet.
         """
 
-        # state check (Guard Clause)
         if not self._is_generated:
             raise RuntimeError("NOT possible to make imperfect"
                                "a non-generated maze.")
 
-        # values that refer to cells that are dead ends :
-        # which has exactly 3 closed walls and 1 open wall
         corridor_ends = [
             self.ALL_WALLS & ~self.N,  # (1110)
             self.ALL_WALLS & ~self.E,  # (1101)
@@ -290,23 +286,17 @@ class MazeGenerator:
             self.ALL_WALLS & ~self.W   # (0111)
         ]
 
-        # search and store all dead ends except in 42 pattern
         dead_ends: list[tuple[int, int]] = [
             (x, y) for y in range(self.height) for x in range(self.width)
             if self._grid[y][x] in corridor_ends
             and (x, y) not in self.pattern_cells
         ]
 
-        # mandatory v2.2: break all dead ends
         nb_walls_to_break = len(dead_ends)
 
-        # iterate over the number of walls to break, to open dead-ends
         for x, y in dead_ends[:nb_walls_to_break]:
             cell = self._grid[y][x]
             may_be_broken = []
-
-            # checks which walls exist (`&` checks if the bit/wall is set)
-            # and are NOT on the grid's perimeter, neither next the 42 pattern
 
             # check north wall
             if (
@@ -345,9 +335,14 @@ class MazeGenerator:
                 self._break_wall(x, y, random.choice(may_be_broken))
 
     def check_walls_integrity(self) -> bool:
-        """
-        Checks all walls are consistent between adjacent cells
-        Returns True if the grid is valid, else False
+        """Check that all walls are consistent between adjacent cells.
+
+        Returns:
+            True if the grid is valid.
+
+        Raises:
+            MazeGenError: If an inconsistency is found between two
+                adjacent cells.
         """
         for y in range(self.height):
             for x in range(self.width):
@@ -357,8 +352,6 @@ class MazeGenerator:
                 if x < self.width - 1:
                     adjacent_E = self.grid[y][x + 1]
 
-                    # East wall of current cell and west wall of cell at right
-                    # MUST have same open/close state
                     if bool(cell & self.E) != bool(adjacent_E & self.W):
                         raise MazeGenError("East–West inconsistency "
                                            f"between ({x},{y}) "
@@ -368,42 +361,42 @@ class MazeGenerator:
                 if y < self.height - 1:
                     adjacent_S = self.grid[y + 1][x]
 
-                    # South wall of current cell and north wall of bottom cell
-                    # MUST have same open/close state
                     if bool(cell & self.S) != bool(adjacent_S & self.N):
                         raise MazeGenError("South–North inconsistency "
-                                      f"between ({x},{y}) and ({x},{y+1})")
+                                           f"between ({x},{y}) "
+                                           "and ({x},{y+1})")
 
         return True
 
     def is_3x3_open(self, start_x: int, start_y: int) -> bool:
-        """
-        Checks if a 3x3 area, with top-left cell at (start_x, start_y),
-        is an open area (no internal walls).
+        """Check if a 3x3 area is open (has no internal walls).
+
+        The area's top-left cell is at (start_x, start_y).
         """
 
-        # Inspection of horizontal (south) and vertical (east) walls
+        # Inspection of horizontal (south)
         found_wall = any(
             (self.grid[y][x] & self.S)
             for y in range(start_y, start_y + 2)
             for x in range(start_x, start_x + 3)
 
+        # Inspection of vertical (east) walls
         ) or any(
             (self.grid[y][x] & self.E)
             for y in range(start_y, start_y + 3)
             for x in range(start_x, start_x + 2)
         )
 
-        # If `found_wall` is False, then `is_3x3_open` is True
         return not found_wall
 
     def free_of_open_areas(self) -> bool:
-        """
-        Check if there is open area of 3x3 cells or larger.
-        Return:
-            True if maze is valid
-        Raise:
-            MazeGenError if a 3x3 area is found
+        """Check that there is no open area of 3x3 cells or larger.
+
+        Returns:
+            True if the maze is valid.
+
+        Raises:
+            MazeGenError: If a 3x3 open area is found.
         """
         if self.width < 3 or self.height < 3:
             return True
@@ -416,7 +409,7 @@ class MazeGenerator:
         return True
 
     def reset(self) -> None:
-        """ Clear internal state of the maze in memory """
+        """Clear the internal state of the maze in memory."""
         self._grid = [[self.ALL_WALLS for _ in range(self.width)]
                       for _ in range(self.height)]
         self.pattern_cells.clear()
@@ -424,8 +417,7 @@ class MazeGenerator:
         self._is_generated = False
 
     def regenerate(self, new_seed: int | None = None) -> None:
-        """ (shorcut corrected to include non perfect maze)
-        Reset and regenerate the maze with a new seed if provided. """
+        """ Reset and regenerate the maze with a new seed if provided. """
         if new_seed is not None:
             random.seed(new_seed)
 
@@ -433,22 +425,22 @@ class MazeGenerator:
         self.generate()
 
     def solve_maze(self) -> str:
-        """
-        Use BFS to find the shortest path between the entrance and the exit
+        """Use BFS to find the shortest path between entrance and exit.
 
-        Starting with entry cell, explore the grid using :
-        visited_yet, a set to store the coordonates of explored cells
-        to_visit, a queue to store, for each visited cell, the path from entry
-
-        Raise RuntimeError:
-            if maze NOT generated yet
-            if NO path to exit can be found
+        Starting from the entry cell, explores the grid using:
+        - already_met: a set storing the coordinates of explored cells.
+        - to_explore: a queue, storing cells to check adjacents and for each cell
+          the path taken from the entry.
 
         Returns:
-        a string containing directions (N, E, S, W) step-by-step to exit
+            A string containing directions (N, E, S, W) step-by-step
+            to the exit.
+
+        Raises:
+            RuntimeError: If the maze has not been generated yet, or
+                if no path to the exit can be found.
         """
 
-        # state check (Guard Clause)
         if not self._is_generated:
             raise RuntimeError("NOT possible to solve a non-generated maze.")
 
@@ -459,59 +451,56 @@ class MazeGenerator:
         exit_x: int = self.exit_coord[0]
         exit_y: int = self.exit_coord[1]
 
-        # store (x, y, distance_traveled) for each cell, for grid exploration
-        # to_visit: list[tuple[int, int, str]] = [(start_x, start_y, "")]
-        to_visit = deque([(start_x, start_y, "")])
+        to_explore = deque([(start_x, start_y, "")])
 
-        # store cells alreay visited coordinates, to NOT visit again
-        visited_yet: set[tuple[int, int]] = {(start_x, start_y)}
+        already_met: set[tuple[int, int]] = {(start_x, start_y)}
 
-        while to_visit:
-            # remove oldest cell from to_visit
-            x, y, path = to_visit.popleft()
+        while to_explore:
+            x, y, path = to_explore.popleft()
 
-            # check if exit is reached
             if x == exit_x and y == exit_y:
                 self._exit_path = path
                 return path
 
-            # get current cell walls data, to explore the 4 directions
             cell = self._grid[y][x]
 
+            # --------------------------------------------------------------
             # for each direction, if NO wall and NOT on the grid's perimeter
             # and next cell NOT yet visited
 
             # North
             if not (cell & self.N) and y > 0\
-                    and (x, y - 1) not in visited_yet:
-                visited_yet.add((x, y - 1))
-                to_visit.append((x, y - 1, path + 'N'))
+                    and (x, y - 1) not in already_met:
+                already_met.add((x, y - 1))
+                to_explore.append((x, y - 1, path + 'N'))
 
             # East
             if not (cell & self.E) and x < self.width - 1\
-                    and (x + 1, y) not in visited_yet:
-                visited_yet.add((x + 1, y))
-                to_visit.append((x + 1, y, path + 'E'))
+                    and (x + 1, y) not in already_met:
+                already_met.add((x + 1, y))
+                to_explore.append((x + 1, y, path + 'E'))
 
             # South
             if not (cell & self.S) and y < self.height - 1\
-                    and (x, y + 1) not in visited_yet:
-                visited_yet.add((x, y + 1))
-                to_visit.append((x, y + 1, path + 'S'))
+                    and (x, y + 1) not in already_met:
+                already_met.add((x, y + 1))
+                to_explore.append((x, y + 1, path + 'S'))
 
             # West
             if not (cell & self.W) and x > 0\
-                    and (x - 1, y) not in visited_yet:
-                visited_yet.add((x - 1, y))
-                to_visit.append((x - 1, y, path + 'W'))
+                    and (x - 1, y) not in already_met:
+                already_met.add((x - 1, y))
+                to_explore.append((x - 1, y, path + 'W'))
 
         # reached empty deque without finding exit, the maze is broken...
         raise RuntimeError("No path to exit was found.")
 
     def generate(self) -> None:
-        """
-        Generate a maze
-        raise MazeGenError if mandatory rules not followed
+        """Generate a maze.
+
+        Raises:
+            MazeGenError: If the generated maze does not comply with
+                the mandatory internal rules.
         """
 
         self.generate_perfect_maze()
@@ -523,3 +512,6 @@ class MazeGenerator:
             raise MazeGenError("Generated maze does not comply internal rules")
 
         self._exit_path = self.solve_maze()
+
+
+# export ICI
