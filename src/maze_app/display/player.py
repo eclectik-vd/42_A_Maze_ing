@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Tuple, Any
+from typing import TYPE_CHECKING, List, Any
 import arcade
 
 if TYPE_CHECKING:
@@ -64,16 +64,33 @@ class Player(arcade.Sprite):
         columns: int = 4
         sprite_path: str = "src/maze_app/display/sprite/player.png"
         self.sprite_sheet: arcade.SpriteSheet = arcade.SpriteSheet(sprite_path)
-        all_textures: List[arcade.Texture] = self.sprite_sheet.get_texture_grid(
+        all_texture: List[arcade.Texture] = self.sprite_sheet.get_texture_grid(
             size=(int(w/columns), int(h/8)),
             columns=columns,
             count=columns*8
         )
 
-        self.anim_sud: List[arcade.Texture] = all_textures[0:columns]
-        self.anim_ouest: List[arcade.Texture] = all_textures[columns*2:columns*3]
-        self.anim_nord: List[arcade.Texture] = all_textures[columns*4:columns*5]
-        self.anim_est: List[arcade.Texture] = all_textures[columns*6:columns*7]
+        self.anim_sud: List[arcade.Texture] = all_texture[0:columns]
+        self.anim_ouest: List[arcade.Texture] = all_texture[columns*2:
+                                                            columns*3]
+        self.anim_nord: List[arcade.Texture] = all_texture[columns*4:
+                                                           columns*5]
+        self.anim_est: List[arcade.Texture] = all_texture[columns*6:columns*7]
+
+        win_w: int = 288
+        win_h: int = 320
+        win_columns = 12
+        win_sprite_path: str = "src/maze_app/display/sprite/win.png"
+        self.win_sprite_sheet: arcade.SpriteSheet =\
+            arcade.SpriteSheet(win_sprite_path)
+        win_textures: List[arcade.Texture] =\
+            self.win_sprite_sheet.get_texture_grid(
+            size=(int(win_w/win_columns), int(win_h/8)),
+            columns=win_columns,
+            count=win_columns*8
+        )
+        self.anim_win: List[arcade.Texture] = win_textures[win_columns:
+                                                           win_columns*3]
         super().__init__(self.anim_sud[0])
         self.scale = self.visualizer.map.scale * 1.5
         self.center_x = cx
@@ -111,7 +128,7 @@ class Player(arcade.Sprite):
 
         self.current_anim_list = self.anim_sud[::4]
 
-    def update(self, delta_time: float = 0.0, *args: Any, **kwargs: Any) -> None:
+    def update(self, delta_time: float = 0.0) -> None:
         """Update player position, direction, and animation each frame.
 
         Checks if player has reached the target cell center. If so, applies
@@ -140,7 +157,8 @@ class Player(arcade.Sprite):
             else:
                 self.texture = self.current_anim_list[0]
                 return
-        target: List[int] = list(self.map.grid[self.cell_pos[1]][self.cell_pos[0]])
+        target: List[int] = list(self.map.grid[self.cell_pos[1]]
+                                 [self.cell_pos[0]])
         if self.center_x < target[0]:
             self.current_anim_list = self.anim_ouest
             self.center_x = min(self.center_x + self.speed, target[0])
@@ -153,6 +171,19 @@ class Player(arcade.Sprite):
         elif self.center_y > target[1]:
             self.current_anim_list = self.anim_sud
             self.center_y = max(self.center_y - self.speed, target[1])
+
+        ex: int
+        ey: int
+        cex: int
+        cey: int
+        cex, cey = self.visualizer.exit
+        ex, ey = self.map.grid[cey][cex]
+        if self.center_x == ex and self.center_y == ey:
+            self.dx == 0
+            self.dy == 0
+            self.next_dx = 0
+            self.next_dy = 0
+            self.current_anim_list = self.anim_win
 
         self.time_counter += delta_time
         if self.time_counter >= self.animation_speed:

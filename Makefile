@@ -41,7 +41,7 @@ lint:
 	# Les outils liront leurs configurations,
 	# respectivement consignées dans `.flake8` et `pyproject.toml`
 	uv run flake8 .
-	uv run  mypy .
+	uv run  mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 # vérification stricte
 lint-strict:

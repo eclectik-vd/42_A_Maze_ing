@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple
 
 from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
 import arcade
@@ -27,6 +27,8 @@ class Map:
         grid (list[list[Tuple[int, int]]]): Pixel coordinates for each cell.
         path_texture (arcade.Texture): Texture for path marker sprites.
     """
+
+    IMG_SCALE: int = 64
 
     def __init__(self, visualizer: ArcadeVisualizer) -> None:
         """Initialize the Map with the given visualizer and calculate layout.
@@ -58,7 +60,7 @@ class Map:
         cell_w: int = self.game_zone[0] // self.visualizer.maze_width
         cell_h: int = self.game_zone[1] // self.visualizer.maze_height
         self.cell: int = min(cell_w, cell_h)
-        self.scale: float = self.cell / 64
+        self.scale: float = self.cell / self.IMG_SCALE
 
         maze_pixel_width: int = self.visualizer.maze_width * self.cell
         maze_pixel_height: int = self.visualizer.maze_height * self.cell
@@ -100,33 +102,40 @@ class Map:
         Returns:
             None: Populates tile_list and path_list with arcade sprites.
         """
-        wall_sheet: Image.Image = Image.open("src/maze_app/display/sprite/e.png")
-        bordure_sheet: Image.Image = Image.open("src/maze_app/display/sprite/bordure.png")
-        exit_sheet: Image.Image = Image.open("src/maze_app/display/sprite/exit.png")
-        path_sheet: Image.Image = Image.open("src/maze_app/display/sprite/path.png")
+        wall_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                             "sprite/tilemap.png")
+        bordure_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                                "sprite/bordure.png")
+        exit_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                             "sprite/exit.png")
+        path_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                             "sprite/path.png")
 
         for i in range(4):
             for j in range(4):
-                region = wall_sheet.crop((j * 64,
-                                         i * 64,
-                                         j * 64 + 64,
-                                         i * 64 + 64))
-                wall_texture: arcade.Texture = arcade.Texture(image=region, name=f"tile_{i}")
+                region = wall_sheet.crop((j * self.IMG_SCALE,
+                                         i * self.IMG_SCALE,
+                                         j * self.IMG_SCALE + self.IMG_SCALE,
+                                         i * self.IMG_SCALE + self.IMG_SCALE))
+                wall_texture: arcade.Texture = arcade.Texture(image=region)
                 self.wall_textures.append(wall_texture)
 
         for i in range(3):
             for j in range(3):
-                region = bordure_sheet.crop((j * 64,
-                                            i * 64,
-                                            j * 64 + 64,
-                                            i * 64 + 64))
-                bordure_texture: arcade.Texture = arcade.Texture(image=region,
-                                                                  name=f"bordure_{i}")
+                region = bordure_sheet.crop((j * self.IMG_SCALE,
+                                            i * self.IMG_SCALE,
+                                            j * self.IMG_SCALE +
+                                            self.IMG_SCALE,
+                                            i * self.IMG_SCALE +
+                                            self.IMG_SCALE))
+                bordure_texture: arcade.Texture = arcade.Texture(image=region)
                 self.bordure_textures.append(bordure_texture)
 
         for i in range(2):
-            region = exit_sheet.crop((i * 64, 0, i * 64 + 64, 64))
-            exit_texture: arcade.Texture = arcade.Texture(image=region, name=f"tile_{i}")
+            region = exit_sheet.crop((i * self.IMG_SCALE, 0,
+                                     i * self.IMG_SCALE +
+                                     self.IMG_SCALE, self.IMG_SCALE))
+            exit_texture: arcade.Texture = arcade.Texture(image=region)
             self.exit_textures.append(exit_texture)
 
         self.path_texture = arcade.Texture(image=path_sheet, name="path")

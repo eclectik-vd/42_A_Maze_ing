@@ -84,7 +84,7 @@ class AsciiVisualizer(Visualizer):
                 print()
         else:
             self.show_path()
-            for line in self.ascii_maze:
+            for line in self.ascii_maze_path:
                 for c in line:
                     if c == "E":
                         print(Fore.GREEN + c, end="", flush=True)
