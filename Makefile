@@ -7,6 +7,7 @@
 
 # Default rule
 all: install
+	make run
 
 install:
 	# uv sync est TRES intelligent :P
@@ -26,7 +27,7 @@ test:
 	uv run pytest tests/
 
 run:
-	uv run python3 a_maze_ing.py config.txt
+	uv run a_maze_ing.py config.txt
 
 build:
 	# lire pyproject.toml ( /!\ y compléter [build-system] /!\ )
