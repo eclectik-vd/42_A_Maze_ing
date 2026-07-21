@@ -13,9 +13,7 @@ La consigne était d'implémenter en Python un générateur de labyrinthes, à p
 + fournir une représentation visuelle du labyrinthe ;
 + organiser le code afin que la logique de génération/solution puisse être réutilisée ultérieurement.
 
-{ToDo} *Objectif pédagogique : structures de données, algorithmes de graphes, parsing de configuration*
-
-{ToDo} *Motivation personnelle : Arcade, pytest*
+Pédagogiquement, ce projet avait pour objectif de travailler les *structures de données*, l'*analyse syntaxique*, les *algorithmes de graphes* et les *tests unitaires*. De manière optionnelle, il a également permis l'usage *Arcade*.
 
 
 ### Sommaire
@@ -39,8 +37,6 @@ La consigne était d'implémenter en Python un générateur de labyrinthes, à p
 [9. Gestion d'équipe et de projet](#9-gestion-déquipe-et-de-projet)
 
 # 1/ Instructions
-{ToDo}: *création du package (build backend utilisé — `hatchling`, `setuptools`, `poetry`, etc. — et la commande exacte, par ex. `python -m build`) *
-
 
 ### Prérequis
 - Python 3.10 ou supérieur
@@ -57,11 +53,17 @@ make install
 ### Exécution
 
 ```bash
-python3 a_maze_ing.py config.txt
+make run
 ```
 
-- `a_maze_ing.py` est le point d'entrée du programme.
-- `config.txt` est le fichier de configuration (voir [par ici]), un exemple par défaut est fourni à la racine du dépôt.
+ou bien, pour ajouter des paramètres nommés :
+```bash
+uv run a_maze_ing.py config.txt --perfect=True --seed=33 --display-mode=ascii
+```
+
++ `a_maze_ing.py` est le point d'entrée du programme.
++ `config.txt` est le fichier de configuration (voir [par ici]), un exemple par défaut est fourni à la racine du dépôt.
++ `perfect`, `seed` et `display-mode` sont des paramètres nommés facultatifs, le cas échéant ils écrasent les valeurs du fichier `config.txt`.
 
 ### Makefile
 
@@ -96,8 +98,9 @@ Le fichier de configuration contient une paire `CLÉ=VALEUR` par ligne. Les li
 | `SEED`         | Graine de génération (reproductibilité) | `SEED=42`              | optionnel   |
 | `DISPLAY_MODE` | Mode d'affichage (`arcade` / `ascii`)   | `DISPLAY_MODE=arcade`  | optionnel   |
 
-{ToDo}: *valeurs par défaut*
-{ToDo}: *comportement en cas d'erreur de syntaxe ou de valeur invalide*
+Par défaut: `SEED` = `None` and `DISPLAY_MODE` = `ascii`.
+
+En cas d'erreur de syntaxe ou de valeur invalide, le programme affiche la raison de l'erreur puis se ferme.
 
 [Haut page](<#description-du-projet>)
 
@@ -113,8 +116,8 @@ Chaque cellule est encodée par un digit hexadécimal représentant l'état de s
 | 3               | Ouest     |
 
 Un mur fermé positionne le bit correspondant à `1`. Par exemple :
-+ b0011 : murs sud et ouest ouverts
-+ b1010 : murs nord et sud ouverts
++ 0b0011 : murs sud et ouest ouverts
++ 0b1010 : murs nord et sud ouverts
 
 Les cellules sont écrites ligne par ligne.
 
@@ -126,18 +129,23 @@ Ensuite, après une ligne vide, trois lignes supplémentaires précisent :
 Exemple :
 
 ```text
-913955111555515515395153
-ac2a9102829113855692c3a92
-...
+9395551393
+8445116C6A
+8539069556
+83C2C12953
+A83A96C692
+C6C4455546
 
-1,1
-19,14
-ESEENEEESSSEESESSESESSSSSEEEEESES
+0,0
+9,5
+SSEESESSEEEEEE
 ```
 
 [Haut page](<#description-du-projet>)
 
 # 4/ Module réutilisable
+
+{ToDo} *valider/corriger après tests*
 
 La logique de génération est isolée dans la classe **`MazeGenerator`** (`src/mazegen.py`).
 Elle est packagée en un module autonome (`mazegen-*.whl` / `mazegen-*.tar.gz`) fourni à la racine du dépôt et installable via `pip` :
@@ -183,14 +191,14 @@ solution = maze.exit_path
 ├── config.txt                        # Fichier de configuration par défaut
 ├── [!] debug_utils.py
 ├── a_maze_ing.py                     # Point d'entrée (main)
-├── src
+├── src/
 │   ├── mazegen.py                    # Génération (DFS) et résolution (BFS) du labyrinthe
 │   └── maze_app
-│       ├── parsing                   # Lecture et validation (Pydantic) du fichier de config
+│       ├── parsing/                   # Lecture et validation (Pydantic) du fichier de config
 │       │   ├── config_main.py
 │       │   ├── config_parser.py
 │       │   └── models.py
-│       ├── display                   # Visualiseurs ASCII et graphique (arcade)
+│       ├── display/                   # Visualiseurs ASCII et graphique (arcade)
 │       │   ├── __init__.py
 │       │   ├── visualizer.py
 │       │   ├── ascii_visualizer.py
@@ -198,17 +206,18 @@ solution = maze.exit_path
 │       │   ├── map.py                # Grille et sprites
 │       │   ├── menu.py               # Interface utilisateur
 │       │   ├── player.py             # Déplacement du personnage
-│       │   └── sprite
+│       │   └── sprite/
 │       │       ├── background.jpeg
 │       │       ├── bordure.png
 │       │       ├── e.png
 │       │       ├── exit.png
 │       │       ├── path.png
 │       │       └── player.png
-│       └── output                    # Écriture du fichier de sortie
+│       └── output/                    # Écriture du fichier de sortie
 │           └── export.py
-└── tests
-    ├── ToDo
+└── tests/
+    ├── test_parsing.py
+    ├── test_models.py
     └── test_player.py
 ```
 
@@ -239,14 +248,16 @@ flowchart TD
 
 # 6/ Algorithmique
 
-4 algorithmes générateurs de labyrinthes parfaits ont été comparés :
+### Génération
 
-| Algorithme               | Difficulté | Texture                     | Biais       | Vitesse     |
-| ------------------- | ---------- | --------------------------- | ----------- | ----------- |
-| Binary Tree         | ⭐          | Diagonale marquée           | Fort        | Très rapide |
-| DFS / Backtracking  | ⭐          | Longs couloirs sinueux      | Moyen       | Rapide      |
-| Prim randomisé      | ⭐⭐         | Branches courtes, organique | Faible      | Rapide      |
-| Kruskal randomisé   | ⭐⭐⭐        | Très homogène               | Très faible | Moyen       |
+Pour générer le labyrinthe, 4 algorithmes **générateurs de labyrinthes parfaits** ont été comparés :
+
+| Algorithme             | Difficulté | Texture                     | Biais       | Vitesse     |
+| ---------------------- | ---------- | --------------------------- | ----------- | ----------- |
+| Binary Tree            | ★          | Diagonale marquée           | Fort        | Très rapide |
+| Recursive Backtracking | ★          | Longs couloirs sinueux      | Moyen       | Rapide      |
+| Prim                   | ★★         | Branches courtes, organique | Faible      | Rapide      |
+| Kruskal                | ★★★        | Très homogène               | Très faible | Moyen       |
 
 Le choix s'est porté sur le Backtracking récursif (DFS randomisé) :
 + génère naturellement un labyrinthe parfait (arbre couvrant)
@@ -258,18 +269,36 @@ Le choix s'est porté sur le Backtracking récursif (DFS randomisé) :
 Principe :
 + Creuse un chemin au hasard en avançant dans une direction aléatoire ; quand on est bloqué, on revient en arrière (backtrack) jusqu'à trouver une case avec une issue.
 
-### Génération
 Le labyrinthe est généré par **`MazeGenerator`** (`src/mazegen.py`) :
 
-1. Toutes les cellules démarrent fermées (4 murs).
-2. Depuis la cellule courante, une cellule adjacente non visitée est choisie aléatoirement, le mur entre les deux est cassé (`_break_wall`), puis on poursuit itérativement (backtracking) jusqu'à épuisement.
-3. Si `PERFECT=False`, le labyrinthe est ensuite "cassé" partiellement (`make_imperfect`) pour supprimer des culs de sacs et le rendre jouable façon Pac-Man, tout en respectant les contraintes du sujet (pas de couloir de largeur supérieure à 2 cellules, connectivité totale, motif "42" visible…).
-4. La résolution du chemin le plus court entre l'entrée et la sortie est calculée par parcours en largeur (**BFS**, `path_exit` / `solve_maze`).
-
-{ToDo} *ajout graph Mermaid*
+1. `generate_perfect_maze()` crée un labyrinthe parfait , `_apply_42_pattern()` intègre le pattern "42" lorsque sa taille le permet.
+2. Si `PERFECT=False`, `make_imperfect()` supprime tous les culs de sac et rend le labyrinthe imparfait.
+3. `check_walls_integrity()` et `free_of_open_areas()` vérifient que le labyrinthe créé est cohérent et respecte les consignes.
+4. `solve_maze()` trouve le chemin le plus court et `export_to_file()` génère le fichier `OUTPUT_FILE`
 
 ### Résolution
-{ToDo} *justif choix de BFS + ajout graph Mermaid*
+
+Pour **trouver le chemin le plus court**, 3 algorithmes solveurs de labyrinthes ont été comparés :
+
+| Critère            | BFS         | Dijkstra   | A*                                 |
+| ------------------ | ----------- | ---------- | ---------------------------------- |
+| Gère les poids     | Non         | Oui        | Oui                                |
+| Nœuds explorés     | Beaucoup    | Beaucoup   | Peu                                |
+| Complexité         | O(n)        | O(n log n) | O(n log n), en pratique bien moins |
+| Simplicité du code | Très simple | Simple     | Modérée (heuristique à écrire)     |
+
+Le choix s'est porté sur le BFS :
++ dans notre labyrinthe, tous les déplacements ont le même coût ;
++ il est simple à implémenter ;
++ pour un labyrinthe affiché à l'écran, donc de taille raisonnable, la différence de performance avec A* sera imperceptible.
+
+Principe :
++ Explore le graphe niveau par niveau, en traitant tous les voisins à distance _k_ avant de passer à distance _k+1_. 
+
+Le labyrinthe est résolu par **`MazeGenerator`** (`src/mazegen.py`) :
+1. `solve_maze()` trouve le chemin le plus court ;
+2. `export_to_file()` génère le fichier `OUTPUT_FILE`.
+
 
 [Haut page](<#description-du-projet>)
 
@@ -288,7 +317,7 @@ Interactions disponibles :
 
 
 ### Arcade
-![capture rendu Arcade](<img src="src/maze_app/utils/arcade.png" width="320">)
+![capture rendu Arcade](img src="src/maze_app/utils/arcade.png")
 
 Interactions disponibles :
 1. Déplacer le joueur.
@@ -301,6 +330,8 @@ Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
 
 Espace pour valider
 
+Echap pour quitter le mode joueur
+
 Flèches :arrow_up: / :arrow_down: et :arrow_left: / :arrow_right: pour se déplacer le joueur dans le labyrinthe
 
 [Haut page](<#description-du-projet>)
@@ -308,13 +339,12 @@ Flèches :arrow_up: / :arrow_down: et :arrow_left: / :arrow_right: pour se dépl
 # 8/ Bonus
 - déplacements du joueur avec Arcade
 - labyrinthe imparfait sans cul-de-sac
+- paramètres en ligne de commande : seed, display_mode, perfect
 - sons / musique
-- 
+- tests pytest
 - ? animation de l'affichage (! pas de la génération) du labyrinthe en ASCII
 - ? modif couleur du Pattern 42
 - ? modif forme du pattern
-- ? paramètres en ligne de commande : seed, display_mode, perfect
-  et/ou affichage des paramètres : seed et perfect
 
 [Haut page](<#description-du-projet>)
 
@@ -325,22 +355,23 @@ Emarette avait déjà validé le projet, nous nous sommes donc réparti le trava
 
 | Membre   | Rôle                                                             |
 | -------- | ---------------------------------------------------------------- |
-| emarette | affichage Ascii, affichage Arcade                                |
+| emarette | affichage Ascii, affichage Arcade, build                                  |
 | vadamavi | makefile, parsing, generator, solver, readme                     |
 | both     | .gitignore, architecture, Flake8 et mypy, type hints, docstrings |
-| ?        | build                                                            |
+| ?        |                                                           |
 
 ### Planning prévisionnel et évolution concrète
-Nous avons estimé le temps nécessaire pour les tâches indispensables mais pas fixé d'échéance compte tenu du contexte :
+Nous avions estimé le temps nécessaire pour les tâches indispensables mais pas fixé d'échéance compte tenu du contexte :
 + bonus à définir
 + congés personnels car période estivale
-+ occupation variable des clusters par les piscineux.
++ disponibilité variable des clusters pendant la piscine.
 
 Ce qui a pris plus de temps que prévu :
-+ génération des labyrinthes imparfaits, le passage du sujet de la version v2.1 à la version v2.2 a ajouté des contraintes.
-+ 
++ le passage du sujet de la version v2.1 à la version v2.2 ;
++ l'appropriation / approfondissement de certaines notions (uv, pytest, arcade, git...) ;
++ la mise en place de tests unitaires ;
++ la rédaction de ce readme.
 
-{ToDo ?} : *Gantt avec réel +/- simulé (/chgt du sujet)*
 
 ### Ce qui a bien fonctionné
 + Mise en place d'une ToDo list pour chaque binône
@@ -348,197 +379,40 @@ Ce qui a pris plus de temps que prévu :
 + Usage de branches pour collaborer avec git
 
 ### Axes d'amélioration
-L'architecture initialement définie a été remise en question et modifiée peu après le début de l'implémentation du projet.
++ L'architecture initialement définie a été remise en question et modifiée deux fois pendant l'implémentation du projet ;
++ Le readme pourrait être partiellement rédigé à l'aide de l'IA.
+
 
 ### Outils collaboration et de développement
 
 Pour collaborer, nous avons fait des points d'étape en **présentiel** régulièrement, communiqué via **Slack** et mutualisé le code sur **Github**.
-Le développement a été effectué avec [VSCode](https://code.visualstudio.com/), les traductions en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec [Obsidian](https://obsidian.md/). 
-**Outils spécifiques** utilisés : `uv`, `pydantic`, `pytest`, `arcade`, `colorama`, `flake8`, `mypy` …
+
+Le développement a été effectué avec [VSCode](https://code.visualstudio.com/), les traductions en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec [Obsidian](https://obsidian.md/).
+
+**Outils spécifiques** utilisés : `uv`, `pydantic`, `pytest`, `arcade`, `colorama`, `flake8`, `mypy`.
 
 ### Ressources
 + Documentation officielle [`uv`](https://docs.astral.sh/uv/guides/projects/)
 + Documentation officielle [`Pydantic`](https://docs.pydantic.dev/)
++ Documentation officielle [`Pytest`](https://docs.pytest.org/en/stable/getting-started.html)
 + Wikipedia [Modélisation mathématique d'un labyrinthe](https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe)
 + [Opérateurs-logiques-bit-a-bit](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
 + Documentation officielle [`arcade`](https://api.arcade.academy/)
 + Sprites free to use [`pmdcollab.org`](https://sprites.pmdcollab.org/)
++ Packaging ???{ToDO}???
 + [Syntaxe Markdown](https://daringfireball.net/projects/markdown/syntax#block)
 
-{ToDO} *? recursive backtracker, BFS, théorie des graphes / arbres couvrants, le packaging Python*
 
 ### Usages IA
 
-Gemini a été utilisé par vadamavi pour :
-+ relecture et optimisation de code (Makefile) ;
-+ créer les flowcharts d'après un modèle Mermaid élaboré "à la main" ;
-
-Claude a été utilisé par vadamavi pour :
+Gemini ou Claude ont été utilisés par vadamavi pour :
++ relecture et optimisation du Makefile ;
++ créer des flowcharts d'après un modèle Mermaid élaboré "à la main" ;
 + synthétiser la comparaison des algorithmes de génération de labyrinthe
 + évaluer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
-Deepl 
-+ traduire le README en anglais.
-
-{ToDO} *? *Enzo*
-
-{ToDO} *? *génération de test avec pytest*
-
-Tous les fichiers modifiés par IA ont été re-vérifiés par l'un des binômes.
++ traduction du readme
 
 
 # Licence
 
-Ce projet est distribué sous licence {ToDo par ex. MIT}, voir le fichier `LICENSE.md` à la racine du dépôt.
-
----
----
-
-Reliquats, à conserver éventuellement en docs perso
-
----
----
-
-#### Déplacements du joueur
-interactions clavier:
-```mermaid
-sequenceDiagram
-    participant User as Joueur
-    participant Window as arcade.Window
-    participant View as ArcadeVisualizer
-    participant Player as Player
-    participant Map as Map
-
-    User->>Window: Appuie sur flèche (ex: HAUT)
-    Window->>View: on_key_press(symbol)
-    View->>Player: on_key_press(symbol)
-    Player-->>Player: Stocke l'intention (next_dy = 1)
-    
-    Window->>View: on_update(delta_time)
-    View->>Player: update(delta_time)
-    Player->>Player: have_wall(next_dx, next_dy)
-    alt Pas de mur
-        Player->>Player: Met à jour la position cible (cell_pos)
-        Player->>Map: Récupère les coordonnées pixels cibles (grid)
-        Map-->>Player: [target_x, target_y]
-        Player->>Player: Anime et déplace le centre du sprite vers la cible
-    else Mur présent
-        Player->>Player: Stoppe l'animation (reste sur place)
-    end
-
-```
-
-
----
----
---- 
-
-arbo fat:
-```text
-.
-├── .flake8
-├── .gitignore
-├── .python-version
-├── pyproject.toml
-├── uv.lock
-├── Makefile
-├── README.md
-├── config.txt
-├── [!] debug_utils.py
-├── a_maze_ing.py
-│   └── def main(config_path: str) -> None:
-├── src
-│   ├── mazegen.py
-│   │   ├── class MazeGenError(Exception):
-│   │   └── class MazeGenerator:
-│   │       ├── def __init__(self, width, height, entry_coord, exit_coord, perfect, seed) -> None:
-│   │       ├── def grid(self) -> list[list[int]]:
-│   │       ├── def exit_path(self) -> str:
-│   │       ├── def _break_wall(self, x: int, y: int, direction: int) -> None:
-│   │       ├── def _get_unvisited_adjacents(self, x: int, y: int) -> list[tuple[int, int, int]]:
-│   │       ├── def _apply_42_pattern(self) -> None:
-│   │       ├── def generate_perfect_maze(self) -> None:
-│   │       ├── def make_imperfect(self, percent_to_break: float = 0.4) -> None:
-│   │       ├── def check_walls_integrity(self) -> bool:
-│   │       ├── def is_3x3_open(self, start_x: int, start_y: int) -> bool:
-│   │       ├── def free_of_open_areas(self) -> bool:
-│   │       ├── def reset(self) -> None:
-│   │       ├── def regenerate(self, new_seed: int | None = None) -> None:
-│   │       ├── def solve_maze(self) -> str:
-│   │       ├── def generate(self) -> None:
-│   │       └── 
-│   └── maze_app
-│       ├── parsing
-│       │   ├── config_main.py
-│       │   │   └── def load_config(config_path: str) -> MazeConfig:
-│       │   ├── config_parser.py
-│       │   │   └── def parse_config(file_path: str) -> dict[str, Any]:
-│       │   └── models.py
-│       │   │   └── class MazeConfig(BaseModel):
-│       │   │       ├── def parse_coordinates(cls, value: Any) -> tuple[int, int] | Any:
-│       │   │       ├── def lowercase_display_mode(cls, value: Any) -> Any:
-│       │   │       ├── def check_extension(cls, value: str) -> str:
-│       │   │       └── def validate_config_rules(self) -> 'MazeConfig':
-│       ├── display
-│       │   ├── __init__.py
-│       │   ├── visualizer.py
-│       │   │   └── class Visualizer:
-│       │   │       └── def __init__(self, mazegen: MazeGenerator):
-│       │   ├── ascii_visualizer.py
-│       │   │   └── class AsciiVisualizer(Visualizer):
-│       │   │       ├── def __init__(self, maze: MazeGenerator):
-│       │   │       ├── def draw(self):
-│       │   │       ├── def update(self):
-│       │   │       ├── def upper_maze(self):
-│       │   │       ├── def show_path(self):
-│       │   │       └── def _draw_path_char(self, line_index, column_index, symbol="•"):
-│       │   ├── arcade_visualizer.py
-│       │   │   └── class ArcadeVisualizer(Visualizer, arcade.View):
-│       │   │       ├── def __init__(self, maze: MazeGenerator):
-│       │   │       ├── def on_draw(self):
-│       │   │       ├── def on_update(self, delta_time: float):
-│       │   │       └── def on_key_press(self, symbol: int, modifiers: int):
-│       │   ├── map.py
-│       │   │   └── class Map:
-│       │   │       ├── def __init__(self, visualizer) -> None:
-│       │   │       ├── def generate_maze(self) -> None:
-│       │   │       ├── def build_sprites(self) -> None:
-│       │   │       ├── def path(self):
-│       │   │       ├── def draw(self) -> None:
-│       │   │       └── def calculate_grid(self) -> None:
-│       │   ├── menu.py
-│       │   │   └── class Menu():
-│       │   │       ├── def __init__(self, visualizer) -> None:
-│       │   │       ├── def setup_ui(self) -> None:
-│       │   │       ├── def draw(self):
-│       │   │       ├── def draw_triangle(self) -> None:
-│       │   │       ├── def on_key_press(self, symbol: int, modifiers: int) -> None:
-│       │   │       └── def execute_action(self) -> None:
-│       │   ├── player.py
-│       │   │   └── class Player(arcade.Sprite):
-│       │   │       ├── def __init__(self, visualizer):
-│       │   │       ├── def init_player(self):
-│       │   │       ├── def update(self, delta_time):
-│       │   │       ├── def on_key_press(self, key: int, modifiers: int) -> None:
-│       │   │       └── def have_wall(self, nx: int, ny: int) -> bool:
-│       │   └── sprite
-│       │       ├── background.jpeg
-│       │       ├── bordure.png
-│       │       ├── e.png
-│       │       ├── exit.png
-│       │       ├── path.png
-│       │       └── player.png
-│       └── output
-│           └── export.py
-└── tests
-    ├── ToDo
-    └── test_player.py
-
-[?]
-└── doc
-    ├── arbo_fat.md
-    └── [?] fiches persos
-```
-
----
-
- 
+Ce projet est distribué sous licence MIT, voir le fichier [LICENSE.md]( à la racine du dépôt.
