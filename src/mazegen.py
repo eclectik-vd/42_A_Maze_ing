@@ -334,6 +334,28 @@ class MazeGenerator:
             if may_be_broken:
                 self._break_wall(x, y, random.choice(may_be_broken))
 
+    def reset(self) -> None:
+        """Clear the internal state of the maze in memory."""
+        self._grid = [[self.ALL_WALLS for _ in range(self.width)]
+                      for _ in range(self.height)]
+        self.pattern_cells.clear()
+        self._exit_path = ""
+        self._is_generated = False
+
+    def regenerate(self, new_seed: int | None = None) -> None:
+        """ Reset and regenerate the maze with a new seed if provided. """
+        if new_seed is not None:
+            random.seed(new_seed)
+
+        self.reset()
+        self.generate()
+
+    # ---------------------------------------------------------------------
+    # 
+    # ----------------------- CHECK maze VALIDITY -------------------------
+    # 
+    # ---------------------------------------------------------------------
+
     def check_walls_integrity(self) -> bool:
         """Check that all walls are consistent between adjacent cells.
 
@@ -408,21 +430,11 @@ class MazeGenerator:
 
         return True
 
-    def reset(self) -> None:
-        """Clear the internal state of the maze in memory."""
-        self._grid = [[self.ALL_WALLS for _ in range(self.width)]
-                      for _ in range(self.height)]
-        self.pattern_cells.clear()
-        self._exit_path = ""
-        self._is_generated = False
-
-    def regenerate(self, new_seed: int | None = None) -> None:
-        """ Reset and regenerate the maze with a new seed if provided. """
-        if new_seed is not None:
-            random.seed(new_seed)
-
-        self.reset()
-        self.generate()
+    # ---------------------------------------------------------------------
+    # 
+    # ----------------------- SOLVE maze  -------------------------
+    # 
+    # ---------------------------------------------------------------------
 
     def solve_maze(self) -> str:
         """Use BFS to find the shortest path between entrance and exit.
@@ -495,6 +507,42 @@ class MazeGenerator:
         # reached empty deque without finding exit, the maze is broken...
         raise RuntimeError("No path to exit was found.")
 
+    # ---------------------------------------------------------------------
+    # 
+    # ----------------------- EXPORT maze  -------------------------
+    # 
+    # ---------------------------------------------------------------------
+
+    # def export_to_file(grid: list[list[int]],
+    #                 entry_coord: tuple[int, int], exit_coord: tuple[int, int],
+    #                 path: str, file_name: str,) -> None:
+    def export_to_file(self) -> None:
+        """
+        Export the maze and its solution to the mandatory text file
+        """
+        with open(file_name, 'w', encoding='utf-8') as new_file:
+            # Write grid in hexa
+            for row in self._grid:
+                # f"{integer:X}" converts integer to uppercase hexa (10->A)
+                line_str = "".join(f"{cell:X}" for cell in row)
+                new_file.write(line_str + "\n")
+
+            # mandatory empty line
+            new_file.write("\n")
+
+            # entrance coordinates
+            new_file.write(f"{self.entry_coord[0]},{self.entry_coord[1]}\n")
+            # exit coordinates
+            new_file.write(f"{self.exit_coord[0]},{self.exit_coord[1]}\n")
+            # path from entrance to exit
+            new_file.write(f"{path}\n")
+
+    # ---------------------------------------------------------------------
+    # 
+    # ----------------------- SOLVE maze  -------------------------
+    # 
+    # ---------------------------------------------------------------------
+
     def generate(self) -> None:
         """Generate a maze.
 
@@ -512,6 +560,4 @@ class MazeGenerator:
             raise MazeGenError("Generated maze does not comply internal rules")
 
         self._exit_path = self.solve_maze()
-
-
-# export ICI
+        self._exit_path = self.solve_maze()

@@ -2,7 +2,6 @@ import argparse
 import sys
 import arcade
 from src.maze_app.parsing.config_main import load_config
-from src.maze_app.output.export import export_to_file
 from src.mazegen import MazeGenerator, MazeGenError
 from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
 from src.maze_app.display.ascii_visualizer import AsciiVisualizer
@@ -13,8 +12,7 @@ from src.maze_app.utils.utility_funcs import str_to_bool
 def main(config_path: str, cli_vars: dict | None = None) -> None:
     """
     Load and validate maze config
-    Initiate, create, validate and solve the maze
-    Export maze and solution to a text file
+    Initiate, create, validate, solve and export the maze
     Display maze
 
     Exit on failure
@@ -47,19 +45,13 @@ def main(config_path: str, cli_vars: dict | None = None) -> None:
             exit_coord=config.exit_coord,
             perfect=config.perfect,
         )
-        # Initiate, create, validate and solve the maze
+        # Initiate, create, validate, solve and export the maze
         maze.generate()
         print_italic("The generated maze is compliant with mandatory rules.")
 
     except (ValueError, RuntimeError, MazeGenError) as err:
         print(f"Error during maze processing: {err}", file=sys.stderr)
         sys.exit(1)
-
-    # ---------------------------------------------------------------------
-    # --------------- EXPORT maze and solution to a text file -------------
-
-    export_to_file(maze.grid, maze.entry_coord, maze.exit_coord,
-                   maze.exit_path, config.output_file)
 
     # ---------------------------------------------------------------------
     # -------------------- DISPLAY the maze -------------------------------
