@@ -350,11 +350,11 @@ Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DI
 - **`ascii`** : rendu texte directement dans le terminal.
 - **`arcade`** : en bonus, rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif.
 ### ASCII
-![capture rendu ASCII](/src/maze_app/doc/display_ascii.png)
+![capture rendu ASCII](/doc/display_ascii.png)
 
 
 ### Arcade
-![capture rendu Arcade](img src="/src/maze_app/doc/display_arcade.png" "width=320")
+![capture rendu Arcade](img src="/doc/display_arcade.png" "width=320")
 
 Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
 
