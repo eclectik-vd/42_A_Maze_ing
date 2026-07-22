@@ -354,7 +354,7 @@ Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DI
 
 
 ### Arcade
-![capture rendu Arcade](img src="/doc/display_arcade.png" "width=320")
+<img src="/doc/display_arcade.png" alt="capture rendu Arcade" width="608">
 
 Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
 
