@@ -6,8 +6,7 @@
 # => si chgt d'environnement, uv gèrera les chemins spécifiques à l'OS.
 
 # Default rule
-all: install
-	make run
+all: install run
 
 install:
 	# uv sync est TRES intelligent :P

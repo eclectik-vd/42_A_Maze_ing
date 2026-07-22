@@ -38,9 +38,18 @@ Pédagogiquement, ce projet avait pour objectif de travailler les *structures de
 
 # 1/ Instructions
 
+
 ### Prérequis
 - Python 3.10 ou supérieur
-- uv pour la gestion des dépendances
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) pour la gestion des dépendances
+```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+- Dépendances système également requises par pyglet/arcade pour décoder les fichiers audio .mp3 (souvent absentes par défaut sous WSL), à installer si besoin avec les commandes suivantes :
+```bash
+sudo apt update
+sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libswresample-dev
+```
 
 ### Installation
 
