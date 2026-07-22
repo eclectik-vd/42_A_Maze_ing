@@ -226,13 +226,16 @@ solution = maze.exit_path
 │           │   ├── background.jpeg
 │           │   ├── bordure.png
 │           │   ├── exit.png
-│           │   ├── exit.png
 │           │   ├── path.png
 │           │   ├── player.png
 │           │   ├── tilemap.png
 │           │   └── win.png
 │           └── sound/
 │               └── music.mp3
+├── doc/
+│   ├── display_ascii.png
+│   ├── display_arcade.png
+│   └── ToDo.md
 └── tests/
     ├── test_parsing.py
     ├── test_models.py
@@ -346,23 +349,27 @@ Le labyrinthe est résolu par **`MazeGenerator`** (`src/mazegen.py`) :
 
 # 7/ Affichage / interactions
 
-Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DISPLAY_MODE`) :
-- **`ascii`** : rendu texte directement dans le terminal.
-- **`arcade`** : en bonus, rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif.
+Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DISPLAY_MODE`).
+
 ### ASCII
+
+Rendu texte directement dans le terminal :
+
 ![capture rendu ASCII](/doc/display_ascii.png)
 
 
 ### Arcade
-<img src="/doc/display_arcade.png" alt="capture rendu Arcade" width="608">
 
-Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
+En bonus, rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif :
 
-Espace pour valider
+<img src="/doc/display_arcade.png" alt="capture rendu Arcade" width="800">
 
-Echap pour quitter le mode joueur
+**Commandes clavier** :
 
-Flèches :arrow_up: / :arrow_down: et :arrow_left: / :arrow_right: pour se déplacer le joueur dans le labyrinthe
++ Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
++ Espace pour valider
++ Flèches :arrow_up: / :arrow_down: et :arrow_left: / :arrow_right: pour déplacer le joueur dans le labyrinthe
++ Echap pour quitter le mode joueur
 
 [Haut page](<#description-du-projet>)
 
