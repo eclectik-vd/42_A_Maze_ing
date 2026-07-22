@@ -2,7 +2,7 @@ import sys
 from pydantic import ValidationError
 from src.maze_app.parsing.config_parser import parse_config
 from src.maze_app.parsing.models import MazeConfig
-from debug_utils import print_italic, print_green
+from src.maze_app.utils.utility_funcs import print_italic, print_green
 
 
 def load_config(config_path: str, cli_vars: dict | None = None) -> MazeConfig:

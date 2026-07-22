@@ -24,3 +24,15 @@ def str_to_bool(value: str) -> bool:
     raise argparse.ArgumentTypeError(
         f"Boolean value expected ('True'/'False'), got '{value}'"
     )
+
+
+def print_italic(msg: str) -> None:
+    print(f"\033[3m{msg}\033[0m")
+
+
+def print_green(msg: str, end_msg: str = '\n') -> None:
+    print(f"\033[32m{msg}\033[0m", end=end_msg)
+
+
+def print_red(msg: str) -> None:
+    print(f"\033[31m{msg}\033[0m")
