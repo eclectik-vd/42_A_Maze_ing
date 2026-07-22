@@ -78,7 +78,7 @@ uv run a_maze_ing.py config.txt --perfect=True --seed=33 --display-mode=ascii
 
 |Cible|Rôle|Obligatoire|
 |---|---|---|
-|`all`|Installe les dépendances du projet|   |
+|`all`|Installe les dépendances et lance le projet|   |
 |`install`|Installe les dépendances du projet|✔️|
 |`update`|force la mise à jour de uv.lock si besoin|   |
 |`test`|Lance les tests pytest|   |
@@ -200,32 +200,39 @@ solution = maze.exit_path
 ├── Makefile
 ├── README.md
 ├── config.txt                        # Fichier de configuration par défaut
-├── [!] debug_utils.py
 ├── a_maze_ing.py                     # Point d'entrée (main)
 ├── src/
+│   ├── __init__.py
 │   ├── mazegen.py                    # Génération (DFS) et résolution (BFS) du labyrinthe
 │   └── maze_app
-│       ├── parsing/                   # Lecture et validation (Pydantic) du fichier de config
+│       ├── __init__.py
+│       ├── utils/                    # Some utility functions
+│       │   ├── __init__.py
+│       │   └── utility_funcs.py
+│       ├── parsing/                  # Lecture et validation (Pydantic) du fichier de config
+│       │   ├── __init__.py
 │       │   ├── config_main.py
 │       │   ├── config_parser.py
 │       │   └── models.py
-│       ├── display/                   # Visualiseurs ASCII et graphique (arcade)
-│       │   ├── __init__.py
-│       │   ├── visualizer.py
-│       │   ├── ascii_visualizer.py
-│       │   ├── arcade_visualizer.py
-│       │   ├── map.py                # Grille et sprites
-│       │   ├── menu.py               # Interface utilisateur
-│       │   ├── player.py             # Déplacement du personnage
-│       │   └── sprite/
-│       │       ├── background.jpeg
-│       │       ├── bordure.png
-│       │       ├── e.png
-│       │       ├── exit.png
-│       │       ├── path.png
-│       │       └── player.png
-│       └── output/                    # Écriture du fichier de sortie
-│           └── export.py
+│       └── display/                  # Visualiseurs ASCII et graphique (arcade)
+│           ├── __init__.py
+│           ├── visualizer.py
+│           ├── ascii_visualizer.py
+│           ├── arcade_visualizer.py
+│           ├── map.py                # Grille et sprites
+│           ├── menu.py               # Interface utilisateur
+│           ├── player.py             # Déplacement du personnage
+│           ├── sprite/
+│           │   ├── background.jpeg
+│           │   ├── bordure.png
+│           │   ├── exit.png
+│           │   ├── exit.png
+│           │   ├── path.png
+│           │   ├── player.png
+│           │   ├── tilemap.png
+│           │   └── win.png
+│           └── sound/
+│               └── music.mp3
 └── tests/
     ├── test_parsing.py
     ├── test_models.py
@@ -317,25 +324,13 @@ Le labyrinthe est résolu par **`MazeGenerator`** (`src/mazegen.py`) :
 
 Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DISPLAY_MODE`) :
 - **`ascii`** : rendu texte directement dans le terminal.
-- **`arcade`** : rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif.
+- **`arcade`** : en bonus, rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif.
 ### ASCII
-![capture rendu ASCII](src/maze_app/utils/ascii.png)
-Interactions disponibles :
-1. Régénérer un nouveau labyrinthe, en choisissant la seed.
-2. Afficher / masquer le plus court chemin entre l'entrée et la sortie.
-3. Changer les couleurs des murs.
-4. Quitter.
+![capture rendu ASCII](src/maze_app/doc/display_ascii.png)
 
 
 ### Arcade
-![capture rendu Arcade](img src="src/maze_app/utils/arcade.png")
-
-Interactions disponibles :
-1. Déplacer le joueur.
-2. Régénérer un nouveau labyrinthe.
-3. Afficher / masquer le plus court chemin entre l'entrée et la sortie.
-4. Changer les couleurs des murs.
-5. Quitter.
+![capture rendu Arcade](img src="src/maze_app/doc/display_arcade.png")
 
 Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
 
@@ -348,14 +343,12 @@ Flèches :arrow_up: / :arrow_down: et :arrow_left: / :arrow_right: pour se dépl
 [Haut page](<#description-du-projet>)
 
 # 8/ Bonus
-- déplacements du joueur avec Arcade
-- labyrinthe imparfait sans cul-de-sac
-- paramètres en ligne de commande : seed, display_mode, perfect
-- sons / musique
-- tests pytest
-- ? animation de l'affichage (! pas de la génération) du labyrinthe en ASCII
-- ? modif couleur du Pattern 42
-- ? modif forme du pattern
+- display avec la librairie Arcade
+- déplacements du joueur (Arcade)
+- musique (Arcade)
+- aucun cul-de-sac dans les labyrinthes imparfaits
+- configuration modifiable en ligne de commande : seed, display_mode, perfect
+- tests unitaires avec Pytest
 
 [Haut page](<#description-du-projet>)
 
@@ -369,7 +362,6 @@ Emarette avait déjà validé le projet, nous nous sommes donc réparti le trava
 | emarette | affichage Ascii, affichage Arcade, build                                  |
 | vadamavi | makefile, parsing, generator, solver, readme                     |
 | both     | .gitignore, architecture, Flake8 et mypy, type hints, docstrings |
-| ?        |                                                           |
 
 ### Planning prévisionnel et évolution concrète
 Nous avions estimé le temps nécessaire pour les tâches indispensables mais pas fixé d'échéance compte tenu du contexte :
@@ -377,8 +369,8 @@ Nous avions estimé le temps nécessaire pour les tâches indispensables mais pa
 + congés personnels car période estivale
 + disponibilité variable des clusters pendant la piscine.
 
-Ce qui a pris plus de temps que prévu :
-+ le passage du sujet de la version v2.1 à la version v2.2 ;
+### Ce qui a pris plus de temps que prévu :
++ la modification du sujet (v2.1 -> v2.2) ;
 + l'appropriation / approfondissement de certaines notions (uv, pytest, arcade, git...) ;
 + la mise en place de tests unitaires ;
 + la rédaction de ce readme.
@@ -394,7 +386,7 @@ Ce qui a pris plus de temps que prévu :
 + Le readme pourrait être partiellement rédigé à l'aide de l'IA.
 
 
-### Outils collaboration et de développement
+### Outils collaboration et développement
 
 Pour collaborer, nous avons fait des points d'étape en **présentiel** régulièrement, communiqué via **Slack** et mutualisé le code sur **Github**.
 
@@ -410,20 +402,19 @@ Le développement a été effectué avec [VSCode](https://code.visualstudio.com/
 + [Opérateurs-logiques-bit-a-bit](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
 + Documentation officielle [`arcade`](https://api.arcade.academy/)
 + Sprites free to use [`pmdcollab.org`](https://sprites.pmdcollab.org/)
-+ Packaging ???{ToDO}???
 + [Syntaxe Markdown](https://daringfireball.net/projects/markdown/syntax#block)
 
 
 ### Usages IA
 
 Gemini ou Claude ont été utilisés par vadamavi pour :
-+ relecture et optimisation du Makefile ;
++ relire et optimiser le Makefile ;
 + créer des flowcharts d'après un modèle Mermaid élaboré "à la main" ;
-+ synthétiser la comparaison des algorithmes de génération de labyrinthe
++ synthétiser la comparaison des algorithmes de génération de labyrinthe ;
 + évaluer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
-+ traduction du readme
++ traduire le ReadMe.
 
 
 # Licence
 
-Ce projet est distribué sous licence MIT, voir le fichier [LICENSE.md]( à la racine du dépôt.
+Ce projet est distribué sous licence MIT, voir le fichier [LICENSE.md](LICENSE.md) à la racine du dépôt.
