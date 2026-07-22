@@ -45,10 +45,10 @@ class AsciiVisualizer(Visualizer):
         self.colors: list[str] = [Fore.WHITE,
                                   Fore.RED,
                                   Fore.GREEN,
-                                  Fore.YELLOW,
                                   Fore.BLUE,
                                   Fore.CYAN]
         self.color_i: int = 0
+        self.is_first: bool = True
 
     def draw(self) -> None:
         """Clear the terminal and render the maze and menu.
@@ -64,7 +64,6 @@ class AsciiVisualizer(Visualizer):
         Returns:
             None: This method performs terminal I/O and has no return value.
         """
-        os.system('clear')
         self.upper_maze()
         if not self.have_path:
             for line in self.ascii_maze:
@@ -132,6 +131,11 @@ class AsciiVisualizer(Visualizer):
         Returns:
             None: This method either recurses or exits the program.
         """
+        if not self.is_first:
+            os.system('clear')
+        else:
+            self.is_first = False
+
         self.draw()
         choice: str = input("choice (1-4): ")
         if choice == '1':
@@ -139,21 +143,13 @@ class AsciiVisualizer(Visualizer):
             line: str = "Select the seed for the next maze: "
             for c in line:
                 print(c, end="", flush=True)
-                time.sleep(0.005)
+                # time.sleep(0.005)
 
-            # -=-=-= BUG if input not an integer
-            # seed: str = input("")
-            # self.mazegen.regenerate(seed)
-            # ----------------------------------
-
-            # -=-=-=-FIX bug when input not an integer
-            new_seed: str = input("")
-            if new_seed.isdigit():
-                seed: int = int(new_seed)
-                self.mazegen.regenerate(seed)
-            else:
-                self.mazegen.regenerate()
-            # ----------------------------------
+            try:
+                new_seed: int = int(input(""))
+            except ValueError:
+                raise ValueError("Error: The seed must be an int !!!!!!!!!!")
+            self.mazegen.regenerate(new_seed)
 
             self.maze: list = self.mazegen.grid.copy()
             self.path: str = self.mazegen.solve_maze()
@@ -162,7 +158,7 @@ class AsciiVisualizer(Visualizer):
             self.have_path = not self.have_path
             self.update()
         if choice == '3':
-            if self.color_i < 5:
+            if self.color_i < len(self.colors) - 1:
                 self.color_i += 1
             else:
                 self.color_i = 0

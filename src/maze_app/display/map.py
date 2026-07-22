@@ -50,8 +50,11 @@ class Map:
         self.exit_textures: list[arcade.Texture] = []
         self.first: bool = True
 
+        # i split my screen into 32 colomn and
+        # row to have my game zone coordonate
         zone_x_start: int = int(self.visualizer.width) // 32
         zone_y_start: int = int(self.visualizer.height) // 32
+        # i calculate the len of my gamezone
         self.game_zone: Tuple[int, int] = (
             int(self.visualizer.width) // 32 * 18 - 2 * zone_x_start,
             int(self.visualizer.height) - 2 * zone_y_start,

@@ -19,5 +19,8 @@ PERFECT=False
 # SEED=42
 
 # custom key that can be added
+<<<<<<< HEAD
 # DISPLAY_MODE=arcade
+=======
+>>>>>>> origin/display
 DISPLAY_MODE=ascii
