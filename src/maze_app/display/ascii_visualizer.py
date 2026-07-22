@@ -133,15 +133,28 @@ class AsciiVisualizer(Visualizer):
             None: This method either recurses or exits the program.
         """
         self.draw()
-        choice: str = input("choice (1-5): ")
+        choice: str = input("choice (1-4): ")
         if choice == '1':
             os.system('clear')
             line: str = "Select the seed for the next maze: "
             for c in line:
                 print(c, end="", flush=True)
                 time.sleep(0.005)
-            seed: str = input("")
-            self.mazegen.regenerate(int(seed))
+
+            # -=-=-= BUG if input not an integer
+            # seed: str = input("")
+            # self.mazegen.regenerate(seed)
+            # ----------------------------------
+
+            # -=-=-=-FIX bug when input not an integer
+            seed:str = input("")
+            if seed.isdigit():
+                seed = int(seed)
+                self.mazegen.regenerate(seed)
+            else:
+                self.mazegen.regenerate()
+            # ----------------------------------
+
             self.maze: list = self.mazegen.grid.copy()
             self.path: str = self.mazegen.solve_maze()
             self.update()
