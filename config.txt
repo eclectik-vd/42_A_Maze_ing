@@ -1,15 +1,12 @@
 # Default settings for the maze generator
 
-# size MAX of the maze to display it in the terminal on my screen
-# WIDTH=69
-# HEIGHT=69
 # size of the maze
-width=12
-HEIGHT=12
+WIDTH=10
+HEIGHT=10
 
 # start and end coordinates, in x,y format
 ENTRY=0,0
-EXIT=6,10
+EXIT=8,8
 
 # name of text file where the maze will be drawn
 OUTPUT_FILE=maze.txt
@@ -22,4 +19,5 @@ PERFECT=False
 # SEED=42
 
 # custom key that can be added
-DISPLAY_MODE=arcade
+# DISPLAY_MODE=arcade
+DISPLAY_MODE=ascii
