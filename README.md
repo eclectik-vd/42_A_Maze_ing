@@ -78,7 +78,7 @@ uv run a_maze_ing.py config.txt --perfect=True --seed=33 --display-mode=ascii
 
 |Cible|Rôle|Obligatoire|
 |---|---|---|
-|`all`|Installe les dépendances et lance le projet|   |
+|`all`|Installe les dépendances et lance le programme principal|   |
 |`install`|Installe les dépendances du projet|✔️|
 |`update`|force la mise à jour de uv.lock si besoin|   |
 |`test`|Lance les tests pytest|   |
@@ -240,25 +240,49 @@ solution = maze.exit_path
 ```
 
 ##### Flux global
-{ToDo}: *maj mef avec styles persos, verif avec Enzo*
 ```mermaid
 flowchart TD
-    A["main:<br>A_Maze_ing.py"] -->|Charge config| B(load_config)
-    B -->|Génère Labyrinthe| C(MazeGenerator)
-    C -->|Résoud Labyrinthe| D(path_exit)
-    D -->|Exporte Labyrinthe| E0(maze.txt)
-    D -->|Choix visuel| E{display_mode}
-    E -->|arcade| F1[ArcadeVisualizer]
-    E -->|ascii| F2[AsciiVisualizer]
+    %% Défine styles
+    classDef file fill:#f9d0c4,stroke:#333,stroke-width:2px;
+    classDef process fill:#c4d7f9,stroke:#333,stroke-width:2px;
+    classDef data fill:#c4f9d0,stroke:#333,stroke-width:2px;
+    classDef error fill:#ff9999,stroke:#333,stroke-width:2px;
+
+    %% Nodes
+    A["a_maze_ing.py"] -->|"argparse"| B{"valid<br>arguments ?"}
+    B -->|NO| B0["EXIT"]
+
+    B -->|YES| C["main()"]
+    B1(["config.txt"]) --> C
+    C -->|"parse_config()"| D{"valid<br>syntax ?"}
+    D -->|YES| E["CLI args<br>if provided"]
+    D -->|NO| D0["EXIT"]
+    E -->|Pydantic| F{"valid<br>Model ?"}
+    F -->|NO| F0["EXIT"]
+    F -->|YES| G(["config"])
+
+    G -->|"instantiate"| H([maze])
+    H --> H1["generate_perfect_maze()"]
+    subgraph "generate()"
+        H1 --> H2["make_imperfect()"]
+        H2 --> H3{"check_walls_integrity()<br>free_of_open_areas()"}
+        H3 -->|KO| H0["raise MazeGenError"]
+        H3 -->|OK| I["solve_maze()"]
+        I --> J0(["export_to_file()"])
+    end
+
+    I --> J{"display_mode"}
+    J -->|arcade| J2["ArcadeVisualizer"]
+    J -->|ascii| J1["AsciiVisualizer"]
+
+    J2 -->|Instancie| K("Map:<br>Gère la grille<br>et les sprites")
+    J2 -->|Instancie| L("Menu:<br>Gère l'interface")
+    J2 -->|Instancie| M("Player:<br>Gère le personnage")
     
-    F1 -->|Instancie| G("Map:<br>Gère la grille<br>et les sprites")
-    F1 -->|Instancie| H("Menu:<br>Gère l'interface")
-    F1 -->|Instancie| I("Player:<br>Gère le personnage")
-    
-    F1 --> J(("Boucle Arcade:<br>run"))
-    J --> K["on_draw:<br>Rendu visuel"]
-    J --> L["on_update:<br>Logique physique"]
-    J --> M["on_key_press:<br>Entrées clavier"]
+    J2 --> N(("Boucle Arcade:<br>run"))
+    N --> O["on_draw:<br>Rendu visuel"]
+    N --> P["on_update:<br>Logique physique"]
+    N --> Q["on_key_press:<br>Entrées clavier"]
 
 ```
 
@@ -326,11 +350,11 @@ Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DI
 - **`ascii`** : rendu texte directement dans le terminal.
 - **`arcade`** : en bonus, rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif.
 ### ASCII
-![capture rendu ASCII](src/maze_app/doc/display_ascii.png)
+![capture rendu ASCII](/src/maze_app/doc/display_ascii.png)
 
 
 ### Arcade
-![capture rendu Arcade](img src="src/maze_app/doc/display_arcade.png")
+![capture rendu Arcade](img src="/src/maze_app/doc/display_arcade.png" "width=320")
 
 Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
 
