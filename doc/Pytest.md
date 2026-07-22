@@ -50,9 +50,9 @@ Chaque champ obligatoire absent doit lever une `ValidationError` :
 Chaque champ invalide doit lever une `ValidationError` :
 
 - [x] `WIDTH` non entier (ex. `WIDTH=abc`)`
-- [x] `WIDTH` hors bornes (`< 2` ou `> 200`)
+- [x] `WIDTH` hors bornes (`< 2` ou `> 100`)
 - [x] `HEIGHT` non entier
-- [x] `HEIGHT` hors bornes (`< 2` ou `> 200`)
+- [x] `HEIGHT` hors bornes (`< 2` ou `> 100`)
 - [x] `ENTRY` mauvais format (pas de virgule, ex. `ENTRY=22`)
 - [x] `ENTRY` coordonnées non entières (ex. `ENTRY=a,b`)
 - [x] `ENTRY` coordonnée négative (ex. `ENTRY=-1,0`)

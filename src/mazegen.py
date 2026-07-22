@@ -9,24 +9,22 @@ Example of use:
 -----------------------
     from mazegen import MazeGenerator
 
-    # 1. Instantiation (width, height, entry, exit)
+    # 1. Instantiation
     maze = MazeGenerator(
-                    width=10, height=10,
-                    entry_coord=(0, 0), exit_coord=(9, 9),
-                    seed=42
+        width=10, height=10,
+        entry_coord=(0, 0), exit_coord=(9, 9),
+        seed=42
+        perfect=True,
+        output_file=`maze.txt`
     )
 
-    # 2. Generation
+    # 2. Initiate, create, validate, solve and export the maze
     maze.generate()
-    # if needed
-    maze.regenerate(new_seed: int)
 
-    # 3. Solving
-    path_to_exit = maze.solve_maze()
-
-    # 4. Retrieving data for display
+    # 3. Retrieving data for display
     # Returns a copy (to prevent accidental modifications) of the grid
     grid = maze.grid
+
 """
 
 
@@ -63,14 +61,15 @@ class MazeGenerator:
     PATTERN_HEIGHT: int = 5
 
     # ---------------------------------------------------------------------
-    # 
+    #
     # --------------------- INSTANTIATE a labyrinth object ----------------
-    # 
+    #
     # ---------------------------------------------------------------------
 
     def __init__(
             self, width: int, height: int, entry_coord: tuple[int, int],
-            exit_coord: tuple[int, int], perfect: bool, seed: int | None = None
+            exit_coord: tuple[int, int], perfect: bool, output_file: str,
+            seed: int | None = None
     ) -> None:
         """Initialize the maze generator and validate its parameters.
 
@@ -81,6 +80,7 @@ class MazeGenerator:
             exit_coord: (x, y) coordinates of the maze exit.
             perfect: If True, generate a perfect maze (no loops, no
                 isolated areas); if False, allow imperfections.
+            output_file: Name of the file to which maze data will be exported.
             seed: Optional seed for the random number generator.
 
         Raises:
@@ -95,6 +95,7 @@ class MazeGenerator:
         self.entry_coord = entry_coord
         self.exit_coord = exit_coord
         self.perfect = perfect
+        self.output_file = output_file
         if seed is not None:
             random.seed(seed)
 
@@ -105,9 +106,9 @@ class MazeGenerator:
         self._is_generated = False
 
     # ---------------------------------------------------------------------
-    # 
+    #
     # --------------------- READ-ONLY properties --------------------------
-    # 
+    #
     # ---------------------------------------------------------------------
 
     @property
@@ -129,9 +130,9 @@ class MazeGenerator:
         return self._exit_path
 
     # ---------------------------------------------------------------------
-    # 
+    #
     # --------------------- methods for INTERNAL use ----------------------
-    # 
+    #
     # ---------------------------------------------------------------------
 
     def _apply_42_pattern(self) -> None:
@@ -175,7 +176,7 @@ class MazeGenerator:
 
         adjacents: list[tuple[int, int, int]] = []
 
-       # to the north
+        # to the north
         if (
             y > 0
             and self._grid[y - 1][x] == self.ALL_WALLS
@@ -237,9 +238,9 @@ class MazeGenerator:
             self._grid[y][x - 1] &= ~self.E
 
     # ---------------------------------------------------------------------
-    # 
+    #
     # ----------------------- maze (re)GENERATION -------------------------
-    # 
+    #
     # ---------------------------------------------------------------------
 
     def generate_perfect_maze(self) -> None:
@@ -345,15 +346,15 @@ class MazeGenerator:
     def regenerate(self, new_seed: int | None = None) -> None:
         """ Reset and regenerate the maze with a new seed if provided. """
         if new_seed is not None:
-            random.seed(new_seed)
+            random.seed(int(new_seed))
 
         self.reset()
         self.generate()
 
     # ---------------------------------------------------------------------
-    # 
+    #
     # ----------------------- CHECK maze VALIDITY -------------------------
-    # 
+    #
     # ---------------------------------------------------------------------
 
     def check_walls_integrity(self) -> bool:
@@ -396,14 +397,14 @@ class MazeGenerator:
         The area's top-left cell is at (start_x, start_y).
         """
 
-        # Inspection of horizontal (south)
         found_wall = any(
+            # Inspection of horizontal (south)
             (self.grid[y][x] & self.S)
             for y in range(start_y, start_y + 2)
             for x in range(start_x, start_x + 3)
 
-        # Inspection of vertical (east) walls
         ) or any(
+            # Inspection of vertical (east) walls
             (self.grid[y][x] & self.E)
             for y in range(start_y, start_y + 3)
             for x in range(start_x, start_x + 2)
@@ -431,9 +432,9 @@ class MazeGenerator:
         return True
 
     # ---------------------------------------------------------------------
-    # 
-    # ----------------------- SOLVE maze  -------------------------
-    # 
+    #
+    # --------------------------- SOLVE maze  -----------------------------
+    #
     # ---------------------------------------------------------------------
 
     def solve_maze(self) -> str:
@@ -441,8 +442,8 @@ class MazeGenerator:
 
         Starting from the entry cell, explores the grid using:
         - already_met: a set storing the coordinates of explored cells.
-        - to_explore: a queue, storing cells to check adjacents and for each cell
-          the path taken from the entry.
+        - to_explore: a queue, storing cells to check adjacents and
+                               for each cell the path taken from the entry.
 
         Returns:
             A string containing directions (N, E, S, W) step-by-step
@@ -508,19 +509,16 @@ class MazeGenerator:
         raise RuntimeError("No path to exit was found.")
 
     # ---------------------------------------------------------------------
-    # 
-    # ----------------------- EXPORT maze  -------------------------
-    # 
+    #
+    # ---------------------------- EXPORT maze  ---------------------------
+    #
     # ---------------------------------------------------------------------
 
-    # def export_to_file(grid: list[list[int]],
-    #                 entry_coord: tuple[int, int], exit_coord: tuple[int, int],
-    #                 path: str, file_name: str,) -> None:
     def export_to_file(self) -> None:
         """
         Export the maze and its solution to the mandatory text file
         """
-        with open(file_name, 'w', encoding='utf-8') as new_file:
+        with open(self.output_file, 'w', encoding='utf-8') as new_file:
             # Write grid in hexa
             for row in self._grid:
                 # f"{integer:X}" converts integer to uppercase hexa (10->A)
@@ -535,12 +533,12 @@ class MazeGenerator:
             # exit coordinates
             new_file.write(f"{self.exit_coord[0]},{self.exit_coord[1]}\n")
             # path from entrance to exit
-            new_file.write(f"{path}\n")
+            new_file.write(f"{self._exit_path}\n")
 
     # ---------------------------------------------------------------------
-    # 
-    # ----------------------- SOLVE maze  -------------------------
-    # 
+    #
+    # ----------------------- maze generation A to Z ----------------------
+    #
     # ---------------------------------------------------------------------
 
     def generate(self) -> None:
@@ -560,4 +558,4 @@ class MazeGenerator:
             raise MazeGenError("Generated maze does not comply internal rules")
 
         self._exit_path = self.solve_maze()
-        self._exit_path = self.solve_maze()
+        self.export_to_file()

@@ -44,6 +44,7 @@ def main(config_path: str, cli_vars: dict | None = None) -> None:
             entry_coord=config.entry_coord,
             exit_coord=config.exit_coord,
             perfect=config.perfect,
+            output_file=config.output_file,
         )
         # Initiate, create, validate, solve and export the maze
         maze.generate()

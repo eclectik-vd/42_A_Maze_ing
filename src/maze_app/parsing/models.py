@@ -6,8 +6,8 @@ from pydantic.types import NonNegativeInt
 class MazeConfig(BaseModel):
     # aliases to tell the model "In Python code this variable is called width,
     # but search a key called WIDTH in the raw data dictionary "config_parsed"
-    width: int = Field(alias="WIDTH", ge=2, le=200)
-    height: int = Field(alias="HEIGHT", ge=2, le=200)
+    width: int = Field(alias="WIDTH", ge=2, le=100)
+    height: int = Field(alias="HEIGHT", ge=2, le=100)
     entry_coord: tuple[NonNegativeInt, NonNegativeInt] = Field(alias="ENTRY")
     exit_coord: tuple[NonNegativeInt, NonNegativeInt] = Field(alias="EXIT")
     output_file: str = Field(alias="OUTPUT_FILE")

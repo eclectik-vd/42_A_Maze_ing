@@ -40,16 +40,21 @@ def load_config(config_path: str, cli_vars: dict | None = None) -> MazeConfig:
     # ---------------------------------------------------------------------
     # ---------------- if provided, OVERRIDE with cli_vars ----------------
 
-    cli_values = set(value for value in cli_vars.values())
-    if len(cli_values) == 1 and None in cli_values:
-        print_italic("No value passed via CLI valid to apply to config_parsed")
+    # make Mypy happy
+    if cli_vars is None:
+        print_italic("No value passed via CLI to apply to config_parsed")
 
     else:
-        print_italic("Apply to config_parsed any values passed via the CLI")
-        for key, value in cli_vars.items():
-            if value is not None:
-                print_green(f"  '{key}' overridden by CLI: '{value}'")
-                config_parsed[key] = value
+        cli_values = set(value for value in cli_vars.values())
+        if len(cli_values) == 1 and None in cli_values:
+            print_italic("No valid CLI value to apply to config_parsed")
+
+        else:
+            print_italic("Apply to config_parsed any value passed via the CLI")
+            for key, value in cli_vars.items():
+                if value is not None:
+                    print_green(f"  '{key}' overridden by CLI: '{value}'")
+                    config_parsed[key] = value
 
     # ---------------------------------------------------------------------
     # ------------- VALIDATE config and data model with Pydantic ----------

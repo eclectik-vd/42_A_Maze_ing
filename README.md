@@ -107,6 +107,8 @@ Le fichier de configuration contient une paire `CLÉ=VALEUR` par ligne. Les li
 | `SEED`         | Graine de génération (reproductibilité) | `SEED=42`              | optionnel   |
 | `DISPLAY_MODE` | Mode d'affichage (`arcade` / `ascii`)   | `DISPLAY_MODE=arcade`  | optionnel   |
 
+La taille maximum de `WIDTH` et `HEIGHT` est 100.
+
 Par défaut: `SEED` = `None` and `DISPLAY_MODE` = `ascii`.
 
 En cas d'erreur de syntaxe ou de valeur invalide, le programme affiche la raison de l'erreur puis se ferme.

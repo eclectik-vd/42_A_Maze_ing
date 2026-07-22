@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from pydantic import ValidationError
 
@@ -7,7 +9,7 @@ from src.maze_app.parsing.models import MazeConfig
 # ================== DICTIONNAIRE VALIDE de référence =====================
 
 @pytest.fixture
-def a_valid_config():
+def a_valid_config() -> dict[str, Any]:
     return {
         "WIDTH": "100", "HEIGHT": "100",
         "ENTRY": "0,0", "EXIT": "6,10",
@@ -19,7 +21,8 @@ def a_valid_config():
 
 @pytest.mark.parametrize("missing_field",
                          ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE",])
-def test_missing_required_field(a_valid_config, missing_field):
+def test_missing_required_field(a_valid_config: dict[str, Any],
+                                missing_field: str) -> None:
     del a_valid_config[missing_field]
 
     with pytest.raises(ValidationError):
@@ -33,12 +36,13 @@ def test_missing_required_field(a_valid_config, missing_field):
 @pytest.mark.parametrize("a_field, invalid_value", [
     ("WIDTH", "NOT AN INT"),
     ("WIDTH", "1"),      # off the map : < 2
-    ("WIDTH", "201"),    # off the map : > 200
+    ("WIDTH", "101"),    # off the map : > 100
     ("HEIGHT", "NOT AN INT"),
     ("HEIGHT", "1"),
     ("HEIGHT", "201"),
 ])
-def test_invalid_width_height(a_valid_config, a_field, invalid_value):
+def test_invalid_width_height(a_valid_config: dict[str, Any], a_field: str,
+                              invalid_value: str) -> None:
     a_valid_config[a_field] = invalid_value
 
     with pytest.raises(ValidationError):
@@ -55,7 +59,8 @@ def test_invalid_width_height(a_valid_config, a_field, invalid_value):
     ("EXIT", "1,b"),
     ("EXIT", "1,-1"),
 ])
-def test_entry_exit_invalides(a_valid_config, a_field, invalid_value):
+def test_entry_exit_invalides(a_valid_config: dict[str, Any], a_field: str,
+                              invalid_value: str) -> None:
     a_valid_config[a_field] = invalid_value
 
     with pytest.raises(ValidationError):
@@ -64,7 +69,7 @@ def test_entry_exit_invalides(a_valid_config, a_field, invalid_value):
 
 # ----------- TEST file extension NOT `.txt` in OUTPUT_FILE ---------------
 
-def test_output_ext_not_txt(a_valid_config):
+def test_output_ext_not_txt(a_valid_config: dict[str, Any]) -> None:
     a_valid_config["OUTPUT_FILE"] = "txt.maze"
 
     with pytest.raises(ValidationError):
@@ -73,7 +78,7 @@ def test_output_ext_not_txt(a_valid_config):
 
 # ----------- TEST DISPLAY_MODE not in {ascii, arcade} --------------
 
-def test_display_mode_unknown(a_valid_config):
+def test_display_mode_unknown(a_valid_config: dict[str, Any]) -> None:
     a_valid_config["DISPLAY_MODE"] = "somethingElse"
 
     with pytest.raises(ValidationError):
@@ -82,7 +87,7 @@ def test_display_mode_unknown(a_valid_config):
 
 # -------------- TEST PERFECT non convertible en booléen ------------------
 
-def test_perfect_not_bool(a_valid_config):
+def test_perfect_not_bool(a_valid_config: dict[str, Any]) -> None:
     a_valid_config["PERFECT"] = "notAbool"
 
     with pytest.raises(ValidationError):
@@ -99,7 +104,8 @@ def test_perfect_not_bool(a_valid_config):
     ("EXIT", "0,101"),    # exit_coord.y >= height
     ("EXIT", "0,0"),      # entry_coord == exit_coord
 ])
-def test_bad_business_rule(a_valid_config, a_field, invalid_value):
+def test_bad_business_rule(a_valid_config: dict[str, Any], a_field: str,
+                           invalid_value: str) -> None:
     a_valid_config[a_field] = invalid_value
 
     with pytest.raises(ValidationError):
@@ -109,13 +115,14 @@ def test_bad_business_rule(a_valid_config, a_field, invalid_value):
 # -------------------------- many business rules ------------------------
 
 @pytest.mark.parametrize("field1, value1, field2, value2, expected_words", [
-    ("ENTRY", "101,0", "EXIT", "101,0",
+    ("ENTRY", "51,0", "EXIT", "51,0",
      ["entry abcisse", "exit abcisse", "must be different"]),
-    ("ENTRY", "101,200", "EXIT", "200,101",
+    ("ENTRY", "51,100", "EXIT", "100,51",
      ["entry abcisse", "entry ordinate", "exit abcisse", "exit ordinate"]),
 ])
-def test_many_rules(a_valid_config, field1, value1, field2, value2,
-                    expected_words):
+def test_many_rules(a_valid_config: dict[str, Any], field1: str, value1: str,
+                    field2: str, value2: str,
+                    expected_words: list[str]) -> None:
     a_valid_config[field1] = value1
     a_valid_config[field2] = value2
 
