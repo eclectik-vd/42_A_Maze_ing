@@ -5,7 +5,7 @@ from src.maze_app.parsing.config_main import load_config
 from src.mazegen import MazeGenerator, MazeGenError
 from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
 from src.maze_app.display.ascii_visualizer import AsciiVisualizer
-from debug_utils import print_italic
+from src.maze_app.utils.utility_funcs import print_italic
 from src.maze_app.utils.utility_funcs import str_to_bool
 
 
@@ -56,6 +56,9 @@ def main(config_path: str, cli_vars: dict | None = None) -> None:
 
     # ---------------------------------------------------------------------
     # -------------------- DISPLAY the maze -------------------------------
+
+    # make Mypy happy
+    visualizer: AsciiVisualizer | ArcadeVisualizer
 
     if config.display_mode == "ascii":
         visualizer = AsciiVisualizer(maze)

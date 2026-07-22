@@ -147,9 +147,9 @@ class AsciiVisualizer(Visualizer):
             # ----------------------------------
 
             # -=-=-=-FIX bug when input not an integer
-            seed:str = input("")
-            if seed.isdigit():
-                seed = int(seed)
+            new_seed: str = input("")
+            if new_seed.isdigit():
+                seed: int = int(new_seed)
                 self.mazegen.regenerate(seed)
             else:
                 self.mazegen.regenerate()
