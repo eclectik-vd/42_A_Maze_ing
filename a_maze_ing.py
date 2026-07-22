@@ -61,8 +61,11 @@ def main(config_path: str, cli_vars: dict | None = None) -> None:
     visualizer: AsciiVisualizer | ArcadeVisualizer
 
     if config.display_mode == "ascii":
-        visualizer = AsciiVisualizer(maze)
-        visualizer.update()
+        try:
+            visualizer = AsciiVisualizer(maze)
+            visualizer.update()
+        except ValueError as e:
+            print(e)
     elif config.display_mode == "arcade":
         window = arcade.Window(1280, 720, "A-Maze-Ing", fullscreen=False)
         visualizer = ArcadeVisualizer(maze)

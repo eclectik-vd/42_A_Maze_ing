@@ -22,4 +22,4 @@ PERFECT=False
 # SEED=42
 
 # custom key that can be added
-DISPLAY_MODE=arcade
+DISPLAY_MODE=ascii
