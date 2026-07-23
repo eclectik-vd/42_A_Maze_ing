@@ -10,13 +10,15 @@ QUESTIONS
 
 CODE
 
+- [x] FIX : random rattaché à l'instance et non au module global
 - [ ] FIX : crash sur [ctrl]+[C] en display ascii
 		=> ajouter try/except sur KeyboardInterrupt
-- [ ] MANDATORY : build (Enzo)
-- [ ] MANDATORY : afficher message quand 42 pattern ne peut pas être inclus dans le labyrinthe
-- [ ] ! MyPy KO sur tests/test_player.py
-- [ ] transformer en variables les 64, 32... du code display
-- [ ] DOC : maj flux global dans readme
+- [x] MANDATORY : build 
+- [x] FIX : pour package, vérif dans mazegen.py qd type correct mais valeur incohérente pour générer labyrinthe
+- [x] MANDATORY : afficher message quand 42 pattern ne peut pas être inclus dans le labyrinthe
+- [x] ! MyPy KO sur tests/test_player.py
+- [x] transformer en variables les 64, 32... du code display -> ajout comm à la place
+- [x] DOC : maj flux global dans readme
 - [ ] FIX : # start_x, start_y = self.entry_coord dans solve_maze()
 
 
@@ -41,7 +43,8 @@ README
 - [ ] 4/ module réutilisable : à rédiger/vérifier/corriger...
 - [ ] 2/ architecture : mettre à jour arbo slim avec architecture finale
 - [ ] ressources : manque packaging
-- [ ] redim capt (taille + poids)
+- [x] redim capt (taille + poids)
+- [ ] flux : ajouter pattern 42 et modifier étape imperfect
 - [ ] Trad en anglais Gemini
 - [x] flux global : verif avec Enzo + maj mef flowchart avec styles persos
 - [x] NE PAS re-numéroter sous la forme 1  1.1  1.2  1.3 ... 2  2.1  2.2  

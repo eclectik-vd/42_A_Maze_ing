@@ -24,6 +24,8 @@ Example of use:
     # 3. Retrieving data for display
     # Returns a copy (to prevent accidental modifications) of the grid
     grid = maze.grid
+    # Returns the path from entry to exit
+    solution = exit_path
 
 """
 
@@ -87,8 +89,15 @@ class MazeGenerator:
             ValueError: If width or height is smaller than 3.
         """
 
-        if width < 3 or height < 3:
+        # generator’s internal rules, for the exported module
+        if width < 2 or height < 2:
             raise ValueError("The maze size must not be less than 3x3.")
+        if not (0 <= entry_coord[0] < width and 0 <= entry_coord[1] < height):
+            raise ValueError("entry_coord must be inside the grid boundaries.")
+        if not (0 <= exit_coord[0] < width and 0 <= exit_coord[1] < height):
+            raise ValueError("exit_coord must be inside the grid boundaries.")
+        if entry_coord == exit_coord:
+            raise ValueError("entry_coord and exit_coord must be different.")
 
         self.width = width
         self.height = height
@@ -96,8 +105,7 @@ class MazeGenerator:
         self.exit_coord = exit_coord
         self.perfect = perfect
         self.output_file = output_file
-        if seed is not None:
-            random.seed(seed)
+        self._rng = random.Random(seed)
 
         self._grid: list[list[int]] = [[self.ALL_WALLS for _ in range(width)]
                                        for _ in range(height)]
@@ -260,7 +268,7 @@ class MazeGenerator:
             adjacents = self._get_unvisited_adjacents(current_x, current_y)
 
             if adjacents:
-                next_x, next_y, direction = random.choice(adjacents)
+                next_x, next_y, direction = self._rng.choice(adjacents)
                 self._break_wall(current_x, current_y, direction)
                 stack.append((next_x, next_y))
 
@@ -333,7 +341,7 @@ class MazeGenerator:
 
             # if there are breakable walls, break one randomly choosen
             if may_be_broken:
-                self._break_wall(x, y, random.choice(may_be_broken))
+                self._break_wall(x, y, self._rng.choice(may_be_broken))
 
     def reset(self) -> None:
         """Clear the internal state of the maze in memory."""
@@ -346,7 +354,7 @@ class MazeGenerator:
     def regenerate(self, new_seed: int | None = None) -> None:
         """ Reset and regenerate the maze with a new seed if provided. """
         if new_seed is not None:
-            random.seed(int(new_seed))
+            self._rng = random.Random(new_seed)
 
         self.reset()
         self.generate()

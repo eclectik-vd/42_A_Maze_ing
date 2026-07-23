@@ -238,8 +238,7 @@ solution = maze.exit_path
 │   └── ToDo.md
 └── tests/
     ├── test_parsing.py
-    ├── test_models.py
-    └── test_player.py
+    └── test_models.py
 ```
 
 ##### Flux global
@@ -304,7 +303,7 @@ Pour générer le labyrinthe, 4 algorithmes **générateurs de labyrinthes parfa
 | Prim                   | ★★         | Branches courtes, organique | Faible      | Rapide      |
 | Kruskal                | ★★★        | Très homogène               | Très faible | Moyen       |
 
-Le choix s'est porté sur le Backtracking récursif (DFS randomisé) :
+Notre choix s'est porté sur le Backtracking récursif (DFS randomisé) :
 + génère naturellement un labyrinthe parfait (arbre couvrant)
 + plutôt facile à coder → idéal pour un 1er projet
 + rapide, faible consommation mémoire relative, complexité en O(n)
@@ -332,7 +331,7 @@ Pour **trouver le chemin le plus court**, 3 algorithmes solveurs de labyrinthes 
 | Complexité         | O(n)        | O(n log n) | O(n log n), en pratique bien moins |
 | Simplicité du code | Très simple | Simple     | Modérée (heuristique à écrire)     |
 
-Le choix s'est porté sur le BFS :
+Notre choix s'est porté sur le BFS :
 + dans notre labyrinthe, tous les déplacements ont le même coût ;
 + il est simple à implémenter ;
 + pour un labyrinthe affiché à l'écran, donc de taille raisonnable, la différence de performance avec A* sera imperceptible.
@@ -390,14 +389,14 @@ Emarette avait déjà validé le projet, nous nous sommes donc réparti le trava
 
 | Membre   | Rôle                                                             |
 | -------- | ---------------------------------------------------------------- |
-| emarette | affichage Ascii, affichage Arcade, build                                  |
-| vadamavi | makefile, parsing, generator, solver, readme                     |
-| both     | .gitignore, architecture, Flake8 et mypy, type hints, docstrings |
+| emarette | affichage Ascii, affichage Arcade                                |
+| vadamavi | makefile, parsing, generator, solver, readme, build              |
+| both     | .gitignore, pyproject.toml, architecture, Flake8 et mypy, type hints, docstrings |
 
 ### Planning prévisionnel et évolution concrète
 Nous avions estimé le temps nécessaire pour les tâches indispensables mais pas fixé d'échéance compte tenu du contexte :
-+ bonus à définir
-+ congés personnels car période estivale
++ bonus à définir ;
++ congés personnels car période estivale ;
 + disponibilité variable des clusters pendant la piscine.
 
 ### Ce qui a pris plus de temps que prévu :
@@ -408,9 +407,9 @@ Nous avions estimé le temps nécessaire pour les tâches indispensables mais pa
 
 
 ### Ce qui a bien fonctionné
-+ Mise en place d'une ToDo list pour chaque binône
-+ Création du `Makefile` dès le démarrage 
-+ Usage de branches pour collaborer avec git
++ Mise en place d'une ToDo list partagée ;
++ Création du `Makefile` dès le démarrage ;
++ Usage de branches pour collaborer avec git.
 
 ### Axes d'amélioration
 + L'architecture initialement définie a été remise en question et modifiée deux fois pendant l'implémentation du projet ;
@@ -419,21 +418,22 @@ Nous avions estimé le temps nécessaire pour les tâches indispensables mais pa
 
 ### Outils collaboration et développement
 
-Pour collaborer, nous avons fait des points d'étape en **présentiel** régulièrement, communiqué via **Slack** et mutualisé le code sur **Github**.
+Pour collaborer, nous avons fait des points d'étape en **présentiel**, communiqué via **Slack** et mutualisé le code sur **Github**.
 
-Le développement a été effectué avec [VSCode](https://code.visualstudio.com/), les traductions en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec [Obsidian](https://obsidian.md/).
+Le développement a été effectué avec [VSCode](https://code.visualstudio.com/), la majorité des traductions en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec [Obsidian](https://obsidian.md/).
 
 **Outils spécifiques** utilisés : `uv`, `pydantic`, `pytest`, `arcade`, `colorama`, `flake8`, `mypy`.
 
 ### Ressources
-+ Documentation officielle [`uv`](https://docs.astral.sh/uv/guides/projects/)
-+ Documentation officielle [`Pydantic`](https://docs.pydantic.dev/)
-+ Documentation officielle [`Pytest`](https://docs.pytest.org/en/stable/getting-started.html)
++ Documentation officielle [uv](https://docs.astral.sh/uv/guides/projects/)
++ Documentation officielle [Pydantic](https://docs.pydantic.dev/)
++ Documentation officielle [Pytest](https://docs.pytest.org/en/stable/getting-started.html)
 + Wikipedia [Modélisation mathématique d'un labyrinthe](https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe)
-+ [Opérateurs-logiques-bit-a-bit](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
-+ Documentation officielle [`arcade`](https://api.arcade.academy/)
-+ Sprites free to use [`pmdcollab.org`](https://sprites.pmdcollab.org/)
-+ [Syntaxe Markdown](https://daringfireball.net/projects/markdown/syntax#block)
++ Python [Opérateurs-"bitwise"](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
++ Documentation officielle [arcade](https://api.arcade.academy/)
++ Sprites free to use [pmdcollab.org](https://sprites.pmdcollab.org/)
++ Syntaxe [Markdown](https://docs.framasoft.org/fr/grav/markdown.html)
++ Documentation officielle [Mermaid](https://mermaid.ai/open-source/syntax/flowchart.html)
 
 
 ### Usages IA
@@ -442,7 +442,7 @@ Gemini ou Claude ont été utilisés par vadamavi pour :
 + relire et optimiser le Makefile ;
 + créer des flowcharts d'après un modèle Mermaid élaboré "à la main" ;
 + synthétiser la comparaison des algorithmes de génération de labyrinthe ;
-+ évaluer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
++ calculer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
 + traduire le ReadMe.
 
 

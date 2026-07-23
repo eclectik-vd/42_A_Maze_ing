@@ -13,13 +13,13 @@ install:
 	# il lit aveuglément le lockfile (uv.lock) existant,
 	# crée le .venv s'il est absent,
 	# y installe exactement les dépendances issues du `pyproject.toml`.
-	uv sync
+	uv sync --group app
 
 update:
 	# pour forcer la mise à jour de uv.lock si il y a eu modif manuelle
 	# des dépendances dans pyproject.toml
 	uv lock --upgrade
-	uv sync
+	uv sync --group app
 
 test:
 	# TODO: mettre en place des tests avec pytest
