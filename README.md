@@ -1,51 +1,51 @@
 *This project has been created as part of the 42 curriculum by emarette and vadamavi.*
 
-# Description du projet
+# Project Description
 
-### But du projet
+### Project Goal
 
-Ce projet a été réalisé dans le cadre du tronc commun de 42, conformément au sujet  "A_Maze-ing v2.2".
+This project was carried out as part of 42's common core curriculum, in accordance with the "A_Maze-ing v2.2" subject.
 
-La consigne était d'implémenter en Python un générateur de labyrinthes, à partir d'un fichier de configuration :
-+ générer des labyrinthes (parfait, et imparfait avec au maximum 2 culs de sac) ;
-+ trouver le chemin le plus court de l'entrée à la sortie ;
-+ exporter dans un fichier texte le labyrinthe et sa solution ;
-+ fournir une représentation visuelle du labyrinthe ;
-+ organiser le code afin que la logique de génération/solution puisse être réutilisée ultérieurement.
+The instructions were to implement a maze generator in Python, based on a configuration file:
++ generate mazes (perfect, and imperfect with a maximum of 2 dead ends);
++ find the shortest path from the entrance to the exit;
++ export the maze and its solution to a text file;
++ provide a visual representation of the maze;
++ organize the code so that the generation/solving logic can be reused later.
 
-Pédagogiquement, ce projet avait pour objectif de travailler les *structures de données*, l'*analyse syntaxique* et les *algorithmes de graphes*. De manière optionnelle, il a également permis l'usage *Arcade* et la création de *tests unitaires*.
+Pedagogically, this project aimed to work on *data structures*, *parsing*, and *graph algorithms*. Optionally, it also allowed for the use of *Arcade* and the creation of *unit tests*.
 
 
-### Sommaire
+### Table of Contents
 
 [1. Instructions](<#1-instructions>)
 
-[2. Fichier de configuration](<#2-fichier-de-configuration>)
+[2. Configuration File](<#2-configuration-file>)
 
-[3. Fichier de sortie](<#3-fichier-de-sortie>)
+[3. Output File](<#3-output-file>)
 
-[4. Module réutilisable](<#4-module-réutilisable>)
+[4. Reusable Module](<#4-reusable-module>)
 
 [5. Architecture](<#5-architecture>)
 
-[6. Algorithmique](<#6-algorithmique>)
+[6. Algorithms](<#6-algorithms>)
 
-[7. Affichage / interactions](#7-affichage--interactions)
+[7. Display / Interactions](#7-display--interactions)
 
 [8. Bonus](<#8-bonus>)
 
-[9. Gestion d'équipe et de projet](#9-gestion-déquipe-et-de-projet)
+[9. Team and Project Management](#9-team-and-project-management)
 
 # 1/ Instructions
 
 
-### Prérequis
-- Python 3.10 ou supérieur
-- [uv](https://docs.astral.sh/uv/getting-started/installation/) pour la gestion des dépendances
+### Prerequisites
+- Python 3.10 or higher
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) for dependency management
 ```bash
   curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-- Dépendances système également requises par pyglet/arcade pour décoder les fichiers audio .mp3 (souvent absentes par défaut sous WSL), à installer si besoin avec les commandes suivantes :
+- System dependencies also required by pyglet/arcade to decode .mp3 audio files (often missing by default on WSL), to be installed if needed with the following commands:
 ```bash
 sudo apt update
 sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libswresample-dev
@@ -54,92 +54,92 @@ sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libswres
 ### Installation
 
 ```bash
-git clone <url_du_repo>
-cd <nom_du_repo>
+git clone <repo_url>
+cd <repo_name>
 make install
 ```
 
-### Exécution
+### Running
 
 ```bash
 make run
 ```
 
-ou bien, pour ajouter des paramètres nommés :
+or, to add named parameters:
 ```bash
 uv run a_maze_ing.py config.txt --perfect=True --seed=33 --display-mode=ascii
 ```
 
-+ `a_maze_ing.py` est le point d'entrée du programme.
-+ `config.txt` est le fichier de configuration, un [exemple par défaut](config.txt) est fourni à la racine du dépôt.
-+ `perfect`, `seed` et `display-mode` sont des paramètres nommés facultatifs, le cas échéant ils écrasent les valeurs du fichier `config.txt`.
++ `a_maze_ing.py` is the program's entry point.
++ `config.txt` is the configuration file; a [default example](config.txt) is provided at the root of the repository.
++ `perfect`, `seed`, and `display-mode` are optional named parameters; if provided, they override the values in the `config.txt` file.
 
 ### Makefile
 
-|Cible|Rôle|Obligatoire|
+|Target|Role|Required|
 |---|---|---|
-|`all`|Installe les dépendances et lance le programme principal|   |
-|`install`|Installe les dépendances du projet|✔️|
-|`update`|force la mise à jour de uv.lock si besoin|   |
-|`test`|Lance les tests pytest|   |
-|`run`|Lance le programme principal|✔️|
-|`build`|génère l'archive|✔️|
-|`debug`|Lance le programme en mode debug (`pdb`)|✔️|
-|`lint`|Exécute `flake8` et `mypy` (règles obligatoires)|✔️|
-|`lint-strict`|Exécute `flake8` et `mypy --strict`|✔️|
-|`clean`|Supprime les fichiers temporaires (`__pycache__`, `.mypy_cache`…)|✔️|
-|`fclean`|Supprime l'environnement virtuel (`.venv`, `uv.lock`…)|   |
+|`all`|Installs dependencies and launches the main program|   |
+|`install`|Installs the project dependencies|✔️|
+|`update`|Forces the update of uv.lock if needed|   |
+|`test`|Runs the pytest tests|   |
+|`run`|Launches the main program|✔️|
+|`build`|Generates the archive|✔️|
+|`debug`|Launches the program in debug mode (`pdb`)|✔️|
+|`lint`|Runs `flake8` and `mypy` (mandatory rules)|✔️|
+|`lint-strict`|Runs `flake8` and `mypy --strict`|✔️|
+|`clean`|Removes temporary files (`__pycache__`, `.mypy_cache`…)|✔️|
+|`fclean`|Removes the virtual environment (`.venv`, `uv.lock`…)|   |
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
-# 2/ Fichier de configuration
-Le fichier de configuration contient une paire `CLÉ=VALEUR` par ligne. Les lignes commençant par `#` sont des commentaires et sont ignorées.
+# 2/ Configuration File
+The configuration file contains one `KEY=VALUE` pair per line. Lines starting with `#` are comments and are ignored.
 
-| Clé            | Description                             | Exemple                | Obligatoire |
-| -------------- | --------------------------------------- | ---------------------- | ----------- |
-| `WIDTH`        | Largeur du labyrinthe (en cellules)     | `WIDTH=20`             | ✔️          |
-| `HEIGHT`       | Hauteur du labyrinthe                   | `HEIGHT=15`            | ✔️          |
-| `ENTRY`        | Coordonnées de l'entrée (x,y)           | `ENTRY=0,0`            | ✔️          |
-| `EXIT`         | Coordonnées de la sortie (x,y)          | `EXIT=19,14`           | ✔️          |
-| `OUTPUT_FILE`  | Nom du fichier de sortie                | `OUTPUT_FILE=maze.txt` | ✔️          |
-| `PERFECT`      | Labyrinthe parfait (un seul chemin)     | `PERFECT=True`         | ✔️          |
-| `SEED`         | Graine de génération (reproductibilité) | `SEED=42`              | optionnel   |
-| `DISPLAY_MODE` | Mode d'affichage (`arcade` / `ascii`)   | `DISPLAY_MODE=arcade`  | optionnel   |
+| Key            | Description                              | Example                | Required   |
+| -------------- | ----------------------------------------- | ---------------------- | ----------- |
+| `WIDTH`        | Width of the maze (in cells)              | `WIDTH=20`             | ✔️          |
+| `HEIGHT`       | Height of the maze                        | `HEIGHT=15`            | ✔️          |
+| `ENTRY`        | Entrance coordinates (x,y)                | `ENTRY=0,0`            | ✔️          |
+| `EXIT`         | Exit coordinates (x,y)                    | `EXIT=19,14`           | ✔️          |
+| `OUTPUT_FILE`  | Name of the output file                   | `OUTPUT_FILE=maze.txt` | ✔️          |
+| `PERFECT`      | Perfect maze (a single path)              | `PERFECT=True`         | ✔️          |
+| `SEED`         | Generation seed (reproducibility)         | `SEED=42`              | optional    |
+| `DISPLAY_MODE` | Display mode (`arcade` / `ascii`)         | `DISPLAY_MODE=arcade`  | optional    |
 
-La taille maximum de `WIDTH` et `HEIGHT` est 100.
+The maximum size for `WIDTH` and `HEIGHT` is 100.
 
-Par défaut : `SEED` = `None` and `DISPLAY_MODE` = `ascii`.
+Default values: `SEED` = `None` and `DISPLAY_MODE` = `ascii`.
 
-En cas d'erreur de syntaxe ou de valeur invalide, le programme affiche la raison de l'erreur puis se ferme.
+In case of a syntax error or an invalid value, the program displays the reason for the error and then exits.
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
-# 3/ Fichier de sortie
+# 3/ Output File
 
-Chaque cellule est encodée par un digit hexadécimal représentant l'état de ses 4 murs : 
+Each cell is encoded by a hexadecimal digit representing the state of its 4 walls:
 
 | Bit (LSB → MSB) | Direction |
 | --------------- | --------- |
-| 0               | Nord      |
-| 1               | Est       |
-| 2               | Sud       |
-| 3               | Ouest     |
+| 0                | North     |
+| 1                | East      |
+| 2                | South     |
+| 3                | West      |
 
-Un mur fermé positionne le bit correspondant à `1` :
+A closed wall sets the corresponding bit to `1`:
 
-Exemple 1 : <img src="/doc/wall_0011.png" alt="capture mur 0011" align="right"> *0x*3 (*0b*0011) : murs Nord et Est fermés
+Example 1: <img src="/doc/wall_0011.png" alt="wall 0011 screenshot" align="right"> *0x*3 (*0b*0011): North and East walls closed
 
-Exemple 2 : <img src="/doc/wall_1110.png" alt="capture mur 1110" align="right"> *0x*E (*0b*1110) : murs Est, Sud et Ouest fermés
+Example 2: <img src="/doc/wall_1110.png" alt="wall 1110 screenshot" align="right"> *0x*E (*0b*1110): East, South, and West walls closed
 
-Le fichier de sortie contient :
-+ toutes les cellules du labyrinthes, écrites ligne par ligne et codées en hexadécimal.
+The output file contains:
++ all the cells of the maze, written line by line and encoded in hexadecimal.
 
-Ensuite, après une ligne vide, trois lignes supplémentaires précisent :
-+ les coordonnées d'entrée,
-+ les coordonnées de sortie,
-+ le plus court chemin, avec une suite de lettres pour désigner la direction à prendre (`N`, `E`, `S`, `W`).
+Then, after an empty line, three additional lines specify:
++ the entrance coordinates,
++ the exit coordinates,
++ the shortest path, as a sequence of letters indicating the direction to take (`N`, `E`, `S`, `W`).
 
-Exemple de fichier de sortie :
+Example output file:
 
 ```text
 9395551393
@@ -154,22 +154,22 @@ C6C4455546
 SSEESESSEEEEEE
 ```
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
-# 4/ Module réutilisable
+# 4/ Reusable Module
 
-La logique de génération est isolée dans la classe **`MazeGenerator`** (`src/mazegen.py`).
-Elle est packagée en un module autonome (`mazegen-*.whl` / `mazegen-*.tar.gz`) fourni à la racine du dépôt et installable via `pip`.
+The generation logic is isolated in the **`MazeGenerator`** class (`src/mazegen.py`).
+It is packaged as a standalone module (`mazegen-*.whl` / `mazegen-*.tar.gz`) provided at the root of the repository and installable via `pip`.
 ```bash
-# Installer le package
+# Install the package
 pip install mazegen-0.1.0-py3-none-any.whl
 ```
 
-### Exemple d'utilisation
+### Usage Example
 ```python
 from mazegen import MazeGenerator
 
-# instancie le labyrinthe
+# instantiate the maze
 maze = MazeGenerator(
     width=5,
     height=5,
@@ -180,29 +180,29 @@ maze = MazeGenerator(
     output_file='maze.txt'
 )
 
-# génère le labyrinthe et le fichier maze.txt (grille du labyrinthe et sa solution)
+# generate the maze and the maze.txt file (maze grid and its solution)
 maze.generate()
 
-# structure générée (le bitmask de chaque cellule décrit l'état de ses murs)
+# generated structure (the bitmask of each cell describes the state of its walls)
 print(maze.grid)
 # [[13, 5, 3, 9, 3], [9, 7, 10, 14, 10], [8, 5, 6, 9, 6], [10, 9, 3, 12, 3], [12, 6, 12, 5, 6]]
 
-# plus court chemin entre l'entrée et la sortie (directions à suivre)
+# shortest path between the entrance and the exit (directions to follow)
 print(maze.exit_path)
 # EESSWWSSENESEE
 ```
 
-> **A noter** :
-La consigne inclut que le labyrinthe intègre un pattern de cellules closes pour afficher le motif "42" : la console est susceptible d'afficher que la taille du labyrinthe ne l'a pas permis : "*This maze is too small to display the '42' pattern*".
+> **Note**:
+The instructions include that the maze incorporates a pattern of closed cells to display the "42" pattern: the console may display that the maze size did not allow for it: "*This maze is too small to display the '42' pattern*".
 
-> **IMPORTANT** :
-Contrairement à l'application, le package seul ne gère pas les arguments d'un mauvais type ou manquants, mais uniquement les valeurs inadéquates pour la création d'un labyrinthe valide.
+> **IMPORTANT**:
+Unlike the application, the package alone does not handle arguments of the wrong type or missing arguments, but only handles values that are inadequate for creating a valid maze.
 
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
 # 5/ Architecture
-##### Fichiers
+##### Files
 
 ```text
 .
@@ -213,54 +213,54 @@ Contrairement à l'application, le package seul ne gère pas les arguments d'un 
 ├── uv.lock
 ├── Makefile
 ├── README.md
-├── config.txt                        # Fichier de configuration par défaut
-├── a_maze_ing.py                     # Point d'entrée (main)
+├── config.txt                        # Default configuration file
+├── a_maze_ing.py                     # Entry point (main)
 ├── src/
-│   ├── __init__.py
-│   ├── mazegen.py                    # Génération (DFS) et résolution (BFS) du labyrinthe
-│   └── maze_app
-│       ├── __init__.py
-│       ├── utils/                    # Some utility functions
-│       │   ├── __init__.py
-│       │   └── utility_funcs.py
-│       ├── parsing/                  # Lecture et validation (Pydantic) du fichier de config
-│       │   ├── __init__.py
-│       │   ├── config_main.py
-│       │   ├── config_parser.py
-│       │   └── models.py
-│       └── display/                  # Visualiseurs ASCII et graphique (arcade)
-│           ├── __init__.py
-│           ├── visualizer.py
-│           ├── ascii_visualizer.py
-│           ├── arcade_visualizer.py
-│           ├── map.py                # Grille et sprites
-│           ├── menu.py               # Interface utilisateur
-│           ├── player.py             # Déplacement du personnage
-│           ├── sprite/
-│           │   ├── background.jpeg
-│           │   ├── bordure.png
-│           │   ├── exit.png
-│           │   ├── path.png
-│           │   ├── player.png
-│           │   ├── tilemap.png
-│           │   └── win.png
-│           └── sound/
-│               └── music.mp3
+│   ├── __init__.py
+│   ├── mazegen.py                    # Maze generation (DFS) and solving (BFS)
+│   └── maze_app
+│       ├── __init__.py
+│       ├── utils/                    # Some utility functions
+│       │   ├── __init__.py
+│       │   └── utility_funcs.py
+│       ├── parsing/                  # Reading and validation (Pydantic) of the config file
+│       │   ├── __init__.py
+│       │   ├── config_main.py
+│       │   ├── config_parser.py
+│       │   └── models.py
+│       └── display/                  # ASCII and graphical (arcade) visualizers
+│           ├── __init__.py
+│           ├── visualizer.py
+│           ├── ascii_visualizer.py
+│           ├── arcade_visualizer.py
+│           ├── map.py                # Grid and sprites
+│           ├── menu.py               # User interface
+│           ├── player.py             # Character movement
+│           ├── sprite/
+│           │   ├── background.jpeg
+│           │   ├── bordure.png
+│           │   ├── exit.png
+│           │   ├── path.png
+│           │   ├── player.png
+│           │   ├── tilemap.png
+│           │   └── win.png
+│           └── sound/
+│               └── music.mp3
 ├── doc/
-│   ├── display_ascii.png
-│   ├── display_arcade.png
-│   ├── wall_0011.png
-│   ├── wall_1110.png
-│   └── ToDo.md
+│   ├── display_ascii.png
+│   ├── display_arcade.png
+│   ├── wall_0011.png
+│   ├── wall_1110.png
+│   └── ToDo.md
 └── tests/
-    ├── test_parsing.py
-    └── test_models.py
+    ├── test_parsing.py
+    └── test_models.py
 ```
 
-##### Flux global
+##### Overall Flow
 ```mermaid
 flowchart TD
-    %% Défine styles
+    %% Define styles
     classDef file fill:#f9d0c4,stroke:#333,stroke-width:2px;
     classDef process fill:#c4d7f9,stroke:#333,stroke-width:2px;
     classDef data fill:#c4f9d0,stroke:#333,stroke-width:2px;
@@ -293,175 +293,176 @@ flowchart TD
     J -->|arcade| J2["ArcadeVisualizer"]
     J -->|ascii| J1["AsciiVisualizer"]
 
-    J2 -->|Instancie| K("Map:<br>Gère la grille<br>et les sprites")
-    J2 -->|Instancie| L("Menu:<br>Gère l'interface")
-    J2 -->|Instancie| M("Player:<br>Gère le personnage")
+    J2 -->|Instantiates| K("Map:<br>Manages the grid<br>and sprites")
+    J2 -->|Instantiates| L("Menu:<br>Manages the interface")
+    J2 -->|Instantiates| M("Player:<br>Manages the character")
     
-    J2 --> N(("Boucle Arcade:<br>run"))
-    N --> O["on_draw:<br>Rendu visuel"]
-    N --> P["on_update:<br>Logique physique"]
-    N --> Q["on_key_press:<br>Entrées clavier"]
+    J2 --> N(("Arcade Loop:<br>run"))
+    N --> O["on_draw:<br>Visual rendering"]
+    N --> P["on_update:<br>Physics logic"]
+    N --> Q["on_key_press:<br>Keyboard input"]
 
 ```
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
-# 6/ Algorithmique
+# 6/ Algorithms
 
-### Génération
+### Generation
 
-Pour générer le labyrinthe, 4 algorithmes **générateurs de labyrinthes parfaits** ont été comparés :
+To generate the maze, 4 **perfect maze generator algorithms** were compared:
 
-| Algorithme             | Difficulté | Texture                     | Biais       | Vitesse     |
-| ---------------------- | ---------- | --------------------------- | ----------- | ----------- |
-| Binary Tree            | ★          | Diagonale marquée           | Fort        | Très rapide |
-| Recursive Backtracking | ★          | Longs couloirs sinueux      | Moyen       | Rapide      |
-| Prim                   | ★★         | Branches courtes, organique | Faible      | Rapide      |
-| Kruskal                | ★★★        | Très homogène               | Très faible | Moyen       |
+| Algorithm               | Difficulty | Texture                       | Bias        | Speed       |
+| ------------------------ | ---------- | ------------------------------ | ----------- | ----------- |
+| Binary Tree               | ★          | Strong diagonal                | Strong      | Very fast   |
+| Recursive Backtracking    | ★          | Long winding corridors         | Medium      | Fast        |
+| Prim                       | ★★         | Short branches, organic        | Low         | Fast        |
+| Kruskal                    | ★★★        | Very homogeneous               | Very low    | Medium      |
 
-Notre choix s'est porté sur le Backtracking récursif (DFS randomisé) :
-+ génère naturellement un labyrinthe parfait
-+ plutôt facile à coder, idéal pour un 1er projet
-+ rapide, faible consommation mémoire relative, complexité en O(n)
-+ génère très peu de branches, ressemble à un "labyrinthe classique"
-+ beaucoup de longs couloirs, donc peu de culs de sacs → ne génère pas de zone ouverte de 3x3 lors du braiding
+We chose Recursive Backtracking (randomized DFS):
++ naturally generates a perfect maze
++ fairly easy to code, ideal for a first project
++ fast, relatively low memory usage, O(n) complexity
++ generates very few branches, resembles a "classic maze"
++ many long corridors, so few dead ends → does not generate 3x3 open areas during braiding
 
-Principe :
-+ Creuse un chemin au hasard en avançant dans une direction aléatoire ; quand on est bloqué, on revient en arrière (backtrack) jusqu'à trouver une case avec une issue.
+Principle:
++ Digs a path at random, moving in a random direction; when blocked, it backtracks until it finds a cell with an unexplored way out.
 
-Le labyrinthe est généré par **`MazeGenerator`** (`src/mazegen.py`) :
+The maze is generated by **`MazeGenerator`** (`src/mazegen.py`):
 
-1. `generate_perfect_maze()` crée un labyrinthe parfait , `_apply_42_pattern()` intègre le pattern "42" lorsque sa taille le permet.
-2. Si `PERFECT=False`, `make_imperfect()` supprime tous les culs de sac et rend le labyrinthe imparfait.
-3. `check_walls_integrity()` et `free_of_open_areas()` vérifient que le labyrinthe créé est cohérent et respecte les consignes.
-4. `solve_maze()` trouve le chemin le plus court et `export_to_file()` génère le fichier `OUTPUT_FILE`
+1. `generate_perfect_maze()` creates a perfect maze, `_apply_42_pattern()` incorporates the "42" pattern when the size allows it.
+2. If `PERFECT=False`, `make_imperfect()` removes all dead ends and makes the maze imperfect.
+3. `check_walls_integrity()` and `free_of_open_areas()` verify that the created maze is consistent and complies with the requirements.
+4. `solve_maze()` finds the shortest path and `export_to_file()` generates the `OUTPUT_FILE`
 
-### Résolution
+### Solving
 
-Pour **trouver le chemin le plus court**, 3 algorithmes solveurs de labyrinthes ont été comparés :
+To **find the shortest path**, 3 maze-solving algorithms were compared:
 
-| Critère            | BFS         | Dijkstra   | A*                                 |
-| ------------------ | ----------- | ---------- | ---------------------------------- |
-| Gère les poids     | Non         | Oui        | Oui                                |
-| Nœuds explorés     | Beaucoup    | Beaucoup   | Peu                                |
-| Complexité         | O(n)        | O(n log n) | O(n log n), en pratique bien moins |
-| Simplicité du code | Très simple | Simple     | Modérée (heuristique à écrire)     |
+| Criterion           | BFS         | Dijkstra   | A*                                    |
+| -------------------- | ----------- | ---------- | -------------------------------------- |
+| Handles weights       | No          | Yes        | Yes                                     |
+| Nodes explored         | Many        | Many       | Few                                     |
+| Complexity              | O(n)        | O(n log n) | O(n log n), in practice much less       |
+| Code simplicity        | Very simple | Simple     | Moderate (heuristic to write)           |
 
-Notre choix s'est porté sur le BFS :
-+ dans notre labyrinthe, tous les déplacements ont le même coût ;
-+ il est simple à implémenter ;
-+ pour un labyrinthe affiché à l'écran, donc de taille raisonnable, la différence de performance avec A* sera imperceptible.
+We chose BFS:
++ in our maze, all moves have the same cost;
++ it is simple to implement;
++ for a maze displayed on screen, and therefore of a reasonable size, the performance difference with A* will be imperceptible.
 
-Principe :
-+ Explore le graphe niveau par niveau, en traitant tous les voisins à distance _k_ avant de passer à distance _k+1_. 
+Principle:
++ Explores the graph level by level, processing all neighbors at distance _k_ before moving on to distance _k+1_.
 
-Le labyrinthe est résolu par **`MazeGenerator`** (`src/mazegen.py`) :
-1. `solve_maze()` trouve le chemin le plus court.
+The maze is solved by **`MazeGenerator`** (`src/mazegen.py`):
+1. `solve_maze()` finds the shortest path.
 
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
-# 7/ Affichage / interactions
+# 7/ Display / Interactions
 
-Deux modes de rendu sont disponibles, sélectionnables via la configuration (`DISPLAY_MODE`).
+Two rendering modes are available, selectable via the configuration (`DISPLAY_MODE`).
 
 ### ASCII
 
-Rendu texte directement dans le terminal :
+Text rendering directly in the terminal:
 
-![capture rendu ASCII](/doc/display_ascii.png)
+![ASCII rendering screenshot](/doc/display_ascii.png)
 
 
 ### Arcade
 
-En bonus, rendu graphique via la librairie [arcade](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif :
+As a bonus, graphical rendering via the [arcade](https://api.arcade.academy/) library, with sprites (walls, player, exit, path) and an interactive menu:
 
-<img src="/doc/display_arcade.png" alt="capture rendu Arcade" width="800">
+<img src="/doc/display_arcade.png" alt="Arcade rendering screenshot" width="800">
 
-**Commandes clavier** :
+**Keyboard controls**:
 
-+ Flèches :arrow_up: / :arrow_down: pour se déplacer dans le menu
-+ Espace pour valider
-+ Flèches :arrow_up: / :arrow_down: et :arrow_left: / :arrow_right: pour déplacer le joueur dans le labyrinthe
-+ Echap pour quitter le mode joueur
++ Arrow keys :arrow_up: / :arrow_down: to move within the menu
++ Space to confirm
++ Arrow keys :arrow_up: / :arrow_down: and :arrow_left: / :arrow_right: to move the player within the maze
++ Escape to exit player mode
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
 # 8/ Bonus
-- aucun cul-de-sac dans les labyrinthes imparfaits
-- display avec la librairie Arcade
-- configuration modifiable en ligne de commande : seed, display-mode, perfect
-- déplacements du joueur (Arcade)
-- musique (Arcade)
-- tests unitaires avec Pytest
+- no dead ends in imperfect mazes
+- display using the Arcade library
+- configuration modifiable via the command line: seed, display-mode, perfect
+- player movement (Arcade)
+- music (Arcade)
+- unit tests with Pytest
 
-[Haut page](<#description-du-projet>)
+[Back to top](<#project-description>)
 
-# 9/ Gestion d'équipe et de projet
+# 9/ Team and Project Management
 
-### Répartition des rôles
-Emarette avait déjà validé le projet, nous nous sommes donc réparti le travail de façon à ce qu'il ne réalise pas les mêmes tâches qu'avec son précédent binôme.
+### Division of Roles
+Emarette had already validated the project, so we divided the work in a way that ensured he would not be doing the same tasks as with his previous partner.
 
-| Membre   | Rôle                                                             |
-| -------- | ---------------------------------------------------------------- |
-| emarette | affichage Ascii, affichage Arcade                                |
-| vadamavi | makefile, pyproject.toml, parsing, generator, solver, readme, build|
-| both     | .gitignore, architecture, Flake8 et mypy, type hints, docstrings |
+| Member   | Role                                                                |
+| -------- | -------------------------------------------------------------------- |
+| emarette | ASCII display, Arcade display                                        |
+| vadamavi | makefile, pyproject.toml, parsing, generator, solver, readme, build  |
+| both     | .gitignore, architecture, Flake8 and mypy, type hints, docstrings    |
 
-### Planning prévisionnel et évolution concrète
-Nous avions estimé le temps nécessaire pour les tâches indispensables mais pas fixé d'échéance compte tenu du contexte :
-+ bonus à définir ;
-+ congés personnels car période estivale ;
-+ disponibilité variable des clusters pendant la piscine.
-
-
-### Ce qui a pris plus de temps que prévu :
-+ la modification du sujet (v2.1 -> v2.2) ;
-+ l'appropriation / approfondissement de certaines notions (uv, pytest, arcade, git...) ;
-+ la mise en place de tests unitaires ;
-+ la rédaction de ce readme.
+### Planned Schedule and Actual Progress
+We estimated the time needed for the essential tasks but did not set a deadline given the context:
++ bonuses to be defined;
++ personal vacation due to the summer period;
++ variable availability of the clusters during the "piscine" period.
 
 
-### Ce qui a (presque) bien fonctionné
-+ Mise en place d'une ToDo list partagée ;
-+ Usage de branches pour collaborer avec git.
-
-### Axes d'amélioration
-+ L'architecture initialement définie a été remise en question et modifiée deux fois pendant l'implémentation du projet ;
-+ Le readme pourrait être partiellement rédigé à l'aide de l'IA.
+### What took longer than expected:
++ the change to the subject (v2.1 -> v2.2);
++ getting up to speed on / deepening certain concepts (uv, pytest, arcade, git...);
++ setting up unit tests;
++ writing this readme.
 
 
-### Outils collaboration et développement
+### What worked (almost) well
++ Setting up a shared To-Do list;
++ Using branches to collaborate with git.
 
-Pour collaborer, nous avons fait des points d'étape en **présentiel** lorsque nos disponibilités coïncidaient, communiqué via **Slack** et mutualisé le code sur **Github**.
+### Areas for improvement
++ The architecture initially defined was reconsidered and modified twice during the implementation of the project;
++ The readme could be partially written with the help of AI.
 
-Le développement a été effectué avec [VSCode](https://code.visualstudio.com/), la majorité des traductions en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec [Obsidian](https://obsidian.md/).
 
-**Outils spécifiques** utilisés : `uv`, `pydantic`, `pytest`, `arcade`, `colorama`, `flake8`, `mypy`.
+### Collaboration and Development Tools
 
-### Ressources
-+ Documentation officielle [uv](https://docs.astral.sh/uv/guides/projects/)
-+ Documentation officielle [Pydantic](https://docs.pydantic.dev/)
-+ Documentation officielle [Pytest](https://docs.pytest.org/en/stable/getting-started.html)
+To collaborate, we held check-in meetings **in person** when our schedules coincided, communicated via **Slack**, and shared the code on **Github**.
+
+Development was carried out with [VSCode](https://code.visualstudio.com/), most English translations were done with [deepl](https://www.deepl.com/fr/translator), and notes were taken with [Obsidian](https://obsidian.md/).
+
+**Specific tools** used: `uv`, `pydantic`, `pytest`, `arcade`, `colorama`, `flake8`, `mypy`.
+
+### Resources
++ Official [uv](https://docs.astral.sh/uv/guides/projects/) documentation
++ Official [Pydantic](https://docs.pydantic.dev/) documentation
++ Official [Pytest](https://docs.pytest.org/en/stable/getting-started.html) documentation
 + uv_build vs hatchling [Medium - Chris Evans](https://medium.com/@dynamicy/python-build-backends-in-2025-what-to-use-and-why-uv-build-vs-hatchling-vs-poetry-core-94dd6b92248f)
-+ Wikipedia [Modélisation mathématique d'un labyrinthe](https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe)
-+ Python [Opérateurs-"bitwise"](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
-+ Documentation officielle [arcade](https://api.arcade.academy/)
-+ Sprites free to use [pmdcollab.org](https://sprites.pmdcollab.org/)
-+ Syntaxe [Markdown](https://docs.framasoft.org/fr/grav/markdown.html)
-+ Documentation officielle [Mermaid](https://mermaid.ai/open-source/syntax/flowchart.html)
++ Wikipedia [Mathematical modeling of a maze](https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe)
++ Python ["Bitwise" operators](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
++ Official [arcade](https://api.arcade.academy/) documentation
++ Free-to-use sprites [pmdcollab.org](https://sprites.pmdcollab.org/)
++ [Markdown](https://docs.framasoft.org/fr/grav/markdown.html) syntax
++ Official [Mermaid](https://mermaid.ai/open-source/syntax/flowchart.html) documentation
 
 
-### Usages IA
+### AI Usage
 
-Gemini ou Claude ont été utilisés par vadamavi pour :
-+ relire et optimiser le Makefile ;
-+ synthétiser la comparaison des algorithmes de génération de labyrinthe ;
-+ calculer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
-+ debugger la gestion de l'audio par Pyglet sous WSL
-+ traduire le ReadMe.
+Gemini or Claude were used by vadamavi to:
++ review and optimize the Makefile;
++ summarize the comparison of maze generation algorithms;
++ calculate the probability of, in mazes generated with DFS or Prim (and of variable size, up to 150x150), open areas of at least 3x3 appearing during braiding;
++ debug audio handling by Pyglet on WSL;
++ write part of the docstring;
++ translate the ReadMe.
 
 
-# Licence
+# License
 
-Ce projet est distribué sous licence MIT, voir le fichier [LICENSE.md](LICENSE.md) à la racine du dépôt.
+This project is distributed under the MIT license; see the [LICENSE.md](LICENSE.md) file at the root of the repository.

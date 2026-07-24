@@ -1,12 +1,12 @@
 # Default settings for the maze generator
 
 # size of the maze
-WIDTH=10
-HEIGHT=10
+WIDTH=100
+HEIGHT=100
 
 # start and end coordinates, in x,y format
-ENTRY=0,0
-EXIT=8,8
+ENTRY=51,100
+EXIT=51,100
 
 # name of text file where the maze will be drawn
 OUTPUT_FILE=maze.txt

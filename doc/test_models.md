@@ -204,3 +204,47 @@ def test_bad_business_rule(a_valid_config: dict[str, Any], a_field: str,
 
     with pytest.raises(ValidationError):
         MazeConfig(**a_valid_config)
+
+
+# -------------------------- many business rules ------------------------
+
+@pytest.mark.parametrize("field1, value1, field2, value2, expected_words", [
+    ("ENTRY", "51,0", "EXIT", "51,0",
+     ["entry abcisse", "exit abcisse", "must be different"]),
+    ("ENTRY", "51,100", "EXIT", "100,51",
+     ["entry abcisse", "entry ordinate", "exit abcisse", "exit ordinate"]),
+])
+def test_many_rules(a_valid_config: dict[str, Any], field1: str, value1: str,
+                    field2: str, value2: str,
+                    expected_words: list[str]) -> None:
+    """Verify that multiple simultaneous business-rule\
+    violations are all reported.
+
+    Sets two fields to values that each violate one or more business
+    rules, then asserts that the resulting ``ValidationError`` message
+    mentions every expected keyword.
+
+    Args:
+        a_valid_config (dict[str, Any]): A valid base configuration,
+            supplied by the ``a_valid_config`` fixture.
+        field1 (str): The name of the first field to set (``"ENTRY"``
+            or ``"EXIT"``).
+        value1 (str): The invalid value to assign to ``field1``.
+        field2 (str): The name of the second field to set (``"ENTRY"``
+            or ``"EXIT"``).
+        value2 (str): The invalid value to assign to ``field2``.
+        expected_words (list[str]): Substrings expected to appear in
+            the raised ``ValidationError``'s message.
+
+    Returns:
+        None
+    """
+    a_valid_config[field1] = value1
+    a_valid_config[field2] = value2
+
+    with pytest.raises(ValidationError) as exception_msg:
+        MazeConfig(**a_valid_config)
+
+    message = str(exception_msg.value)
+    for a_word in expected_words:
+        assert a_word in message
