@@ -11,7 +11,7 @@ QUESTIONS
 CODE
 
 - [x] FIX : random rattaché à l'instance et non au module global
-- [ ] FIX : crash sur [ctrl]+[C] en display ascii
+- [x] FIX : crash sur [ctrl]+[C] en display ascii
 		=> ajouter try/except sur KeyboardInterrupt
 - [x] MANDATORY : build 
 - [x] FIX : pour package, vérif dans mazegen.py qd type correct mais valeur incohérente pour générer labyrinthe

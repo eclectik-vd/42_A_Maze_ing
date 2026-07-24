@@ -324,14 +324,14 @@ wheels = [
 [[package]]
 name = "mazegen"
 version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
+source = { editable = "." }
+
+[package.dev-dependencies]
+app = [
     { name = "arcade" },
     { name = "colorama" },
     { name = "pydantic" },
 ]
-
-[package.dev-dependencies]
 dev = [
     { name = "flake8" },
     { name = "mypy" },
@@ -339,13 +339,13 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
+
+[package.metadata.requires-dev]
+app = [
     { name = "arcade", specifier = ">=3.3.3" },
     { name = "colorama", specifier = ">=0.4.6" },
     { name = "pydantic", specifier = ">=2.13.4" },
 ]
-
-[package.metadata.requires-dev]
 dev = [
     { name = "flake8", specifier = ">=7.3.0" },
     { name = "mypy", specifier = ">=2.1.0" },

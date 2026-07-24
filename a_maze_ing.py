@@ -105,5 +105,7 @@ if __name__ == "__main__":
         "DISPLAY_MODE": args.display_mode,
         "PERFECT": args.perfect,
     }
-
-    main(args.config_path, cli_vars)
+    try:
+        main(args.config_path, cli_vars)
+    except KeyboardInterrupt:
+        print("You already leave us ...")
