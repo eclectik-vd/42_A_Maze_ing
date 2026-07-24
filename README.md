@@ -13,7 +13,7 @@ La consigne était d'implémenter en Python un générateur de labyrinthes, à p
 + fournir une représentation visuelle du labyrinthe ;
 + organiser le code afin que la logique de génération/solution puisse être réutilisée ultérieurement.
 
-Pédagogiquement, ce projet avait pour objectif de travailler les *structures de données*, l'*analyse syntaxique*, les *algorithmes de graphes* et les *tests unitaires*. De manière optionnelle, il a également permis l'usage *Arcade*.
+Pédagogiquement, ce projet avait pour objectif de travailler les *structures de données*, l'*analyse syntaxique* et les *algorithmes de graphes*. De manière optionnelle, il a également permis l'usage *Arcade* et la création de *tests unitaires*.
 
 
 ### Sommaire
@@ -71,7 +71,7 @@ uv run a_maze_ing.py config.txt --perfect=True --seed=33 --display-mode=ascii
 ```
 
 + `a_maze_ing.py` est le point d'entrée du programme.
-+ `config.txt` est le fichier de configuration (voir [par ici]), un exemple par défaut est fourni à la racine du dépôt.
++ `config.txt` est le fichier de configuration, un [exemple par défaut](config.txt) est fourni à la racine du dépôt.
 + `perfect`, `seed` et `display-mode` sont des paramètres nommés facultatifs, le cas échéant ils écrasent les valeurs du fichier `config.txt`.
 
 ### Makefile
@@ -88,7 +88,6 @@ uv run a_maze_ing.py config.txt --perfect=True --seed=33 --display-mode=ascii
 |`lint`|Exécute `flake8` et `mypy` (règles obligatoires)|✔️|
 |`lint-strict`|Exécute `flake8` et `mypy --strict`|✔️|
 |`clean`|Supprime les fichiers temporaires (`__pycache__`, `.mypy_cache`…)|✔️|
-|`fclean`|Supprime l'environnement virtuel (`.venv`, `uv.lock`…)|   |
 |`fclean`|Supprime l'environnement virtuel (`.venv`, `uv.lock`…)|   |
 
 [Haut page](<#description-du-projet>)
@@ -109,7 +108,7 @@ Le fichier de configuration contient une paire `CLÉ=VALEUR` par ligne. Les li
 
 La taille maximum de `WIDTH` et `HEIGHT` est 100.
 
-Par défaut: `SEED` = `None` and `DISPLAY_MODE` = `ascii`.
+Par défaut : `SEED` = `None` and `DISPLAY_MODE` = `ascii`.
 
 En cas d'erreur de syntaxe ou de valeur invalide, le programme affiche la raison de l'erreur puis se ferme.
 
@@ -117,7 +116,7 @@ En cas d'erreur de syntaxe ou de valeur invalide, le programme affiche la raison
 
 # 3/ Fichier de sortie
 
-Chaque cellule est encodée par un digit hexadécimal représentant l'état de ses murs : 
+Chaque cellule est encodée par un digit hexadécimal représentant l'état de ses 4 murs : 
 
 | Bit (LSB → MSB) | Direction |
 | --------------- | --------- |
@@ -126,18 +125,19 @@ Chaque cellule est encodée par un digit hexadécimal représentant l'état de s
 | 2               | Sud       |
 | 3               | Ouest     |
 
-Un mur fermé positionne le bit correspondant à `1`. Par exemple :
-+ 0b0011 : murs sud et ouest ouverts
-+ 0b1010 : murs nord et sud ouverts
+Un mur fermé positionne le bit correspondant à `1` :
+Exemple 1 : <img src="/doc/wall_0011.png" alt="capture mur 0011" align="right"> 0x3 (0b0011) : murs Nord et Est fermés
+Exemple 2 : <img src="/doc/wall_1110.png" alt="capture mur 1110" align="right"> 0xE (0b1110) : murs Est, Sud et Ouest fermés
 
-Les cellules sont écrites ligne par ligne.
+Le fichier de sortie contient :
++ toutes les cellules du labyrinthes, écrites ligne par ligne et codées en hexadécimal.
 
 Ensuite, après une ligne vide, trois lignes supplémentaires précisent :
 + les coordonnées d'entrée,
 + les coordonnées de sortie,
 + le plus court chemin, avec une suite de lettres pour désigner la direction à prendre (`N`, `E`, `S`, `W`).
 
-Exemple :
+Exemple de fichier de sortie :
 
 ```text
 9395551393
@@ -156,40 +156,52 @@ SSEESESSEEEEEE
 
 # 4/ Module réutilisable
 
-{ToDo} *valider/corriger après tests*
-
 La logique de génération est isolée dans la classe **`MazeGenerator`** (`src/mazegen.py`).
-Elle est packagée en un module autonome (`mazegen-*.whl` / `mazegen-*.tar.gz`) fourni à la racine du dépôt et installable via `pip` :
+Elle est packagée en un module autonome (`mazegen-*.whl` / `mazegen-*.tar.gz`) fourni à la racine du dépôt et installable via `pip`.
 ```bash
-# Installation du package
-pip install mazegen-<version>-py3-none-any.whl
+# Installer le package
+pip install mazegen-0.1.0-py3-none-any.whl
 ```
 
 ### Exemple d'utilisation
 ```python
 from mazegen import MazeGenerator
 
+# instancie le labyrinthe
 maze = MazeGenerator(
-    width=20,
-    height=15,
+    width=5,
+    height=5,
     entry_coord=(0, 0),
-    exit_coord=(19, 14),
+    exit_coord=(4, 4),
     perfect=True,
-    seed=42,
+    seed=33,
+    output_file='maze.txt'
 )
+
+# génère le labyrinthe et le fichier maze.txt (grille du labyrinthe et sa solution)
 maze.generate()
 
-# Accès à la structure générée (liste 2D d'entiers, bitmask par cellule pour l'état des murs)
-grid = maze.grid
-# Accès à une solution (plus court chemin entre l'entrée et la sortie)
-solution = maze.exit_path
+# structure générée (le bitmask de chaque cellule décrit l'état de ses murs)
+print(maze.grid)
+# [[13, 5, 3, 9, 3], [9, 7, 10, 14, 10], [8, 5, 6, 9, 6], [10, 9, 3, 12, 3], [12, 6, 12, 5, 6]]
+
+# plus court chemin entre l'entrée et la sortie (directions à suivre)
+print(maze.exit_path)
+# EESSWWSSENESEE
 ```
+
+> **A noter** :
+La consigne inclut que le labyrinthe intègre un pattern de cellules closes pour afficher le motif "42" : la console est susceptible d'afficher que la taille du labyrinthe ne l'a pas permis : "*This maze is too small to display the '42' pattern*".
+
+> **IMPORTANT** :
+Contrairement à l'application, le package seul ne gère pas les arguments d'un mauvais type ou manquants, mais uniquement les valeurs inadéquates pour la création d'un labyrinthe valide.
+
 
 [Haut page](<#description-du-projet>)
 
 # 5/ Architecture
 ##### Fichiers
-{ToDo}: *maj avec projet final*
+
 ```text
 .
 ├── .flake8
@@ -235,6 +247,8 @@ solution = maze.exit_path
 ├── doc/
 │   ├── display_ascii.png
 │   ├── display_arcade.png
+│   ├── wall_0011.png
+│   ├── wall_1110.png
 │   └── ToDo.md
 └── tests/
     ├── test_parsing.py
@@ -264,9 +278,9 @@ flowchart TD
     F -->|YES| G(["config"])
 
     G -->|"instantiate"| H([maze])
-    H --> H1["generate_perfect_maze()"]
+    H --> H1["generate_perfect_maze()<br>if possible: apply_42_pattern()"]
     subgraph "generate()"
-        H1 --> H2["make_imperfect()"]
+        H1 --> H2["if needed:<br>make_imperfect()"]
         H2 --> H3{"check_walls_integrity()<br>free_of_open_areas()"}
         H3 -->|KO| H0["raise MazeGenError"]
         H3 -->|OK| I["solve_maze()"]
@@ -304,10 +318,10 @@ Pour générer le labyrinthe, 4 algorithmes **générateurs de labyrinthes parfa
 | Kruskal                | ★★★        | Très homogène               | Très faible | Moyen       |
 
 Notre choix s'est porté sur le Backtracking récursif (DFS randomisé) :
-+ génère naturellement un labyrinthe parfait (arbre couvrant)
-+ plutôt facile à coder → idéal pour un 1er projet
++ génère naturellement un labyrinthe parfait
++ plutôt facile à coder, idéal pour un 1er projet
 + rapide, faible consommation mémoire relative, complexité en O(n)
-+ génère très peu de branches → ressemble à un "labyrinthe classique"
++ génère très peu de branches, ressemble à un "labyrinthe classique"
 + beaucoup de longs couloirs, donc peu de culs de sacs → ne génère pas de zone ouverte de 3x3 lors du braiding
 
 Principe :
@@ -340,8 +354,7 @@ Principe :
 + Explore le graphe niveau par niveau, en traitant tous les voisins à distance _k_ avant de passer à distance _k+1_. 
 
 Le labyrinthe est résolu par **`MazeGenerator`** (`src/mazegen.py`) :
-1. `solve_maze()` trouve le chemin le plus court ;
-2. `export_to_file()` génère le fichier `OUTPUT_FILE`.
+1. `solve_maze()` trouve le chemin le plus court.
 
 
 [Haut page](<#description-du-projet>)
@@ -359,7 +372,7 @@ Rendu texte directement dans le terminal :
 
 ### Arcade
 
-En bonus, rendu graphique via la librairie [`arcade`](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif :
+En bonus, rendu graphique via la librairie [arcade](https://api.arcade.academy/), avec sprites (murs, joueur, sortie, chemin) et un menu interactif :
 
 <img src="/doc/display_arcade.png" alt="capture rendu Arcade" width="800">
 
@@ -373,11 +386,11 @@ En bonus, rendu graphique via la librairie [`arcade`](https://api.arcade.academ
 [Haut page](<#description-du-projet>)
 
 # 8/ Bonus
+- aucun cul-de-sac dans les labyrinthes imparfaits
 - display avec la librairie Arcade
+- configuration modifiable en ligne de commande : seed, display-mode, perfect
 - déplacements du joueur (Arcade)
 - musique (Arcade)
-- aucun cul-de-sac dans les labyrinthes imparfaits
-- configuration modifiable en ligne de commande : seed, display_mode, perfect
 - tests unitaires avec Pytest
 
 [Haut page](<#description-du-projet>)
@@ -390,14 +403,15 @@ Emarette avait déjà validé le projet, nous nous sommes donc réparti le trava
 | Membre   | Rôle                                                             |
 | -------- | ---------------------------------------------------------------- |
 | emarette | affichage Ascii, affichage Arcade                                |
-| vadamavi | makefile, parsing, generator, solver, readme, build              |
-| both     | .gitignore, pyproject.toml, architecture, Flake8 et mypy, type hints, docstrings |
+| vadamavi | makefile, pyproject.toml, parsing, generator, solver, readme, build|
+| both     | .gitignore, architecture, Flake8 et mypy, type hints, docstrings |
 
 ### Planning prévisionnel et évolution concrète
 Nous avions estimé le temps nécessaire pour les tâches indispensables mais pas fixé d'échéance compte tenu du contexte :
 + bonus à définir ;
 + congés personnels car période estivale ;
 + disponibilité variable des clusters pendant la piscine.
+
 
 ### Ce qui a pris plus de temps que prévu :
 + la modification du sujet (v2.1 -> v2.2) ;
@@ -406,9 +420,8 @@ Nous avions estimé le temps nécessaire pour les tâches indispensables mais pa
 + la rédaction de ce readme.
 
 
-### Ce qui a bien fonctionné
+### Ce qui a (presque) bien fonctionné
 + Mise en place d'une ToDo list partagée ;
-+ Création du `Makefile` dès le démarrage ;
 + Usage de branches pour collaborer avec git.
 
 ### Axes d'amélioration
@@ -418,7 +431,7 @@ Nous avions estimé le temps nécessaire pour les tâches indispensables mais pa
 
 ### Outils collaboration et développement
 
-Pour collaborer, nous avons fait des points d'étape en **présentiel**, communiqué via **Slack** et mutualisé le code sur **Github**.
+Pour collaborer, nous avons fait des points d'étape en **présentiel** lorsque nos disponibilités coïncidaient, communiqué via **Slack** et mutualisé le code sur **Github**.
 
 Le développement a été effectué avec [VSCode](https://code.visualstudio.com/), la majorité des traductions en anglais avec [deepl](https://www.deepl.com/fr/translator) et la prise de notes avec [Obsidian](https://obsidian.md/).
 
@@ -440,9 +453,9 @@ Le développement a été effectué avec [VSCode](https://code.visualstudio.com/
 
 Gemini ou Claude ont été utilisés par vadamavi pour :
 + relire et optimiser le Makefile ;
-+ créer des flowcharts d'après un modèle Mermaid élaboré "à la main" ;
 + synthétiser la comparaison des algorithmes de génération de labyrinthe ;
 + calculer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
++ debugger la gestion de l'audio par Pyglet sous WSL
 + traduire le ReadMe.
 
 

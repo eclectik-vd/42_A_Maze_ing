@@ -5,26 +5,6 @@ Ce sont des **archives** (cf `.zip`) spécialisées pour la distribution de code
 - **`.whl`** (*wheel*) = version **prête à l'emploi**, ne nécessitera pas de compilation/construction, juste un `pip install` pour le déposer dans le bon dossier.
 
 En plus du code Python, ces archives contiennent des métadonnées (nom, version, dépendances...) tirées du `pyproject.toml`.
-
-## build & pip
-
-Quand on fait `uv build` :
-+ uv lit le `pyproject.toml`
-+ fabrique ces deux archives dans un dossier `dist/`.
-
-On récupère ensuite le module avec `pip install mazegen-1.0.0-py3-none-any.whl` :
-```bash
-pip install mazegen-1.0.0-py3-none-any.whl
-```
-
-ou bien :
-```bash
-pip install mazegen-0.1.0.tar.gz
-# `pip` décompresse l'archive,
-# lit `pyproject.toml` pour savoir quel build-backend appeler (ici `hatchling`),
-# appelle ce backend pour fabriquer un wheel à la volée.
-```
-
 ## pyproject.toml
 
 #### outil
@@ -60,28 +40,12 @@ include = [
 ]
 ```
 
-Une fois installé, l'utilisateur pourra faire `from mazegen import MazeGenerator`, usage à préciser dans la docstring
 
-## make build
+/!\ Il faut EVITER que le package installe AUSSI `arcade`, `pydantic` et `colorama`  /!\ 
 
-Une fois le `pyproject.toml` correctement paramétré, `make build` va créer automatiquement `mazegen-0.1.0-py3-none-any.whl` et `mazegen-0.1.0.tar.gz`.
-
-Pour vérifier que le module est autonome, le tester **en isolation totale** , donc dans un venv vide :
-```bash
-# copier le dossier dist/ par ex dans correction
-cd correction
-python3 -m venv check_mazegen
-source check_mazegen/bin/activate
-pip install dist/mazegen-0.1.0-py3-none-any.whl
-python -c "from mazegen import MazeGenerator; maze = MazeGenerator(width=10, height=10, entry_coord=(0, 0), exit_coord=(9, 9), seed=42, perfect=True, output_file='maze.txt'); maze.generate()"
-#le dossier correction contient désormais maze.txt avec le labyrinthe et sa solution :)
-```
-
-/!\ installe AUSSI `arcade`, `pydantic` et `colorama` /!\ 
-# TODO : 
-1/ corriger le `pyproject.toml` en modifiant les dépendances.
+1. adapter le `pyproject.toml` en modifiant les dépendances :
 ```toml
-# mazegen n'a besoin de rien d'externe
+# le package mazegen n'a besoin de rien d'externe
 dependencies = []
 
 [dependency-groups]
@@ -96,18 +60,71 @@ app = [
     "pydantic>=2.13.4",
 ]
 ```
-2/ corriger le Makefile en mettant à jour la cible `install` pour continuer à installer ce dont l'app a besoin en local
+
+2. adapter le Makefile en mettant à jour la cible `install` pour qu'elle installe ce dont l'app a besoin en local :
 ```makefile
 install:
+	# le groupe `dev` est inclus par défaut par `uv sync`, mais `app` doit être demandé explicitement...
 	uv sync --group app
 ```
-le groupe `dev` est inclus par défaut par `uv sync`, mais `app` doit être demandé explicitement...
 
-## Vérifs possibles pendant la correction ?
-#### Reproductibilité avec `seed`
+## make build
+
+Une fois le `pyproject.toml` correctement paramétré, `make build` va créer automatiquement `mazegen-<version>-py3-none-any.whl` et `mazegen-<version>.tar.gz` :
+```bash
+uv build
+# uv lit le `pyproject.toml`
+# puis crée les deux archives dans un dossier `dist/`.
+```
+
+## pip install
+
+On récupère ensuite le module depuis la racine du répertoire où on aura copié `dist` :
+```bash
+# installation via le .whl
+pip install dist/mazegen-0.1.0-py3-none-any.whl
+# Processing ./dist/mazegen-0.1.0-py3-none-any.whl
+# Installing collected packages: mazegen
+# Successfully installed mazegen-0.1.0
+```
+
+ou bien :
+```bash
+# installation via le .tar.gz
+pip install dist/mazegen-0.1.0.tar.gz
+# `pip` décompresse l'archive,
+# lit `pyproject.toml` pour savoir quel build-backend appeler (ici `hatchling`),
+# appelle ce backend pour fabriquer un wheel à la volée.
+```
+
+Une fois installé, l'utilisateur pourra faire `from mazegen import MazeGenerator`, usage à préciser dans la docstring.
+
+## Vérifs que tout roule
+
+#### module autonome ?
+
+Pour vérifier que le module est autonome, le tester **en isolation totale** , donc dans un venv vide.
+
+Si on a copié `dist/` dans un répertoire `correction` :
+```bash
+cd correction
+
+# créer et activer un venv
+python3 -m venv check_mazegen
+source check_mazegen/bin/activate
+
+#installer le package
+pip install dist/mazegen-0.1.0-py3-none-any.whl
+
+# générer un labyrinthe
+python -c "from mazegen import MazeGenerator; maze = MazeGenerator(width=10, height=10, entry_coord=(0, 0), exit_coord=(9, 9), seed=42, perfect=True, output_file='maze.txt'); maze.generate()"
+# => le dossier correction contient désormais maze.txt avec le labyrinthe et sa solution :)
+```
+
+#### Reproductibilité avec `seed` ?
 
 Deux instances avec le même seed doivent produire la même grille :
-```
+```bash
 python -c "
 from mazegen import MazeGenerator
 m1 = MazeGenerator(width=10, height=10, entry_coord=(0,0), exit_coord=(9,9), seed=42, perfect=True, output_file='seed1.txt')

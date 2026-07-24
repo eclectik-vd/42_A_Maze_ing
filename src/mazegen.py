@@ -90,7 +90,7 @@ class MazeGenerator:
         """
 
         # generator’s internal rules, for the exported module
-        if width < 2 or height < 2:
+        if width < 3 or height < 3:
             raise ValueError("The maze size must not be less than 3x3.")
         if not (0 <= entry_coord[0] < width and 0 <= entry_coord[1] < height):
             raise ValueError("entry_coord must be inside the grid boundaries.")
