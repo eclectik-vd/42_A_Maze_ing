@@ -30,6 +30,7 @@ Example of use:
 """
 
 
+import sys
 import random
 # import warnings
 from collections import deque
@@ -582,22 +583,29 @@ class MazeGenerator:
         Raises:
             OSError: If the output file cannot be opened or written to.
         """
-        with open(self.output_file, 'w', encoding='utf-8') as new_file:
-            # Write grid in hexa
-            for row in self._grid:
-                # f"{integer:X}" converts integer to uppercase hexa (10->A)
-                line_str = "".join(f"{cell:X}" for cell in row)
-                new_file.write(line_str + "\n")
 
-            # mandatory empty line
-            new_file.write("\n")
+        try:
+            with open(self.output_file, 'w', encoding='utf-8') as new_file:
+                # Write grid in hexa
+                for row in self._grid:
+                    # f"{integer:X}" converts integer to uppercase hexa (10->A)
+                    line_str = "".join(f"{cell:X}" for cell in row)
+                    new_file.write(line_str + "\n")
 
-            # entrance coordinates
-            new_file.write(f"{self.entry_coord[0]},{self.entry_coord[1]}\n")
-            # exit coordinates
-            new_file.write(f"{self.exit_coord[0]},{self.exit_coord[1]}\n")
-            # path from entrance to exit
-            new_file.write(f"{self._exit_path}\n")
+                # mandatory empty line
+                new_file.write("\n")
+
+                # entrance coordinates
+                new_file.write(f"{self.entry_coord[0]},{self.entry_coord[1]}\n")
+                # exit coordinates
+                new_file.write(f"{self.exit_coord[0]},{self.exit_coord[1]}\n")
+                # path from entrance to exit
+                new_file.write(f"{self._exit_path}\n")
+                
+        except (PermissionError) as err:
+            print(f"Error: the file '{self.output_file}' can't be accessed\n {err}",
+                    file=sys.stderr)
+            sys.exit(1)
 
     # ---------------------------------------------------------------------
     #

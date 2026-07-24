@@ -108,4 +108,4 @@ if __name__ == "__main__":
     try:
         main(args.config_path, cli_vars)
     except KeyboardInterrupt:
-        print("You already leave us ...")
+        print("\n\nYou already leave us ...")
