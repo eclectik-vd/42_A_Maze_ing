@@ -79,7 +79,7 @@ class AsciiVisualizer(Visualizer):
                     else:
                         print(self.colors[self.color_i] + c,
                               end="", flush=True)
-                    time.sleep(0.005)
+                    # time.sleep(0.005)
                 print()
         else:
             self.show_path()
@@ -96,7 +96,7 @@ class AsciiVisualizer(Visualizer):
                     else:
                         print(self.colors[self.color_i] + c,
                               end="", flush=True)
-                    time.sleep(0.005)
+                    # time.sleep(0.005)
                 print()
 
         print()
@@ -110,7 +110,7 @@ class AsciiVisualizer(Visualizer):
         for line in menu:
             for c in line:
                 print(c, end="", flush=True)
-                time.sleep(0.01)
+                # time.sleep(0.01)
             print()
 
     def update(self) -> None:
@@ -255,7 +255,7 @@ class AsciiVisualizer(Visualizer):
 
         current_row: int
         current_col: int
-        current_row, current_col = self.entry
+        current_col, current_row = self.entry
 
         for direction in self.path:
             row_offset: int
