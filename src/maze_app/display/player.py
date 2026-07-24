@@ -59,9 +59,9 @@ class Player(arcade.Sprite):
         self.next_dx: int = 0
         self.next_dy: int = 0
 
-        w: int = 96
-        h: int = 320
-        columns: int = 4
+        w: int = 96 # width of player.png
+        h: int = 320 # height of player.png
+        columns: int = 4 # nb of colomns of player.png
         sprite_path: str = "src/maze_app/display/sprite/player.png"
         self.sprite_sheet: arcade.SpriteSheet = arcade.SpriteSheet(sprite_path)
         all_texture: List[arcade.Texture] = self.sprite_sheet.get_texture_grid(
@@ -77,9 +77,9 @@ class Player(arcade.Sprite):
                                                            columns*5]
         self.anim_est: List[arcade.Texture] = all_texture[columns*6:columns*7]
 
-        win_w: int = 288
-        win_h: int = 320
-        win_columns = 12
+        win_w: int = 288 # width of win.png
+        win_h: int = 320 # height of win.png
+        win_columns = 12 # nb of colomns of win.png
         win_sprite_path: str = "src/maze_app/display/sprite/win.png"
         self.win_sprite_sheet: arcade.SpriteSheet =\
             arcade.SpriteSheet(win_sprite_path)

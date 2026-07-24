@@ -198,7 +198,7 @@ class Menu:
         if selected == "1. re-generate a new maze":
             self.visualizer.mazegen.regenerate(randint(0, 10000))
             self.visualizer.maze = self.visualizer.mazegen.grid.copy()
-            self.visualizer.path = self.visualizer.mazegen.solve_maze()
+            self.visualizer.path = self.visualizer.mazegen.exit_path
             self.visualizer.map.generate_maze()
         elif selected == "2. Show / Hide the shortest path":
             self.visualizer.have_path = not self.visualizer.have_path
