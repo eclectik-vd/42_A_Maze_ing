@@ -31,7 +31,7 @@ Example of use:
 
 
 import random
-import warnings
+# import warnings
 from collections import deque
 from copy import deepcopy
 
@@ -154,7 +154,8 @@ class MazeGenerator:
 
         if (self.width < self.PATTERN_WIDTH + 2
                 or self.height < self.PATTERN_HEIGHT + 2):
-            warnings.warn("This maze is too small to display the '42' pattern")
+            # warnings.warn("Maze too small to display the '42' pattern")
+            print("This maze is too small to display the '42' pattern")
             return
 
         pattern_x = (self.width - self.PATTERN_WIDTH) // 2
@@ -166,7 +167,9 @@ class MazeGenerator:
 
         if (self.entry_coord in grid_pattern_cells
                 or self.exit_coord in grid_pattern_cells):
-            warnings.warn("'42' pattern overlaps the entrance or exit. "
+            # warnings.warn("'42' pattern overlaps the entrance or exit. "
+            #               "It will be ignored.")
+            print("'42' pattern overlaps the entrance or exit. "
                           "It will be ignored.")
             return
 
