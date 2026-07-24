@@ -4,6 +4,9 @@ from pydantic.types import NonNegativeInt
 
 
 class MazeConfig(BaseModel):
+    """
+    Pydantic model class for parameter validation
+    """
     # aliases to tell the model "In Python code this variable is called width,
     # but search a key called WIDTH in the raw data dictionary "config_parsed"
     width: int = Field(alias="WIDTH", ge=3, le=100)

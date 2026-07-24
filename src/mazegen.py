@@ -42,7 +42,24 @@ class MazeGenError(Exception):
 
 
 class MazeGenerator:
-    """Maze generator based on the Recursive Backtracker algorithm."""
+    """Maze generator based on the Recursive Backtracker algorithm.
+
+    Generates a perfect or imperfect maze on a rectangular grid, solves
+    it with a breadth-first search, and exports the result to a text
+    file. Each cell of the grid is stored as an integer bitmask
+    describing which of its 4 walls (North, East, South, West) are
+    closed.
+
+    Attributes:
+        width: Number of columns in the grid.
+        height: Number of rows in the grid.
+        entry_coord: (x, y) coordinates of the maze entrance.
+        exit_coord: (x, y) coordinates of the maze exit.
+        perfect: Whether the maze should remain perfect (no loops).
+        output_file: Name of the file to which maze data is exported.
+        pattern_cells: Set of (x, y) coordinates locked by the "42"
+            pattern, if it was successfully applied.
+    """
 
     # Wall constants (binary representation)
     # to store 4 states (North, East, South, West) in a single integer
@@ -179,6 +196,10 @@ class MazeGenerator:
             self, x: int, y: int) -> list[tuple[int, int, int]]:
         """Look around cell (x, y).
 
+        Args:
+            x: Column index of the cell to inspect.
+            y: Row index of the cell to inspect.
+
         Returns:
             The list of unvisited and valid adjacent cells.
             Each adjacent is returned as a tuple:
@@ -226,6 +247,12 @@ class MazeGenerator:
 
         Also breaks the opposite wall of the adjacent cell, so both
         sides stay consistent.
+
+        Args:
+            x: Column index of the cell whose wall is broken.
+            y: Row index of the cell whose wall is broken.
+            direction: Wall to break, one of `self.N`, `self.E`,
+                `self.S`, or `self.W`.
         """
 
         # North wall
@@ -282,6 +309,11 @@ class MazeGenerator:
 
     def make_imperfect(self, percent_to_break: float = 0.4) -> None:
         """Make the maze imperfect by breaking random dead-end walls.
+
+        Args:
+            percent_to_break: Currently unused placeholder for the
+                proportion of dead ends to break; all dead ends are
+                broken regardless of this value.
 
         Raises:
             RuntimeError: If the maze has not been generated yet.
@@ -355,7 +387,14 @@ class MazeGenerator:
         self._is_generated = False
 
     def regenerate(self, new_seed: int | None = None) -> None:
-        """ Reset and regenerate the maze with a new seed if provided. """
+        """Reset and regenerate the maze with a new seed if provided.
+
+        Args:
+            new_seed: Optional seed for the random number generator.
+                If provided, replaces the current internal generator;
+                if omitted, the existing generator (and its state)
+                is reused.
+        """
         if new_seed is not None:
             self._rng = random.Random(new_seed)
 
@@ -406,6 +445,14 @@ class MazeGenerator:
         """Check if a 3x3 area is open (has no internal walls).
 
         The area's top-left cell is at (start_x, start_y).
+
+        Args:
+            start_x: Column index of the area's top-left cell.
+            start_y: Row index of the area's top-left cell.
+
+        Returns:
+            True if none of the internal walls of the 3x3 area are
+            closed, False otherwise.
         """
 
         found_wall = any(
@@ -526,8 +573,14 @@ class MazeGenerator:
     # ---------------------------------------------------------------------
 
     def export_to_file(self) -> None:
-        """
-        Export the maze and its solution to the mandatory text file
+        """Export the maze and its solution to the mandatory text file.
+
+        Writes the grid (one hexadecimal-encoded row per line), then
+        an empty line, then the entry coordinates, exit coordinates,
+        and the solution path, to `self.output_file`.
+
+        Raises:
+            OSError: If the output file cannot be opened or written to.
         """
         with open(self.output_file, 'w', encoding='utf-8') as new_file:
             # Write grid in hexa
