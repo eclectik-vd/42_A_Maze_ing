@@ -126,8 +126,10 @@ Chaque cellule est encodée par un digit hexadécimal représentant l'état de s
 | 3               | Ouest     |
 
 Un mur fermé positionne le bit correspondant à `1` :
-Exemple 1 : <img src="/doc/wall_0011.png" alt="capture mur 0011" align="right"> 0x3 (0b0011) : murs Nord et Est fermés
-Exemple 2 : <img src="/doc/wall_1110.png" alt="capture mur 1110" align="right"> 0xE (0b1110) : murs Est, Sud et Ouest fermés
+
+Exemple 1 : <img src="/doc/wall_0011.png" alt="capture mur 0011" align="right"> *0x*3 (*0b*0011) : murs Nord et Est fermés
+
+Exemple 2 : <img src="/doc/wall_1110.png" alt="capture mur 1110" align="right"> *0x*E (*0b*1110) : murs Est, Sud et Ouest fermés
 
 Le fichier de sortie contient :
 + toutes les cellules du labyrinthes, écrites ligne par ligne et codées en hexadécimal.
@@ -441,6 +443,7 @@ Le développement a été effectué avec [VSCode](https://code.visualstudio.com/
 + Documentation officielle [uv](https://docs.astral.sh/uv/guides/projects/)
 + Documentation officielle [Pydantic](https://docs.pydantic.dev/)
 + Documentation officielle [Pytest](https://docs.pytest.org/en/stable/getting-started.html)
++ uv_build vs hatchling [Medium - Chris Evans](https://medium.com/@dynamicy/python-build-backends-in-2025-what-to-use-and-why-uv-build-vs-hatchling-vs-poetry-core-94dd6b92248f)
 + Wikipedia [Modélisation mathématique d'un labyrinthe](https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe)
 + Python [Opérateurs-"bitwise"](https://datascientist.fr/blog/tutoriel-python-operateurs-bit-a-bit#operateurs-logiques-bit-a-bit)
 + Documentation officielle [arcade](https://api.arcade.academy/)

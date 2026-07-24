@@ -170,7 +170,7 @@ class MazeGenerator:
             # warnings.warn("'42' pattern overlaps the entrance or exit. "
             #               "It will be ignored.")
             print("'42' pattern overlaps the entrance or exit. "
-                          "It will be ignored.")
+                  "It will be ignored.")
             return
 
         self.pattern_cells = grid_pattern_cells

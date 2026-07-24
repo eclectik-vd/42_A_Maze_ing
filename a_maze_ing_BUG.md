@@ -7,17 +7,6 @@ from src.maze_app.utils.utility_funcs import print_italic
 from src.maze_app.utils.utility_funcs import str_to_bool
 
 
-def _run_arcade_mode(maze: MazeGenerator) -> None:
-    """Lazily import arcade and launch the graphical visualizer."""
-    import arcade
-    from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
-
-    window = arcade.Window(1280, 720, "A-Maze-Ing", fullscreen=False)
-    visualizer = ArcadeVisualizer(maze)
-    window.show_view(visualizer)
-    arcade.run()
-
-
 def main(config_path: str, cli_vars: dict | None = None) -> None:
     """
     Load and validate maze config
@@ -66,6 +55,9 @@ def main(config_path: str, cli_vars: dict | None = None) -> None:
     # ---------------------------------------------------------------------
     # -------------------- DISPLAY the maze -------------------------------
 
+    # BUG made MyPy happy as long as there were no late imports
+    visualizer: AsciiVisualizer | ArcadeVisualizer
+
     if config.display_mode == "ascii":
         try:
             visualizer = AsciiVisualizer(maze)
@@ -73,7 +65,12 @@ def main(config_path: str, cli_vars: dict | None = None) -> None:
         except ValueError as e:
             print(e)
     elif config.display_mode == "arcade":
-        _run_arcade_mode(maze)
+        import arcade
+        from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
+        window = arcade.Window(1280, 720, "A-Maze-Ing", fullscreen=False)
+        visualizer = ArcadeVisualizer(maze)
+        window.show_view(visualizer)
+        arcade.run()
 
 
 if __name__ == "__main__":

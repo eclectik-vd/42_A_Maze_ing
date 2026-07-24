@@ -40,21 +40,20 @@ CODE
 
 
 README
-- [ ] 4/ module réutilisable : à rédiger/vérifier/corriger...
-- [ ] 2/ architecture : mettre à jour arbo slim avec architecture finale
-- [ ] ressources : manque packaging
+- [x] 4/ module réutilisable : à rédiger/vérifier/corriger...
+- [x] 2/ architecture : mettre à jour arbo slim avec architecture finale
+- [x] ressources : manque packaging
 - [x] redim capt (taille + poids)
-- [ ] flux : ajouter pattern 42 et modifier étape imperfect
+- [x] flux : ajouter pattern 42 et modifier étape imperfect
 - [ ] Trad en anglais Gemini
 - [x] flux global : verif avec Enzo + maj mef flowchart avec styles persos
 - [x] NE PAS re-numéroter sous la forme 1  1.1  1.2  1.3 ... 2  2.1  2.2  
 
 NETTOYAGE
 - [ ] supprimer/transférer (Obsidian ou doc) dossiers/fichiers/commentaires superflus
-- [ ] typehints
 - [ ] docstring
-- [ ] flake8 mypy
-- [ ] CHECK maze_analyzer
+- [] flake8 mypy
+- [x] CHECK maze_analyzer
 - [ ] CHECK CORR BENJI
 
 
