@@ -465,4 +465,4 @@ Gemini or Claude were used by vadamavi to:
 
 # License
 
-This project is distributed under the MIT license; see the [LICENSE.md](LICENSE.md) file at the root of the repository.
+This project is distributed under the MIT license; see the [LICENSE](LICENSE) file at the root of the repository.
