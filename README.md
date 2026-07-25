@@ -380,10 +380,10 @@ As a bonus, graphical rendering via the [arcade](https://api.arcade.academy/) li
 
 **Keyboard controls**:
 
-+ Arrow keys :arrow_up: / :arrow_down: to move within the menu
-+ Space to confirm
-+ Arrow keys :arrow_up: / :arrow_down: and :arrow_left: / :arrow_right: to move the player within the maze
-+ Escape to exit player mode
++ Arrow keys :arrow_up: / :arrow_down: to move within the menu;
++ Space to confirm;
++ Arrow keys :arrow_up: / :arrow_down: and :arrow_left: / :arrow_right: to move the player within the maze;
++ Escape to exit player mode.
 
 [Back to top](<#project-description>)
 
