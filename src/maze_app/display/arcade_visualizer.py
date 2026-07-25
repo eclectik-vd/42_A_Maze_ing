@@ -44,9 +44,12 @@ class ArcadeVisualizer(Visualizer, arcade.View):
         except OSError:
             raise OSError("Error: Asset not found.")
         self.music_player = arcade.play_sound(self.music, volume=0.5)
-        self.map: Map = Map(self)
-        self.menu: Menu = Menu(self)
-        self.player: Player = Player(self)
+        try:
+            self.map: Map = Map(self)
+            self.menu: Menu = Menu(self)
+            self.player: Player = Player(self)
+        except OSError:
+            raise OSError("Error: Asset not found.")
         self.mazegen: MazeGenerator = maze
         self.player_list: arcade.SpriteList[arcade.Sprite]
         self.player_list = arcade.SpriteList()

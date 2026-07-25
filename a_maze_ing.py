@@ -14,10 +14,13 @@ def _run_arcade_mode(maze: MazeGenerator) -> None:
     import arcade
     from src.maze_app.display.arcade_visualizer import ArcadeVisualizer
 
-    window = arcade.Window(1280, 720, "A-Maze-Ing", fullscreen=False)
-    visualizer = ArcadeVisualizer(maze)
-    window.show_view(visualizer)
-    arcade.run()
+    try:
+        window = arcade.Window(1280, 720, "A-Maze-Ing", fullscreen=False)
+        visualizer = ArcadeVisualizer(maze)
+        window.show_view(visualizer)
+        arcade.run()
+    except OSError as e:
+        print(e)
 
 
 def main(config_path: str, cli_vars: dict[str, Any] | None = None) -> None:
@@ -111,5 +114,3 @@ if __name__ == "__main__":
         main(args.config_path, cli_vars)
     except KeyboardInterrupt:
         print("\n\nYou already leave us ...")
-    except OSError as e:
-        print(e)
