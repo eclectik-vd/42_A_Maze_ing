@@ -152,7 +152,7 @@ class AsciiVisualizer(Visualizer):
             self.mazegen.regenerate(new_seed)
 
             self.maze: list[list[int]] = self.mazegen.grid.copy()
-            self.path: str = self.mazegen.solve_maze()
+            self.path: str = self.mazegen.exit_path
             self.update()
         if choice == '2':
             self.have_path = not self.have_path
