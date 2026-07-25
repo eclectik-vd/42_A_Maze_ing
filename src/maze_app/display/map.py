@@ -105,14 +105,17 @@ class Map:
         Returns:
             None: Populates tile_list and path_list with arcade sprites.
         """
-        wall_sheet: Image.Image = Image.open("src/maze_app/display/" +
-                                             "sprite/tilemap.png")
-        bordure_sheet: Image.Image = Image.open("src/maze_app/display/" +
-                                                "sprite/bordure.png")
-        exit_sheet: Image.Image = Image.open("src/maze_app/display/" +
-                                             "sprite/exit.png")
-        path_sheet: Image.Image = Image.open("src/maze_app/display/" +
-                                             "sprite/path.png")
+        try:
+            wall_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                                 "sprite/tilemap.png")
+            bordure_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                                    "sprite/bordure.png")
+            exit_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                                 "sprite/exit.png")
+            path_sheet: Image.Image = Image.open("src/maze_app/display/" +
+                                                 "sprite/path.png")
+        except OSError:
+            raise OSError("Error: Asset not found.")
 
         for i in range(4):
             for j in range(4):

@@ -111,3 +111,5 @@ if __name__ == "__main__":
         main(args.config_path, cli_vars)
     except KeyboardInterrupt:
         print("\n\nYou already leave us ...")
+    except OSError as e:
+        print(e)

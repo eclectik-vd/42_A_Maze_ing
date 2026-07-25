@@ -62,7 +62,10 @@ class Player(arcade.Sprite):
         w: int = 96  # width of player.png
         h: int = 320  # height of player.png
         columns: int = 4  # nb of colomns of player.png
-        sprite_path: str = "src/maze_app/display/sprite/player.png"
+        try:
+            sprite_path: str = "src/maze_app/display/sprite/player.png"
+        except OSError:
+            raise OSError("Error: Asset not found.")
         self.sprite_sheet: arcade.SpriteSheet = arcade.SpriteSheet(sprite_path)
         all_texture: List[arcade.Texture] = self.sprite_sheet.get_texture_grid(
             size=(int(w/columns), int(h/8)),
@@ -80,7 +83,10 @@ class Player(arcade.Sprite):
         win_w: int = 288  # width of win.png
         win_h: int = 320  # height of win.png
         win_columns = 12  # nb of colomns of win.png
-        win_sprite_path: str = "src/maze_app/display/sprite/win.png"
+        try:
+            win_sprite_path: str = "src/maze_app/display/sprite/win.png"
+        except OSError:
+            raise OSError("Error: Asset not found.")
         self.win_sprite_sheet: arcade.SpriteSheet =\
             arcade.SpriteSheet(win_sprite_path)
         win_textures: List[arcade.Texture] =\

@@ -38,7 +38,11 @@ class ArcadeVisualizer(Visualizer, arcade.View):
         from src.maze_app.display.map import Map
         from src.maze_app.display.menu import Menu
         from src.maze_app.display.player import Player
-        self.music = arcade.load_sound("src/maze_app/display/sound/music.mp3")
+        try:
+            self.music = arcade.load_sound("src/maze_app/display" +
+                                           "/sound/music.mp3")
+        except OSError:
+            raise OSError("Error: Asset not found.")
         self.music_player = arcade.play_sound(self.music, volume=0.5)
         self.map: Map = Map(self)
         self.menu: Menu = Menu(self)
@@ -50,8 +54,11 @@ class ArcadeVisualizer(Visualizer, arcade.View):
         background_path: str = ("src/maze_app/display"
                                 + "/sprite/"
                                 + "background.jpeg")
-        self.background_texture: arcade.Texture =\
-            arcade.load_texture(background_path)
+        try:
+            self.background_texture: arcade.Texture =\
+                arcade.load_texture(background_path)
+        except OSError:
+            raise OSError("Error: Asset not found.")
         self.on_menu: bool = True
 
     def on_draw(self) -> None:
