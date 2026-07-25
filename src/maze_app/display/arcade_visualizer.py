@@ -44,7 +44,8 @@ class ArcadeVisualizer(Visualizer, arcade.View):
         self.menu: Menu = Menu(self)
         self.player: Player = Player(self)
         self.mazegen: MazeGenerator = maze
-        self.player_list: arcade.SpriteList = arcade.SpriteList()
+        self.player_list: arcade.SpriteList[arcade.Sprite]
+        self.player_list = arcade.SpriteList()
         self.player_list.append(self.player)
         background_path: str = ("src/maze_app/display"
                                 + "/sprite/"

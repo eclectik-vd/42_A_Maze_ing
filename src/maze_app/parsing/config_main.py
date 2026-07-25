@@ -1,11 +1,14 @@
 import sys
+from typing import Any
+
 from pydantic import ValidationError
 from src.maze_app.parsing.config_parser import parse_config
 from src.maze_app.parsing.models import MazeConfig
 from src.maze_app.utils.utility_funcs import print_italic, print_green
 
 
-def load_config(config_path: str, cli_vars: dict | None = None) -> MazeConfig:
+def load_config(config_path: str,
+                cli_vars: dict[str, Any] | None = None) -> MazeConfig:
     """
     Load, parse, and validate maze configuration.
     Exit on failure

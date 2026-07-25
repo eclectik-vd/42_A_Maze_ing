@@ -43,8 +43,8 @@ class Map:
         """
         self.visualizer: ArcadeVisualizer = visualizer
 
-        self.tile_list: arcade.SpriteList = arcade.SpriteList()
-        self.path_list: arcade.SpriteList = arcade.SpriteList()
+        self.tile_list: arcade.SpriteList[arcade.Sprite] = arcade.SpriteList()
+        self.path_list: arcade.SpriteList[arcade.Sprite] = arcade.SpriteList()
         self.wall_textures: list[arcade.Texture] = []
         self.bordure_textures: list[arcade.Texture] = []
         self.exit_textures: list[arcade.Texture] = []

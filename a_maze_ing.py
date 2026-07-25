@@ -1,5 +1,7 @@
 import argparse
 import sys
+from typing import Any
+
 from src.maze_app.parsing.config_main import load_config
 from src.mazegen import MazeGenerator, MazeGenError
 from src.maze_app.display.ascii_visualizer import AsciiVisualizer
@@ -18,7 +20,7 @@ def _run_arcade_mode(maze: MazeGenerator) -> None:
     arcade.run()
 
 
-def main(config_path: str, cli_vars: dict | None = None) -> None:
+def main(config_path: str, cli_vars: dict[str, Any] | None = None) -> None:
     """
     Load and validate maze config
     Initiate, create, validate, solve and export the maze

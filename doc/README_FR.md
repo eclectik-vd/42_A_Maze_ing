@@ -125,11 +125,11 @@ Chaque cellule est encodée par un digit hexadécimal représentant l'état de s
 | 2               | Sud       |
 | 3               | Ouest     |
 
-Un mur fermé positionne le bit correspondant à `1` :
+Un mur fermé positionne le bit correspondant à `1` : <img src="/doc/walls.png" alt="walls screenshot" align="right">
 
-Exemple 1 : <img src="/doc/wall_0011.png" alt="capture mur 0011" align="right"> *0x*3 (*0b*0011) : murs Nord et Est fermés
+Exemple 1 : *0x*3 (*0b*0011) : murs Nord et Est fermés
 
-Exemple 2 : <img src="/doc/wall_1110.png" alt="capture mur 1110" align="right"> *0x*E (*0b*1110) : murs Est, Sud et Ouest fermés
+Exemple 2 : *0x*E (*0b*1110) : murs Est, Sud et Ouest fermés
 
 Le fichier de sortie contient :
 + toutes les cellules du labyrinthes, écrites ligne par ligne et codées en hexadécimal.

@@ -37,9 +37,9 @@ include = ["src/mazegen.py"]
 [tool.hatch.build.targets.sdist]
 include = [
     "src/mazegen.py",
-    "pyproject.toml", # ce fichier dit à `pip`/`build` avec quel outil et comment construire le package
-    "README.md",      # référencé explicitement dans les métadonnées, son contenu sera la description longue du package
-    "LICENSE.md",     # bonne pratique, la licence doit accompagner un module réutilisable et redistribuable
+    "pyproject.toml",
+    "README.md",
+    "LICENSE.md",
 ]
 
 [tool.mypy]

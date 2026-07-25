@@ -1,4 +1,30 @@
-  
+
+LAST CHANGES
+
+- [x] readme : capture walls
+- [x] doc/ : suppr img inutiles
+- [x] test_models : correction des valeurs testées
+- [x] Makefile : corr comm flake8 et déplacé rm __pycache__
+- [x] flake8 : ./src/maze_app/display/player.py ./src/mazegen.py
+- [x] mypy-strict : corrigé 6 erreurs
+		a_maze_ing.py		cli_vars: dict
+		config_main.py		cli_vars: dict
+		arcade_visualizer	self.player_list: arcade.SpriteList
+		ascii_visualizer	self.maze: list
+		map.py				self.tile_list: arcade.SpriteList
+							self.path_list: arcade.SpriteList
+- [x] FIX (cf mypy): # start_x, start_y = self.entry_coord dans solve_maze()
+- [ ] suppr .flake8 => galères de ouf... => fichier à assumer :P
+
+- [!!!] si make lint AVANT make, ERROR :
+		pyproject.toml:1: error: Error importing plugin "pydantic.mypy": No module named 'pydantic'  [misc]
+
+- [ ] dé-commenter mon code
+- [ ] commenter Enzo code
+- (ascii_visualizer.py (L 155)
+		self.path: str = self.mazegen.solve_maze() )
+
+
 
 QUESTIONS
 
@@ -19,7 +45,6 @@ CODE
 - [x] ! MyPy KO sur tests/test_player.py
 - [x] transformer en variables les 64, 32... du code display -> ajout comm à la place
 - [x] DOC : maj flux global dans readme
-- [ ] FIX : # start_x, start_y = self.entry_coord dans solve_maze()
 
 
 - [x] FIX : seed regenerate bug si pas int...

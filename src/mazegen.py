@@ -516,12 +516,8 @@ class MazeGenerator:
         if not self._is_generated:
             raise RuntimeError("NOT possible to solve a non-generated maze.")
 
-        # start_x, start_y = self.entry_coord
-        # exit_x, exit_y = self.exit_coord
-        start_x: int = self.entry_coord[0]
-        start_y: int = self.entry_coord[1]
-        exit_x: int = self.exit_coord[0]
-        exit_y: int = self.exit_coord[1]
+        start_x, start_y = self.entry_coord
+        exit_x, exit_y = self.exit_coord
 
         to_explore = deque([(start_x, start_y, "")])
 
@@ -596,15 +592,16 @@ class MazeGenerator:
                 new_file.write("\n")
 
                 # entrance coordinates
-                new_file.write(f"{self.entry_coord[0]},{self.entry_coord[1]}\n")
+                new_file.write(f"{self.entry_coord[0]},"
+                               f"{self.entry_coord[1]}\n")
                 # exit coordinates
                 new_file.write(f"{self.exit_coord[0]},{self.exit_coord[1]}\n")
                 # path from entrance to exit
                 new_file.write(f"{self._exit_path}\n")
-                
+
         except (PermissionError) as err:
-            print(f"Error: the file '{self.output_file}' can't be accessed\n {err}",
-                    file=sys.stderr)
+            print(f"Error: the file '{self.output_file}' can't be accessed"
+                  f"\n {err}", file=sys.stderr)
             sys.exit(1)
 
     # ---------------------------------------------------------------------

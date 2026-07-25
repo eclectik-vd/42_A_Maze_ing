@@ -125,11 +125,11 @@ Each cell is encoded by a hexadecimal digit representing the state of its 4 wall
 | 2                | South     |
 | 3                | West      |
 
-A closed wall sets the corresponding bit to `1`:
+A closed wall sets the corresponding bit to `1`: <img src="/doc/walls.png" alt="walls screenshot" align="right">
 
-Example 1: <img src="/doc/wall_0011.png" alt="wall 0011 screenshot" align="right"> *0x*3 (*0b*0011): North and East walls closed
+Example 1: *0x*3 (*0b*0011): North and East walls closed
 
-Example 2: <img src="/doc/wall_1110.png" alt="wall 1110 screenshot" align="right"> *0x*E (*0b*1110): East, South, and West walls closed
+Example 2: *0x*E (*0b*1110): East, South, and West walls closed
 
 The output file contains:
 + all the cells of the maze, written line by line and encoded in hexadecimal.

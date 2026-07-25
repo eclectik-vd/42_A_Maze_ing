@@ -151,7 +151,7 @@ class AsciiVisualizer(Visualizer):
                 raise ValueError("Error: The seed must be an int !!!!!!!!!!")
             self.mazegen.regenerate(new_seed)
 
-            self.maze: list = self.mazegen.grid.copy()
+            self.maze: list[list[int]] = self.mazegen.grid.copy()
             self.path: str = self.mazegen.solve_maze()
             self.update()
         if choice == '2':

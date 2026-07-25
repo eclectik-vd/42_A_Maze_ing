@@ -1,3 +1,2 @@
 [flake8]
 exclude = .venv, .git, __pycache__, build, dist
-# max-line-length = 79 (72 pour les docstrings et les commentaires O_O)
