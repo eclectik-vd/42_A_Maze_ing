@@ -48,56 +48,48 @@ class AsciiVisualizer(Visualizer):
                                   Fore.BLUE,
                                   Fore.CYAN]
         self.color_i: int = 0
+
+        # to NOT clear terminal on first display
         self.is_first: bool = True
 
     def draw(self) -> None:
-        """Clear the terminal and render the maze and menu.
+        """Render the maze and menu in the terminal.
 
-        Clears the terminal, builds the ASCII representation of the maze
-        via `upper_maze()`, optionally overlays the shortest path via
-        `show_path()` depending on `self.have_path`, then prints the maze
-        character by character (with a small delay for a typewriter effect)
-        followed by the interactive menu options. Wall characters are colored
-        based on the current color index, while entry/exit and path markers
-        use fixed colors.
+        Builds the ASCII representation of the maze via `upper_maze()`,
+        optionally overlays the shortest path via `show_path()` depending on
+        `self.have_path`, then prints the maze character by character (with a
+        small delay for a typewriter effect) followed by the interactive menu
+        options. Wall characters are colored based on the current color index,
+        while entry/exit and path markers use fixed colors.
 
         Returns:
             None: This method performs terminal I/O and has no return value.
         """
+
         self.upper_maze()
+        draw_list: list[str]
+
         if not self.have_path:
-            for line in self.ascii_maze:
-                for c in line:
-                    if c == "E":
-                        print(Fore.GREEN + c, end="", flush=True)
-                    elif c == "S":
-                        print(Fore.RED + c, end="", flush=True)
-                    elif c == "❀":
-                        print(Fore.BLUE + c, end="", flush=True)
-                    elif c == "•":
-                        print(Fore.YELLOW + c, end="", flush=True)
-                    else:
-                        print(self.colors[self.color_i] + c,
-                              end="", flush=True)
-                    time.sleep(0.005)
-                print()
+            draw_list = self.ascii_maze
         else:
             self.show_path()
-            for line in self.ascii_maze_path:
-                for c in line:
-                    if c == "E":
-                        print(Fore.GREEN + c, end="", flush=True)
-                    elif c == "S":
-                        print(Fore.RED + c, end="", flush=True)
-                    elif c == "❀":
-                        print(Fore.BLUE + c, end="", flush=True)
-                    elif c == "•":
-                        print(Fore.YELLOW + c, end="", flush=True)
-                    else:
-                        print(self.colors[self.color_i] + c,
-                              end="", flush=True)
-                    time.sleep(0.005)
-                print()
+            draw_list = self.ascii_maze_path
+
+        for line in draw_list:
+            for c in line:
+                if c == "E":
+                    print(Fore.GREEN + c, end="", flush=True)
+                elif c == "S":
+                    print(Fore.RED + c, end="", flush=True)
+                elif c == "❀":
+                    print(Fore.BLUE + c, end="", flush=True)
+                elif c == "•":
+                    print(Fore.YELLOW + c, end="", flush=True)
+                else:
+                    print(self.colors[self.color_i] + c,
+                            end="", flush=True)
+                time.sleep(0.005)
+            print()
 
         print()
 
@@ -151,19 +143,19 @@ class AsciiVisualizer(Visualizer):
                 raise ValueError("Error: The seed must be an int !!!!!!!!!!")
             self.mazegen.regenerate(new_seed)
 
-            self.maze: list[list[int]] = self.mazegen.grid.copy()
+            self.maze: list[list[int]] = self.mazegen.grid
             self.path: str = self.mazegen.exit_path
             self.update()
-        if choice == '2':
+        elif choice == '2':
             self.have_path = not self.have_path
             self.update()
-        if choice == '3':
+        elif choice == '3':
             if self.color_i < len(self.colors) - 1:
                 self.color_i += 1
             else:
                 self.color_i = 0
             self.update()
-        if choice == '4':
+        elif choice == '4':
             sys.exit(0)
         else:
             pass
@@ -209,8 +201,6 @@ class AsciiVisualizer(Visualizer):
             for i, cell in enumerate(row):
                 if i == 0:
                     mid_line += "|" if cell in west else " "
-                # print(self.exit)
-                # print([row_index, i])
                 if entry_x == i and entry_y == row_index:
                     mid_line += " E "
                 elif exit_x == i and exit_y == row_index:

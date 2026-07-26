@@ -1,5 +1,49 @@
 
-LAST CHANGES
+## changements pendant relecture
+
++ visualizer.py + acii.visualizer.py + menu.py
+	remplacé `mazegen.grid.copy()` par `self.mazegen.grid` :
+		@property `.grid` fait déjà un deepcopy
+		(en plus `.copy()` ne duplique que le premier niveau d'une liste, la liste des lignes, pas le contenu de chaque ligne...)
+
++ visualizer.py
+	remplacé `self.path: str = mazegen.solve_maze()`
+	par `self.path: str = mazegen.exit_path`
+
+	dans les docstrings
+		remplacé `solve_maze() method`
+			par `exit_path`
+		remplacé 2D grid of maze cells, copied from the maze generator
+			par A deep copy of the 2D grid of maze cells.
+		ajouté pour self.maze et self.path :
+			Must be refreshed after a maze regeneration.
+
++ ascii.visualizer.py, dans update() :
+	les conditions étant mutuellement exclusives, pour éviter d'évaluer inutilement les tests suivants et surtout plus pythonique (explicite > implicite) :
+		remplacé `if choice == '1':... if choice == '2':... if choice == '3':... if choice == '4':... else: pass`
+		par `if choice == '1':... elif choice == '2':... elif choice == '3':... elif choice == '4':... else: pass`
+	supprimé 2 print() de debogage : `# print(self.exit)` et `# print([row_index, i])`
+
++ ascii.visualizer.py, dans draw() :
+	corrigé docstring en supprimant "Clear the terminal" (clear se fait dans update()).
+	supprimé duplication de code en introduisant une liste draw_list, qui pointe vers la bonne liste en mémoire :
+		if not self.have_path:
+			draw_list = self.ascii_maze
+		else:
+			self.show_path()
+			draw_list = self.ascii_maze_path
+	pour faire ensuite :
+		for line in draw_list:
+			... code (non) dupliqué ...
+
+que self.ascii_maze
+	
+	les conditions étant mutuellement exclusives, pour éviter d'évaluer inutilement les tests suivants et surtout plus pythonique (explicite > implicite) :
+		remplacé `if choice == '1':... if choice == '2':... if choice == '3':... if choice == '4':... else: pass`
+		par `if choice == '1':... elif choice == '2':... elif choice == '3':... elif choice == '4':... else: pass`
+	supprimé 2 print() de debogage : `# print(self.exit)` et `# print([row_index, i])`
+
+## LAST CHANGES
 
 - [x] readme : capture walls
 - [x] doc/ : suppr img inutiles
@@ -26,7 +70,7 @@ LAST CHANGES
 
 
 
-QUESTIONS
+## QUESTIONS
 
 - [x] You must implement the maze generation as a unique class (e.g., ‘MazeGenerator‘) inside a standalone module that can be imported in a future project.
 - [x] Makefile `all` = install + run
@@ -34,7 +78,7 @@ QUESTIONS
 
 
 
-CODE
+## CODE
 
 - [x] FIX : random rattaché à l'instance et non au module global
 - [x] FIX : crash sur [ctrl]+[C] en display ascii
@@ -64,7 +108,7 @@ CODE
 - [x] BONUS : sons / musique
 
 
-README
+## README
 - [x] 4/ module réutilisable : à rédiger/vérifier/corriger...
 - [x] 2/ architecture : mettre à jour arbo slim avec architecture finale
 - [x] ressources : manque packaging
@@ -74,7 +118,7 @@ README
 - [x] flux global : verif avec Enzo + maj mef flowchart avec styles persos
 - [x] NE PAS re-numéroter sous la forme 1  1.1  1.2  1.3 ... 2  2.1  2.2  
 
-NETTOYAGE
+## NETTOYAGE
 - [ ] supprimer/transférer (Obsidian ou doc) dossiers/fichiers/commentaires superflus
 - [ ] docstring
 - [] flake8 mypy
