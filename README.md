@@ -455,7 +455,7 @@ Development was carried out with [VSCode](https://code.visualstudio.com/), most 
 
 ### AI Usage
 
-Gemini or Claude were used by vadamavi to:
+Gemini or Claude were used to:
 + review and optimize the Makefile;
 + summarize the comparison of maze generation algorithms;
 + calculate the probability of, in mazes generated with DFS or Prim (and of variable size, up to 150x150), open areas of at least 3x3 appearing during braiding;

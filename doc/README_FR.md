@@ -455,7 +455,7 @@ Le développement a été effectué avec [VSCode](https://code.visualstudio.com/
 
 ### Usages IA
 
-Gemini ou Claude ont été utilisés par vadamavi pour :
+Gemini ou Claude ont été utilisés pour :
 + relire et optimiser le Makefile ;
 + synthétiser la comparaison des algorithmes de génération de labyrinthe ;
 + calculer la probabilité d'apparition, dans des labyrinthes générés avec DFS ou Prim (et de taille variable, jusqu'à 150x150), de zones ouvertes d'au moins 3x3 lors du braiding ;
@@ -466,4 +466,4 @@ Gemini ou Claude ont été utilisés par vadamavi pour :
 
 # Licence
 
-Ce projet est distribué sous licence MIT, voir le fichier [LICENSE.md](LICENSE.md) à la racine du dépôt.
+Ce projet est distribué sous licence MIT, voir le fichier [LICENSE](LICENSE) à la racine du dépôt.
