@@ -247,11 +247,13 @@ Contrairement à l'application, le package seul ne gère pas les arguments d'un 
 │           └── sound/
 │               └── music.mp3
 ├── doc/
-│   ├── display_ascii.png
-│   ├── display_arcade.png
-│   ├── wall_0011.png
-│   ├── wall_1110.png
-│   └── ToDo.md
+│   ├── display_ascii.png
+│   ├── display_arcade.png
+│   ├── walls.png
+│   ├── BFS_graph.md
+│   ├── BFS_graph.md
+│   ├── MazeGenerator_description.md
+│   └── ToDo.md
 └── tests/
     ├── test_parsing.py
     └── test_models.py
@@ -327,14 +329,13 @@ Notre choix s'est porté sur le Backtracking récursif (DFS randomisé) :
 + beaucoup de longs couloirs, donc peu de culs de sacs → ne génère pas de zone ouverte de 3x3 lors du braiding
 
 Principe :
-+ Creuse un chemin au hasard en avançant dans une direction aléatoire ; quand on est bloqué, on revient en arrière (backtrack) jusqu'à trouver une case avec une issue.
++ Creuse un chemin au hasard en avançant dans une direction aléatoire ; quand on est bloqué, on revient en arrière (backtrack) jusqu'à trouver une case avec une issue. [Details ici](/doc/DFS_graph.md)
 
 Le labyrinthe est généré par **`MazeGenerator`** (`src/mazegen.py`) :
 
-1. `generate_perfect_maze()` crée un labyrinthe parfait , `_apply_42_pattern()` intègre le pattern "42" lorsque sa taille le permet.
-2. Si `PERFECT=False`, `make_imperfect()` supprime tous les culs de sac et rend le labyrinthe imparfait.
+1. `_generate_perfect_maze()` crée un labyrinthe parfait , `_apply_42_pattern()` intègre le pattern "42" lorsque sa taille le permet.
+2. Si `PERFECT=False`, `_make_imperfect()` supprime tous les culs de sac et rend le labyrinthe imparfait.
 3. `check_walls_integrity()` et `free_of_open_areas()` vérifient que le labyrinthe créé est cohérent et respecte les consignes.
-4. `solve_maze()` trouve le chemin le plus court et `export_to_file()` génère le fichier `OUTPUT_FILE`
 
 ### Résolution
 
@@ -353,7 +354,7 @@ Notre choix s'est porté sur le BFS :
 + pour un labyrinthe affiché à l'écran, donc de taille raisonnable, la différence de performance avec A* sera imperceptible.
 
 Principe :
-+ Explore le graphe niveau par niveau, en traitant tous les voisins à distance _k_ avant de passer à distance _k+1_. 
++ Explore le graphe niveau par niveau, en traitant tous les voisins à distance _k_ avant de passer à distance _k+1_. [Details ici](/doc/BFS_graph.md)
 
 Le labyrinthe est résolu par **`MazeGenerator`** (`src/mazegen.py`) :
 1. `solve_maze()` trouve le chemin le plus court.
