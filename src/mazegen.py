@@ -117,10 +117,10 @@ class MazeGenerator:
         if entry_coord == exit_coord:
             raise ValueError("entry_coord and exit_coord must be different.")
 
-        self.width = width
-        self.height = height
-        self.entry_coord = entry_coord
-        self.exit_coord = exit_coord
+        self._width = width
+        self._height = height
+        self._entry_coord = entry_coord
+        self._exit_coord = exit_coord
         self.perfect = perfect
         self.output_file = output_file
         self._rng = random.Random(seed)
@@ -136,6 +136,42 @@ class MazeGenerator:
     # --------------------- READ-ONLY properties --------------------------
     #
     # ---------------------------------------------------------------------
+
+    @property
+    def width(self) -> int:
+        """Read-only access to the number of columns in the grid.
+
+        The `width` property is read-only: encapsulation prevents
+        calling code from corrupting internal state after construction.
+        """
+        return self._width
+
+    @property
+    def height(self) -> int:
+        """Read-only access to the number of rows in the grid.
+
+        The `height` property is read-only: encapsulation prevents
+        calling code from corrupting internal state after construction.
+        """
+        return self._height
+
+    @property
+    def entry_coord(self) -> tuple[int, int]:
+        """Read-only access to the (x, y) coordinates of the maze entrance.
+
+        The `entry_coord` property is read-only: encapsulation prevents
+        calling code from corrupting internal state after construction.
+        """
+        return self._entry_coord
+
+    @property
+    def exit_coord(self) -> tuple[int, int]:
+        """Read-only access to the (x, y) coordinates of the maze exit.
+
+        The `exit_coord` property is read-only: encapsulation prevents
+        calling code from corrupting internal state after construction.
+        """
+        return self._exit_coord
 
     @property
     def grid(self) -> list[list[int]]:
@@ -282,7 +318,7 @@ class MazeGenerator:
     #
     # ---------------------------------------------------------------------
 
-    def generate_perfect_maze(self) -> None:
+    def _generate_perfect_maze(self) -> None:
         """Generate a perfect maze using Recursive Backtracker.
 
         The maze is generated starting from `self.entry_coord`.
@@ -308,7 +344,7 @@ class MazeGenerator:
 
         self._is_generated = True
 
-    def make_imperfect(self, percent_to_break: float = 0.4) -> None:
+    def _make_imperfect(self, percent_to_break: float = 0.4) -> None:
         """Make the maze imperfect by breaking random dead-end walls.
 
         Args:
@@ -618,10 +654,10 @@ class MazeGenerator:
                 the mandatory internal rules.
         """
 
-        self.generate_perfect_maze()
+        self._generate_perfect_maze()
 
         if not self.perfect:
-            self.make_imperfect()
+            self._make_imperfect()
 
         if not self.check_walls_integrity() or not self.free_of_open_areas():
             raise MazeGenError("Generated maze does not comply internal rules")
