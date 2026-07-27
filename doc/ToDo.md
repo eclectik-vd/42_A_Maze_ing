@@ -1,3 +1,12 @@
+## OTHER CHANGES
+
+- [x] ./src/maze_app/display/ascii_visualizer.py:90:29: E127 continuation line over-indented for visual indent
+
+- [x] FIX raise OSError("Error: Asset not found.") empeche arcade de se lancer :
+		player.png avait disparu de src/display/sprite
+
+- [x] ajouté graph pour algos DFS et BFS
+
 
 ## changements pendant relecture
 
@@ -36,7 +45,6 @@
 		for line in draw_list:
 			... code (non) dupliqué ...
 
-- [x] ajouté graph pour algos DFS et BFS
 
 
 ## LAST CHANGES
@@ -59,7 +67,7 @@
 - [!!!] si make lint AVANT make, ERROR :
 		pyproject.toml:1: error: Error importing plugin "pydantic.mypy": No module named 'pydantic'  [misc]
 
-- [ ] dé-commenter mon code
+- [x] dé-commenter mon code
 - [ ] commenter Enzo code
 - (ascii_visualizer.py (L 155)
 		self.path: str = self.mazegen.solve_maze() )

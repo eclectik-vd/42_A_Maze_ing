@@ -86,8 +86,7 @@ class AsciiVisualizer(Visualizer):
                 elif c == "•":
                     print(Fore.YELLOW + c, end="", flush=True)
                 else:
-                    print(self.colors[self.color_i] + c,
-                            end="", flush=True)
+                    print(self.colors[self.color_i] + c, end="", flush=True)
                 time.sleep(0.005)
             print()
 
