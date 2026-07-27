@@ -12,8 +12,8 @@ EXIT=3,1
 OUTPUT_FILE=maze.txt
 
 # True or False, to indicate whether there is only one possible path
-# PERFECT=True
-PERFECT=False
+PERFECT=True
+# PERFECT=False
 
 # custom key that must be added
 # SEED=42
