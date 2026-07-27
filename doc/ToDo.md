@@ -36,12 +36,8 @@
 		for line in draw_list:
 			... code (non) dupliqué ...
 
-que self.ascii_maze
-	
-	les conditions étant mutuellement exclusives, pour éviter d'évaluer inutilement les tests suivants et surtout plus pythonique (explicite > implicite) :
-		remplacé `if choice == '1':... if choice == '2':... if choice == '3':... if choice == '4':... else: pass`
-		par `if choice == '1':... elif choice == '2':... elif choice == '3':... elif choice == '4':... else: pass`
-	supprimé 2 print() de debogage : `# print(self.exit)` et `# print([row_index, i])`
+- [x] ajouté graph pour algos DFS et BFS
+
 
 ## LAST CHANGES
 
